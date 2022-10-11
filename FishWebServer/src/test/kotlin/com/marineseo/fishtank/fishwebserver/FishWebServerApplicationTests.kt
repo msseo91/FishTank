@@ -2,6 +2,7 @@ package com.marineseo.fishtank.fishwebserver
 
 import com.marineseo.fishtank.fishwebserver.model.*
 import com.marineseo.fishtank.fishwebserver.service.ArduinoService
+import kotlinx.coroutines.awaitAll
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
@@ -21,7 +22,9 @@ class FishWebServerApplicationTests {
         val service = ArduinoService()
         service.init()
 
+        Thread.sleep(3000L)
         service.enableInWaterValve(true)
+        Thread.sleep(3000L)
         service.enableOutWaterValve(true)
     }
 
@@ -58,9 +61,5 @@ class FishWebServerApplicationTests {
         Assertions.assertEquals(packet, aPacket)
         Assertions.assertTrue(aPacket.isValidate())
         Assertions.assertTrue(packet.isValidate())
-    }
-
-    fun ByteArray.toHex2(): String = asUByteArray().joinToString(", ") {
-        "0x" + it.toString(radix = 16).padStart(2, '0')
     }
 }

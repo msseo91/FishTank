@@ -85,5 +85,8 @@ fun ByteArray.toPacket(): FishPacket {
     )
 }
 
+fun ByteArray.toHex2(): String = asUByteArray().joinToString(", ") {
+    "0x" + it.toString(radix = 16).padStart(2, '0')
+}
 
 

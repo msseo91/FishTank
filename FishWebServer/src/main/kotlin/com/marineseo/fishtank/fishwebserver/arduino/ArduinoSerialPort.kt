@@ -25,6 +25,7 @@ class ArduinoSerialPort(portName: String): SerialPort(portName) {
             val byteBuffer = ByteBuffer.allocate(PACKET_SIZE).apply {
                 put(bytes)
                 order(ByteOrder.LITTLE_ENDIAN)
+                position(0)
             }
 
             val first = byteBuffer.get()
@@ -61,7 +62,8 @@ class ArduinoSerialPort(portName: String): SerialPort(portName) {
     }
 
     fun writePacket(packet: FishPacket): Boolean {
-        logger.info("Write $packet")
-        return writeBytes(packet.toRawPacket())
+        val raw = packet.toRawPacket()
+        logger.info("Write $packet { ${raw.toHex2()} }")
+        return writeBytes(raw)
     }
 }

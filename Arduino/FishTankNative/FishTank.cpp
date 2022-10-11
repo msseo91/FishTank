@@ -1,6 +1,6 @@
 #include "DallasTemperature.h"
-#include "Arduino.h"
 #include "FishPacket.h"
+#include "FishTank.h"
 
 #define READ_TIMEOUT 5000
 
@@ -37,7 +37,7 @@ Ser Serial;
 Ser Serial1;
 
 
-void clearPacket(FishPacket &packet) {
+void FishTank::clearPacket(FishPacket &packet) {
     packet.id = 0;
     packet.clientId = 0;
     packet.opCode = 0;
@@ -46,7 +46,7 @@ void clearPacket(FishPacket &packet) {
     packet.data = 0;
 }
 
-void printArrayAsHex(unsigned char arr[], int len) {
+void FishTank::printArrayAsHex(unsigned char arr[], int len) {
     // Print buffer for debugging
     for (int i=0; i<len; i++) {
         char hexBuf[3];
@@ -58,7 +58,7 @@ void printArrayAsHex(unsigned char arr[], int len) {
     }
 }
 
-void printFishPacket(FishPacket &packet) {
+void FishTank::printFishPacket(FishPacket &packet) {
     Serial1.println();
     Serial1.print(", id=");
     Serial1.print(packet.id);
@@ -75,7 +75,7 @@ void printFishPacket(FishPacket &packet) {
     Serial1.println();
 }
 
-void sendPacket(FishPacket &packet) {
+void FishTank::sendPacket(FishPacket &packet) {
     Serial1.println("Send Packet");
 
     unsigned char buffer[PACKET_SIZE_MAX];
@@ -95,7 +95,7 @@ void sendPacket(FishPacket &packet) {
     Serial1.println();
 }
 
-void readPacket(FishPacket &packet) {
+void FishTank::readPacket(FishPacket &packet) {
     char firstByte = Serial.read();
     if(firstByte == STX) {
         // Packet received
@@ -138,83 +138,4 @@ void readPacket(FishPacket &packet) {
     }
 }
 
-void setup() {
-    // Clear pinState
-    for (int state: pinState) {
-        state = 0;
-    }
-
-    Serial.begin(BAUD_RATE);
-    Serial.setTimeout(READ_TIMEOUT);
-    Serial.flush();
-
-    Serial1.begin(BAUD_RATE);
-    sensors.begin();
-}
-
-void loop() {
-    unsigned long currentMils = millis();
-
-    if (currentMils - prevMils > LOOP_INTERVAL) {
-        FishPacket packet;
-        readPacket(packet);
-
-        if (packet.id != 0) {
-            switch (packet.opCode) {
-                case OP_GET_TEMPERATURE: {
-                    sensors.requestTemperatures();
-                    float temperature = sensors.getTempCByIndex(0);
-
-                    packet.data = temperature;
-                    break;
-                }
-                case OP_INPUT_PIN: {
-                    pinMode(packet.pin, packet.pinMode);
-                    int value = (int) (packet.data);
-
-                    digitalWrite(packet.pin, value);
-
-                    if (packet.pin < PIN_LENGTH && packet.pin >= 0) {
-                        pinState[packet.pin] = value;
-                    }
-
-                    break;
-                }
-                case OP_READ_DIGIT_PIN: {
-                    if (packet.pin < PIN_LENGTH && packet.pin >= 0) {
-                        packet.data = pinState[packet.pin];
-                    }
-
-                    break;
-                }
-                case OP_INPUT_ANALOG_PIN: {
-                    pinMode(packet.pin, packet.pinMode);
-                    int value = (int) (packet.data);
-                    analogWrite(packet.pin, value);
-
-                    if (packet.pin < PIN_LENGTH && packet.pin >= 0) {
-                        pinState[packet.pin] = value;
-                    }
-
-                    break;
-                }
-                case OP_READ_ANALOG_PIN: {
-                    if (packet.pin < PIN_LENGTH && packet.pin >= 0) {
-                        packet.data = pinState[packet.pin];
-                    }
-                    break;
-                }
-            }
-
-            // Send response
-            sendPacket(packet);
-        }
-
-        // clear buffer
-        clearPacket(packet);
-
-        // Update prevMils.
-        prevMils = millis();
-    }
-}
 

@@ -1,7 +1,7 @@
 #include <iostream>
 #include <iomanip>
-#include <cstring>
-#include "FishPacket.h"
+#include "Arduino.h"
+#include "FishTank.h"
 
 using namespace std;
 
@@ -24,29 +24,113 @@ void printBytes(unsigned char arr[], int len) {
 }
 
 int main() {
-    for(int i=0; i<10; i++) {
-        auto *fishPacket = new FishPacket();
-        fishPacket->clientId = i;
-        fishPacket->id = i+100;
-        fishPacket->pin = i+299;
-        fishPacket->pinMode = i;
-        fishPacket->opCode = i;
-        fishPacket->data = i * 0.75;
+    uint8_t buffer[] = {0x02,
+                        0x02, 0x00, 0x00, 0x00,
+                        0x01, 0x00, 0x00, 0x00,
+                        0xc8, 0x00,
+                        0x0a, 0x00,
+                        0x01, 0x00,
+                        0x00, 0x00, 0x60, 0x40,
+                        0xa1, 0x21,
+                        0x03
+    };
 
-        unsigned int crc = fishPacket->makeCrc();
-        cout << "CRC=" << crc << endl;
+    FishPacket fishPacket;
+    printPacket(&fishPacket);
 
-        unsigned char buffer[40];
-        int packetSize = fishPacket->serializePacket(buffer);
-        cout << "PacketSize=" << packetSize << endl;
-        printPacket(fishPacket);
-        printBytes(buffer, packetSize);
+    bool readResult = fishPacket.deSerializePacket(buffer) > 0;
+    cout << "readResult=" << readResult << endl;
 
-        auto *aPacket = new FishPacket();
-        aPacket->deSerializePacket(buffer);
-        printPacket(aPacket);
-    }
+    bool isValid = fishPacket.validateCrc();
+    cout << "isValid=" << isValid << endl;
+
+    int calCrc = fishPacket.makeCrc();
+    cout << "Calculated crc=" << calCrc << endl;
+
+    printPacket(&fishPacket);
 
     return 0;
 }
+
+/*
+void setup() {
+    // Clear pinState
+    for (int state: pinState) {
+        state = 0;
+    }
+
+    Serial.begin(BAUD_RATE);
+    Serial.setTimeout(READ_TIMEOUT);
+    Serial.flush();
+
+    Serial1.begin(BAUD_RATE);
+    sensors.begin();
+}
+
+void loop() {
+    unsigned long currentMils = millis();
+
+    if (currentMils - prevMils > LOOP_INTERVAL) {
+        FishPacket packet;
+        readPacket(packet);
+
+        if (packet.id != 0) {
+            switch (packet.opCode) {
+                case OP_GET_TEMPERATURE: {
+                    sensors.requestTemperatures();
+                    float temperature = sensors.getTempCByIndex(0);
+
+                    packet.data = temperature;
+                    break;
+                }
+                case OP_INPUT_PIN: {
+                    pinMode(packet.pin, packet.pinMode);
+                    int value = (int) (packet.data);
+
+                    digitalWrite(packet.pin, value);
+
+                    if (packet.pin < PIN_LENGTH && packet.pin >= 0) {
+                        pinState[packet.pin] = value;
+                    }
+
+                    break;
+                }
+                case OP_READ_DIGIT_PIN: {
+                    if (packet.pin < PIN_LENGTH && packet.pin >= 0) {
+                        packet.data = pinState[packet.pin];
+                    }
+
+                    break;
+                }
+                case OP_INPUT_ANALOG_PIN: {
+                    pinMode(packet.pin, packet.pinMode);
+                    int value = (int) (packet.data);
+                    analogWrite(packet.pin, value);
+
+                    if (packet.pin < PIN_LENGTH && packet.pin >= 0) {
+                        pinState[packet.pin] = value;
+                    }
+
+                    break;
+                }
+                case OP_READ_ANALOG_PIN: {
+                    if (packet.pin < PIN_LENGTH && packet.pin >= 0) {
+                        packet.data = pinState[packet.pin];
+                    }
+                    break;
+                }
+            }
+
+            // Send response
+            sendPacket(packet);
+        }
+
+        // clear buffer
+        clearPacket(packet);
+
+        // Update prevMils.
+        prevMils = millis();
+    }
+}
+ */
 

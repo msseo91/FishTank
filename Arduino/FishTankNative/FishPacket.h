@@ -2,8 +2,8 @@
 // Created by MSSeo on 2022-08-31.
 //
 
-#ifndef FISHTANKNATIVE_FISHTANK_H
-#define FISHTANKNATIVE_FISHTANK_H
+#ifndef FISHTANKNATIVE_FISHPACKET_H
+#define FISHTANKNATIVE_FISHPACKET_H
 
 #define STX 0x02
 #define ETX 0x03
@@ -11,19 +11,21 @@
 
 class FishPacket {
 public:
-    //const unsigned char stx = STX;
+    const unsigned char stx = STX;
 
     // Start Data
-    long id;
-    long clientId;
-    int opCode;
-    int pin;
-    int pinMode;
-    float data;
+    long id = 0;
+    long clientId = 0;
+    int opCode = 0;
+    int pin = 0;
+    int pinMode = 0;
+    float data = 0;
     // End Data
 
-    //const unsigned char etx = ETX;
-    unsigned int crc;
+    // CheckSum
+    unsigned int crc = 0;
+
+    const unsigned char etx = ETX;
 
     /**
      * Write value to target in little endian order.
@@ -68,4 +70,4 @@ void sendPacket(FishPacket &packet);
 
 void readPacket(FishPacket &packet);
 
-#endif //FISHTANKNATIVE_FISHTANK_H
+#endif //FISHTANKNATIVE_FISHPACKET_H

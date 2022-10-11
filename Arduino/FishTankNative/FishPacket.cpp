@@ -99,11 +99,9 @@ int FishPacket::deSerializePacket(unsigned char bff[]) {
     index += read((unsigned char *)&pin, 2, bff+index);
     index += read((unsigned char *)&pinMode, 2, bff+index);
     index += read((unsigned char *)&data, 4, bff+index);
+    index += read((unsigned char *)&crc, 2, bff+index);
 
     if(bff[index++] != ETX) return -1;
-    unsigned char* cp = (unsigned char *)&crc;
-    cp[0] = bff[index++];
-    cp[1] = bff[index++];
 
     return index;
 }

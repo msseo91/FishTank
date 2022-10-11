@@ -14,15 +14,15 @@ import org.springframework.stereotype.Service
 private const val PIN_BOARD_LED: Short = 13
 
 // HW316 Relay - Low Trigger
-private const val PIN_RELAY_OUT_WATER: Short = 49
-private const val PIN_RELAY_IN_WATER: Short = 48
-private const val PIN_RELAY_PUMP: Short = 47
-private const val PIN_RELAY_LIGHT: Short = 46
-private const val PIN_RELAY_PURIFIER1: Short = 45
-private const val PIN_RELAY_PURIFIER2: Short = 44
-private const val PIN_RELAY_HEATER: Short = 43
+private const val PIN_RELAY_OUT_WATER: Short = 2
+private const val PIN_RELAY_IN_WATER: Short = 3
 
-private const val PIN_LIGHT_BRIGHTNESS: Short = 2
+private const val PIN_RELAY_LIGHT: Short = 10
+
+private const val PIN_RELAY_PURIFIER: Short = 7
+private const val PIN_RELAY_HEATER: Short = 8
+
+private const val PIN_LIGHT_BRIGHTNESS: Short = 5
 
 private const val MODE_INPUT: Short = 0x00
 private const val MODE_OUTPUT: Short = 0x01
@@ -45,10 +45,11 @@ class ArduinoService: ApplicationListener<ApplicationContextEvent> {
     private lateinit var portName: String
     private var runLog = false
 
-    private fun init() {
+    fun init() {
         logger.info("Application start!")
 
-        val usbDevs = DeviceUtils.getFileList("/dev", "ttyUSB*")
+        connect("COM4")
+       /* val usbDevs = DeviceUtils.getFileList("/dev", "ttyUSB*")
         for(devFile in usbDevs) {
             when(DeviceUtils.getDriver(devFile)) {
                 "ch341" -> {
@@ -60,7 +61,7 @@ class ArduinoService: ApplicationListener<ApplicationContextEvent> {
                     //runDebugLog(devFile.absolutePath)
                 }
             }
-        }
+        }*/
     }
 
     override fun onApplicationEvent(event: ApplicationContextEvent) {
@@ -211,7 +212,7 @@ class ArduinoService: ApplicationListener<ApplicationContextEvent> {
             FishPacket(
                 clientId = COMMON_CLIENT_ID,
                 opCode = OP_PIN_IO,
-                pin = PIN_RELAY_PURIFIER1,
+                pin = PIN_RELAY_PURIFIER,
                 pinMode = MODE_OUTPUT,
                 data = (if (enable) LOW else HIGH).toFloat()
             )

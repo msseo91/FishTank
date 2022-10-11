@@ -1,6 +1,7 @@
 package com.marineseo.fishtank.fishwebserver
 
 import com.marineseo.fishtank.fishwebserver.model.*
+import com.marineseo.fishtank.fishwebserver.service.ArduinoService
 import com.marineseo.fishtank.fishwebserver.util.runCommand
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -18,8 +19,11 @@ class FishWebServerApplicationTests {
 
     @Test
     fun generalTest() {
-        val routed = "route print".runCommand()
-        println(routed)
+        val service = ArduinoService()
+        service.init()
+
+        service.enableInWaterValve(true)
+        service.enableOutWaterValve(true)
     }
 
     @Test

@@ -21,7 +21,7 @@ class ArduinoSerialPort(portName: String): SerialPort(portName) {
         return readBytes(1)?.get(0)
     }
 
-    fun readP(): FishPacket? {
+    fun readPacket(): FishPacket? {
         var readStx = false
         var readEtx = false
 
@@ -64,7 +64,7 @@ class ArduinoSerialPort(portName: String): SerialPort(portName) {
         return dataArr.toByteArray().toPacket()
     }
 
-    fun readPacket(): FishPacket? {
+    /*fun readPacket(): FishPacket? {
         try {
 
             // Print bytes for debugging
@@ -104,7 +104,7 @@ class ArduinoSerialPort(portName: String): SerialPort(portName) {
         }
 
         return null
-    }
+    }*/
 
     fun writePacket(packet: FishPacket): Boolean {
         logger.info("Write $packet")

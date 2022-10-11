@@ -86,26 +86,4 @@ fun ByteArray.toPacket(): FishPacket {
 }
 
 
-fun write(value: Number, buffer: ByteBuffer) {
-    val size = when(value) {
-        is Long -> Long.SIZE_BYTES
-        is Int -> Int.SIZE_BYTES
-        is Short -> Short.SIZE_BYTES
-        is Double -> Double.SIZE_BYTES
-        is Float -> Float.SIZE_BYTES
-        is Byte -> Byte.SIZE_BYTES
-        else -> 0
-    }
-
-    val number = if(value is Float) value.toFloat().toRawBits() else value.toInt()
-    repeat(size) { index ->
-        val b = number.ushr(index * 8).toByte()
-        when(b) {
-            STX, ETX, DLE -> buffer.put(DLE)
-        }
-
-        buffer.put(b)
-    }
-}
-
 

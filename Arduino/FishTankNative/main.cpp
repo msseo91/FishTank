@@ -77,6 +77,15 @@ int main() {
     printPacket(&deserialized);
 
     printBytes(buffer, 22);
+    cout << endl;
+
+    cout << "===Read packet from Serial===" << endl;
+    FishTank fishTank;
+    fishTank.Serial.mockSetReadNext(buffer, 22);
+
+    FishPacket readPacket;
+    fishTank.readPacket(readPacket);
+    printPacket(&readPacket);
 
     return 0;
 }

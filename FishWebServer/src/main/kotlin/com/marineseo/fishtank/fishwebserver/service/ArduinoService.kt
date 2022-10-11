@@ -2,7 +2,6 @@ package com.marineseo.fishtank.fishwebserver.service
 
 import com.marineseo.fishtank.fishwebserver.arduino.ArduinoSerialPort
 import com.marineseo.fishtank.fishwebserver.model.*
-import com.marineseo.fishtank.fishwebserver.util.DeviceUtils
 import jssc.SerialPort
 import jssc.SerialPortException
 import kotlinx.coroutines.*
@@ -319,9 +318,9 @@ class ArduinoService: ApplicationListener<ApplicationContextEvent> {
     private fun repairConnection() {
         runBlocking {
             disConnect()
-            delay(2000L)
+            delay(1000L)
             connect(portName)
-            delay(2000L)
+            delay(1000L)
         }
     }
 

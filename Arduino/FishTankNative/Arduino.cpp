@@ -8,15 +8,18 @@ uint8_t mData[100];
 int index = 0;
 
 void Ser::println() {
-
+    printf("\n");
 }
 
-void Ser::println(const char *) {
+void Ser::println(const char *s) {
+    printf(s);
 }
 
 void Ser::print() {}
 
-void Ser::print(const char *) {}
+void Ser::print(const char *s) {
+    printf(s);
+}
 
 void Ser::print(int) {}
 

@@ -4,9 +4,7 @@ import com.marineseo.fishtank.fishwebserver.model.*
 import jssc.SerialPort
 import jssc.SerialPortTimeoutException
 import org.slf4j.LoggerFactory
-import java.io.ByteArrayOutputStream
 import java.lang.Exception
-import java.lang.StringBuilder
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
@@ -22,67 +20,16 @@ class ArduinoSerialPort(portName: String): SerialPort(portName) {
     }
 
     fun readPacket(): FishPacket? {
-        var readStx = false
-        var readEtx = false
-
-        val buffer = ByteBuffer.allocate(PACKET_SIZE * 2)
-
-        val firstByte = readByte()
-        if(firstByte == STX) {
-            var escaping = false
-            while(true) {
-                val b = readByte() ?: continue
-
-                if(escaping) {
-                    buffer.put(b)
-                    escaping = false
-                    continue
-                }
-
-                if(b == DLE) {
-                    escaping = true
-                    continue
-                }
-
-                if(b == ETX) {
-                    // End of packet.
-                    buffer.put(b)
-                    // Read CRC
-                    buffer.put(b)
-                    buffer.put(b)
-                    break
-                }
-
-                // Plain data byte.
-                buffer.put(b)
-            }
-        }
-
-        val dataArr = buffer.array().filterIndexed {index, byte ->
-            index < buffer.position()
-        }
-        return dataArr.toByteArray().toPacket()
-    }
-
-    /*fun readPacket(): FishPacket? {
         try {
-
-            // Print bytes for debugging
-            val stringBuilder = StringBuilder()
-            for(b in bytes) {
-                stringBuilder.append(String.format("%X ", b))
-            }
-            //logger.info("Raw Packet=${stringBuilder}")
-
+            val bytes = readBytes(PACKET_SIZE, READ_TIMEOUT)
             val byteBuffer = ByteBuffer.allocate(PACKET_SIZE).apply {
+                put(bytes)
                 order(ByteOrder.LITTLE_ENDIAN)
             }
-            byteBuffer.put(bytes)
-            byteBuffer.position(0)
-            // Read magic
-            val magic = byteBuffer.short
-            if(magic != MAGIC) {
-                logger.error("Unexpected magic! $magic")
+
+            val first = byteBuffer.get()
+            if(first != STX) {
+                logger.error("First byte must be $STX, but $first")
                 return null
             }
 
@@ -92,8 +39,15 @@ class ArduinoSerialPort(portName: String): SerialPort(portName) {
                 opCode = byteBuffer.short,
                 pin = byteBuffer.short,
                 pinMode = byteBuffer.short,
-                data = byteBuffer.float
+                data = byteBuffer.float,
+                crc = byteBuffer.short
             )
+
+            if(!packet.isValidate()) {
+                logger.error("CRC not matched!")
+                return null
+            }
+
             logger.info("Read $packet")
             return packet
         } catch (e: SerialPortTimeoutException) {
@@ -104,7 +58,7 @@ class ArduinoSerialPort(portName: String): SerialPort(portName) {
         }
 
         return null
-    }*/
+    }
 
     fun writePacket(packet: FishPacket): Boolean {
         logger.info("Write $packet")

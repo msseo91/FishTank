@@ -10,6 +10,9 @@
 
 class FishTank {
 public:
+    Ser Serial;
+    Ser Serial1;
+
     void clearPacket(FishPacket &packet);
     void printArrayAsHex(unsigned char arr[], int len);
     void printFishPacket(FishPacket &packet);

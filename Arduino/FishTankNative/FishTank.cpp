@@ -19,7 +19,7 @@
 #define SMALL_BUF_SIZE 256
 
 #define MAGIC 31256
-#define PACKET_SIZE_MAX 40
+#define PACKET_SIZE 22
 
 #define PIN_LENGTH 53
 
@@ -32,9 +32,6 @@ DallasTemperature sensors(&oneWire);
 unsigned long prevMils = 0;
 
 int pinState[PIN_LENGTH];
-
-Ser Serial;
-Ser Serial1;
 
 
 void FishTank::clearPacket(FishPacket &packet) {
@@ -78,8 +75,8 @@ void FishTank::printFishPacket(FishPacket &packet) {
 void FishTank::sendPacket(FishPacket &packet) {
     Serial1.println("Send Packet");
 
-    unsigned char buffer[PACKET_SIZE_MAX];
-    memset(buffer, 0, PACKET_SIZE_MAX);
+    unsigned char buffer[PACKET_SIZE];
+    memset(buffer, 0, PACKET_SIZE);
 
     int size = packet.serializePacket(buffer);
 
@@ -96,43 +93,22 @@ void FishTank::sendPacket(FishPacket &packet) {
 }
 
 void FishTank::readPacket(FishPacket &packet) {
-    char firstByte = Serial.read();
+    uint8_t firstByte = Serial.read();
+    int idx = 0;
     if(firstByte == STX) {
         // Packet received
-        unsigned char buffer[PACKET_SIZE_MAX];
-        memset(buffer, 0, PACKET_SIZE_MAX);
+        unsigned char buffer[PACKET_SIZE];
+        memset(buffer, 0, PACKET_SIZE);
 
-        int idx = 0;
-        bool escaping = false;
-        for(int i= 0; i<PACKET_SIZE_MAX; i++) {
-            unsigned char b = Serial.read();
-            if(escaping) {
-                // This byte is escaped. alloc unconditionally.
-                buffer[idx++] = b;
-                escaping = false;
-                continue;
-            }
-
-            if(b == DLE) {
-                // Next byte is escaped!
-                escaping = true;
-                continue;
-            }
-
-            if(b == ETX){
-                // End of packet.
-                buffer[idx++] = b;
-                // Read CRC
-                buffer[idx++] = Serial.read();
-                buffer[idx++] = Serial.read();
-                break;
-            }
-
-            buffer[idx++] = b;
+        buffer[idx++] = firstByte;
+        for(int i= 0; i<PACKET_SIZE-1; i++) {
+            buffer[idx++] = Serial.read();
         }
 
         packet.deSerializePacket(buffer);
+
         if(!packet.validateCrc()) {
+            Serial1.println("CRC is not match!");
             packet.clear();
         }
     }

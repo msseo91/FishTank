@@ -15,15 +15,16 @@ void printPacket(FishPacket* packet) {
 }
 
 void printBytes(unsigned char arr[], int len) {
-    for(int i=0; i<=len; i++) {
-        cout << hex << setfill('0') << setw(2) << (int)arr[i] << " ";
+    for(int i=0; i<len; i++) {
+        cout << "0x" << hex << setfill('0') << setw(2) << (int)arr[i] << ", ";
     }
     cout << endl;
 
     cout << dec;
 }
 
-int main() {
+void deSerializeTest() {
+    cout << "=== Deserialize Test ===" << endl;
     uint8_t buffer[] = {0x02,
                         0x02, 0x00, 0x00, 0x00,
                         0x01, 0x00, 0x00, 0x00,
@@ -48,6 +49,34 @@ int main() {
     cout << "Calculated crc=" << calCrc << endl;
 
     printPacket(&fishPacket);
+
+    cout << endl;
+}
+
+int main() {
+    deSerializeTest();
+
+    cout << "=== Serialize Test ===" << endl;
+    FishPacket fishPacket;
+    fishPacket.id = 1515;
+    fishPacket.clientId = 2999;
+    fishPacket.pin = 50;
+    fishPacket.pinMode = 2;
+    fishPacket.opCode = 3;
+    fishPacket.crc = fishPacket.makeCrc();
+
+    cout << "Before Serialize...";
+    printPacket(&fishPacket);
+
+    uint8_t buffer[22];
+    fishPacket.serializePacket(buffer);
+
+    FishPacket deserialized;
+    deserialized.deSerializePacket(buffer);
+    cout << "After Deserialize...";
+    printPacket(&deserialized);
+
+    printBytes(buffer, 22);
 
     return 0;
 }

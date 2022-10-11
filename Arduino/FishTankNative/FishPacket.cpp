@@ -18,19 +18,26 @@ int FishPacket::write(const unsigned char* value, int sizeOfValue, unsigned char
     int idx = 0;
 
     for(int i=0; i<sizeOfValue; i++) {
-        // Meta data should be escaped.
-        switch (value[i]) {
-            case STX:
-            case ETX:
-            case DLE:
-                // Add DLE for escape.
-                target[idx++] = DLE;
-                break;
-        }
-
         target[idx++] = value[i];
     }
 
+    return idx;
+}
+
+/**
+ *
+ * @param value
+ * @param sizeOfValue
+ * @param buffer
+ * @return byte size of read from buffer.
+ */
+int FishPacket::read(unsigned char* value, int sizeOfValue, const unsigned char* buffer) {
+    int idx = 0;
+    int vIdx = 0;
+    while(true) {
+        value[vIdx++] = buffer[idx++];
+        if(vIdx >= sizeOfValue) break;
+    }
     return idx;
 }
 
@@ -53,39 +60,11 @@ int FishPacket::serializePacket(unsigned char bff[]) {
     index += write((unsigned char *)&pin, 2, bff+index);
     index += write((unsigned char *)&pinMode, 2, bff+index);
     index += write((unsigned char *)&data, 4, bff+index);
+    index += write((unsigned char *)&crc, 2, bff+index);
 
     bff[index++] = ETX;
-    unsigned char* cp = (unsigned char *)&crc;
-    bff[index++] = cp[0];
-    bff[index++] = cp[1];
 
     return index;
-}
-
-/**
- *
- * @param value
- * @param sizeOfValue
- * @param buffer
- * @return byte size of read from buffer.
- */
-int FishPacket::read(unsigned char* value, int sizeOfValue, const unsigned char* buffer) {
-    int idx = 0;
-    int vIdx = 0;
-
-    bool escaped = false;
-    while(true) {
-        unsigned char b = buffer[idx++];
-        if(!escaped && b == DLE) {
-            escaped = true;
-            continue;
-        }
-
-        escaped = false;
-        value[vIdx++] = b;
-        if(vIdx >= sizeOfValue) break;
-    }
-    return idx;
 }
 
 int FishPacket::deSerializePacket(unsigned char bff[]) {

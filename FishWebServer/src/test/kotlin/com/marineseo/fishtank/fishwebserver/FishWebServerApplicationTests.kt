@@ -2,15 +2,14 @@ package com.marineseo.fishtank.fishwebserver
 
 import com.marineseo.fishtank.fishwebserver.model.*
 import com.marineseo.fishtank.fishwebserver.service.ArduinoService
-import com.marineseo.fishtank.fishwebserver.util.runCommand
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
 
 class FishWebServerApplicationTests {
     private val packet = FishPacket(
-        clientId = 1,
         id = 2,
+        clientId = 1,
         opCode = 200,
         pin = 10,
         pinMode = 1,
@@ -38,21 +37,21 @@ class FishWebServerApplicationTests {
 
     @Test
     fun deSerializeTest() {
-        for(i in 0..Short.MAX_VALUE) {
-            testPacketConversion(FishPacket(
-                id = i,
-                clientId = i,
-                opCode = (i+100).toShort(),
-                pin = i.toShort(),
-                pinMode = i.toShort(),
-                data = i * 0.75f
-            ))
-        }
+        val testRawPacket = arrayOf(
+            0x02, 0xeb, 0x05, 0x00, 0x00, 0xb7, 0x0b, 0x00, 0x00, 0x03, 0x00, 0x32, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x22,
+            0xb7, 0x03,
+        )
+
+        val packet = testRawPacket.map { it.toByte() }.toByteArray().toPacket()
+        println("$packet VALID=${packet.isValidate()}")
     }
 
     private fun testPacketConversion(packet: FishPacket) {
         val buffer = packet.toRawPacket()
         val aPacket = buffer.toPacket()
+
+        // Print buffer
+        println("BUFFER=${buffer.toHex2()}")
 
         println("origin=$packet")
         println("decoded=$aPacket")
@@ -61,4 +60,7 @@ class FishWebServerApplicationTests {
         Assertions.assertTrue(packet.isValidate())
     }
 
+    fun ByteArray.toHex2(): String = asUByteArray().joinToString(", ") {
+        "0x" + it.toString(radix = 16).padStart(2, '0')
+    }
 }

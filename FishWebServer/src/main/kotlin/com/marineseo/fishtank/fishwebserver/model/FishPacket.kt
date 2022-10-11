@@ -12,7 +12,7 @@ const val OP_INPUT_ANALOG_PIN: Short = 1003
 const val OP_READ_ANALOG_PIN: Short = 1004
 
 const val MAGIC: Short = 31256
-const val PACKET_SIZE = 20
+const val PACKET_SIZE = 22
 
 private var autoIncId: Int = 0
 
@@ -44,55 +44,35 @@ fun FishPacket.isValidate(): Boolean {
 fun FishPacket.toRawPacket(): ByteArray {
     crc = makeCrc()
 
-    val buffer = ByteBuffer.allocate(PACKET_SIZE * 2)
-    buffer.order(ByteOrder.LITTLE_ENDIAN)
+    val buffer = ByteBuffer.allocate(PACKET_SIZE).apply {
+        order(ByteOrder.LITTLE_ENDIAN)
+        put(STX)
+        putInt(id)
+        putInt(clientId)
+        putShort(opCode)
+        putShort(pin)
+        putShort(pinMode)
+        putFloat(data)
+        putShort(crc)
+        put(ETX)
+    }
 
-    buffer.put(STX)
-    write(id, buffer)
-    write(clientId, buffer)
-    write(opCode, buffer)
-    write(pin, buffer)
-    write(pinMode, buffer)
-    write(data, buffer)
-    buffer.put(ETX)
-    buffer.putShort(crc)
-
-    buffer.limit(buffer.position())
-    buffer.flip()
-
-    return ByteBuffer.allocate(buffer.limit()).apply { put(buffer) }.array()
+    return buffer.array()
 }
 
 fun ByteArray.toPacket(): FishPacket {
     if(this.size < PACKET_SIZE) throw IllegalArgumentException("Size error. Size must be $PACKET_SIZE at least.")
-    if(this[0] != STX) throw IllegalArgumentException("First byte should be $STX but ${this[0]}")
-    if(this[size-3] != ETX) throw IllegalArgumentException("Last byte should be $ETX but ${this[size-3]}")
+    if(this.first() != STX) throw IllegalArgumentException("First byte should be $STX but ${this.first()}")
+    if(this.last() != ETX) throw IllegalArgumentException("Last byte should be $ETX but ${this.last()}")
 
-    val crc = ByteBuffer.allocate(2).also {
-        it.order(ByteOrder.LITTLE_ENDIAN)
-        it.put(this[size-2])
-        it.put(this[size-1])
-        it.position(0)
-    }.short
-
-    // Fetch content. STX~ETX
-    val contents = this.filterIndexed { i: Int, _: Byte -> i in 1 until size-3 }.toByteArray()
-
-    val buffer = ByteBuffer.allocate(this.size)
-    buffer.order(ByteOrder.LITTLE_ENDIAN)
-
-    var escaped = false
-    for(b in contents) {
-        if(!escaped && b == DLE){
-            escaped = true
-            continue
-        }
-        escaped = false
-        buffer.put(b)
+    val buffer = ByteBuffer.allocate(this.size).apply {
+        put(this@toPacket)
+        order(ByteOrder.LITTLE_ENDIAN)
+        position(0)
     }
 
-    buffer.limit(buffer.position())
-    buffer.flip()
+    // Read stx for positioning.
+    val stx = buffer.get()
 
     return FishPacket(
         id = buffer.int,
@@ -101,7 +81,7 @@ fun ByteArray.toPacket(): FishPacket {
         pin = buffer.short,
         pinMode = buffer.short,
         data = buffer.float,
-        crc = crc
+        crc = buffer.short
     )
 }
 

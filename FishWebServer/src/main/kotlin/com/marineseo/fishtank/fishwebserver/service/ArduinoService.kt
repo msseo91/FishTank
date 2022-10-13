@@ -2,6 +2,7 @@ package com.marineseo.fishtank.fishwebserver.service
 
 import com.marineseo.fishtank.fishwebserver.arduino.ArduinoSerialPort
 import com.marineseo.fishtank.fishwebserver.model.*
+import com.marineseo.fishtank.fishwebserver.util.DeviceUtils
 import jssc.SerialPort
 import jssc.SerialPortException
 import kotlinx.coroutines.*
@@ -47,8 +48,8 @@ class ArduinoService: ApplicationListener<ApplicationContextEvent> {
     fun init() {
         logger.info("Application start!")
 
-        connect("COM4")
-       /* val usbDevs = DeviceUtils.getFileList("/dev", "ttyUSB*")
+        //connect("COM4")
+        val usbDevs = DeviceUtils.getFileList("/dev", "ttyUSB*")
         for(devFile in usbDevs) {
             when(DeviceUtils.getDriver(devFile)) {
                 "ch341" -> {
@@ -57,10 +58,14 @@ class ArduinoService: ApplicationListener<ApplicationContextEvent> {
                 }
                 "ftdi_sio" -> {
                     logger.info("${devFile.name} is debug port")
-                    //runDebugLog(devFile.absolutePath)
+                    runDebugLog(devFile.absolutePath)
                 }
             }
-        }*/
+        }
+
+        runBlocking {
+            delay(1000L)
+        }
     }
 
     override fun onApplicationEvent(event: ApplicationContextEvent) {
@@ -90,7 +95,7 @@ class ArduinoService: ApplicationListener<ApplicationContextEvent> {
                 runLog = true
                 while(runLog) {
                     debugPort?.readString().let {
-                        logger.info(it)
+                        logger.info("[ARDUINO] $it")
                     }
 
                     delay(2000L)
@@ -142,6 +147,12 @@ class ArduinoService: ApplicationListener<ApplicationContextEvent> {
                 port?.eventsMask = SerialPort.MASK_RXCHAR
 
                 logger.info("Arduino device is connected!")
+
+                runBlocking {
+                    delay(3000L)
+                    port?.ready = true
+                }
+
                 return true
             } catch (ex: SerialPortException) {
                 logger.error(ex.toString())

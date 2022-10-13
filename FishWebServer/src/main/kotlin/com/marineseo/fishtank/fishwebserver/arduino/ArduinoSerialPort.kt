@@ -15,11 +15,11 @@ private const val READ_TIMEOUT = MAX_READ_ATTEMPT * READ_INTERVAL // ms
 class ArduinoSerialPort(portName: String): SerialPort(portName) {
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
-    private fun readByte(): Byte? {
-        return readBytes(1)?.get(0)
-    }
+    var ready = false
 
     fun readPacket(): FishPacket? {
+        if(!ready) return null
+
         try {
             val bytes = readBytes(PACKET_SIZE, READ_TIMEOUT)
             val byteBuffer = ByteBuffer.allocate(PACKET_SIZE).apply {
@@ -62,6 +62,8 @@ class ArduinoSerialPort(portName: String): SerialPort(portName) {
     }
 
     fun writePacket(packet: FishPacket): Boolean {
+        if(!ready) return false
+
         val raw = packet.toRawPacket()
         logger.info("Write $packet { ${raw.toHex2()} }")
         return writeBytes(raw)

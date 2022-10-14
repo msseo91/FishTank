@@ -250,7 +250,7 @@ class ArduinoService: ApplicationListener<ApplicationContextEvent> {
                 pinMode = MODE_INPUT
             )
         )
-        return response?.data?.toInt()?.toShort() == LOW
+        return response?.data?.toInt()?.toShort() == HIGH
     }
 
     fun isOutWaterValveOpen(): Boolean {
@@ -263,7 +263,7 @@ class ArduinoService: ApplicationListener<ApplicationContextEvent> {
             )
         )
 
-        return response?.data?.toInt()?.toShort() == HIGH
+        return response?.data?.toInt()?.toShort() == LOW
     }
 
     fun readBrightness(): Float {

@@ -77,6 +77,7 @@ class ArduinoSerialPort(portName: String): SerialPort(portName) {
             return false
         }
 
+        lastWriteTime = System.currentTimeMillis()
         val raw = packet.toRawPacket()
         logger.info("Write $packet { ${raw.toHex2()} }")
         return writeBytes(raw)

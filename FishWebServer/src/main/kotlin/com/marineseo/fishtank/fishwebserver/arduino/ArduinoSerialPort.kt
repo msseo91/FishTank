@@ -12,10 +12,16 @@ private const val MAX_READ_ATTEMPT = 500
 private const val READ_INTERVAL = 10
 private const val READ_TIMEOUT = MAX_READ_ATTEMPT * READ_INTERVAL // ms
 
+/**
+ * minimum interval to communicate.
+ */
+private const val MINIMUM_INTERVAL = 300
+
 class ArduinoSerialPort(portName: String): SerialPort(portName) {
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
     var ready = false
+    private var lastWriteTime = System.currentTimeMillis()
 
     fun readPacket(): FishPacket? {
         if(!ready) return null
@@ -63,6 +69,13 @@ class ArduinoSerialPort(portName: String): SerialPort(portName) {
 
     fun writePacket(packet: FishPacket): Boolean {
         if(!ready) return false
+
+        val interval = System.currentTimeMillis() - lastWriteTime
+        if(interval < MINIMUM_INTERVAL) {
+            logger.error("You must wait. interval=$MINIMUM_INTERVAL, current=$interval, " +
+                    "remain=${MINIMUM_INTERVAL - interval}")
+            return false
+        }
 
         val raw = packet.toRawPacket()
         logger.info("Write $packet { ${raw.toHex2()} }")

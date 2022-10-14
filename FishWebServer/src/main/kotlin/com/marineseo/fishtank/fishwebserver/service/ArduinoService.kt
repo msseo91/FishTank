@@ -187,7 +187,7 @@ class ArduinoService: ApplicationListener<ApplicationContextEvent> {
                 opCode = OP_PIN_IO,
                 pin = PIN_RELAY_OUT_WATER,
                 pinMode = MODE_OUTPUT,
-                data = (if (open) HIGH else LOW).toFloat()
+                data = (if (open) LOW else HIGH).toFloat()
             )
         ) != null
     }
@@ -200,7 +200,7 @@ class ArduinoService: ApplicationListener<ApplicationContextEvent> {
                 opCode = OP_PIN_IO,
                 pin = PIN_RELAY_IN_WATER,
                 pinMode = MODE_OUTPUT,
-                data = (if (open) LOW else HIGH).toFloat()
+                data = (if (open) HIGH else LOW).toFloat()
             )
         ) != null
     }
@@ -304,9 +304,9 @@ class ArduinoService: ApplicationListener<ApplicationContextEvent> {
         if (writeResult != true) {
             // Fail to write.
             logger.error("Fail to write!")
-            repairConnection()
 
             if (depth < REPAIR_MAX_TRY) {
+                runBlocking { delay(150) }
                 return sendAndGetResponse(packet, depth + 1)
             }
             return null
@@ -316,7 +316,6 @@ class ArduinoService: ApplicationListener<ApplicationContextEvent> {
         if (response == null) {
             // Fail to read!
             logger.error("Fail to read packet!")
-            repairConnection()
 
             if (depth < REPAIR_MAX_TRY) {
                 return sendAndGetResponse(packet, depth + 1)

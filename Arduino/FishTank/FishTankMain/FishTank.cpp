@@ -49,8 +49,7 @@ void FishTank::printArrayAsHex(unsigned char arr[], int len) {
 }
 
 void FishTank::printFishPacket(FishPacket &packet) {
-    Serial1.println();
-    Serial1.print(", id=");
+    Serial1.print("id=");
     Serial1.print(packet.id);
     Serial1.print(", clientId=");
     Serial1.print(packet.clientId);
@@ -62,6 +61,8 @@ void FishTank::printFishPacket(FishPacket &packet) {
     Serial1.print(packet.pinMode);
     Serial1.print(", data=");
     Serial1.print(packet.data);
+    Serial1.print(", CRC=");
+    Serial1.print(packet.crc);
     Serial1.println();
 }
 
@@ -88,24 +89,15 @@ void FishTank::sendPacket(FishPacket &packet) {
 void FishTank::readPacket(FishPacket &packet) {
     unsigned char buffer[PACKET_SIZE];
     memset(buffer, 0, PACKET_SIZE);
-
-    int idx = 0;
-    while(true) {
-      int v = Serial.read();
-      if(v == -1) continue;
-      buffer[idx++] = v;
-      printArrayAsHex(buffer, idx);
-      if(idx >= PACKET_SIZE) break;
-    }
-
-    printArrayAsHex(buffer, PACKET_SIZE);
-    /*
+    
     size_t readSize= Serial.readBytes(buffer, PACKET_SIZE);
+    printArrayAsHex(buffer, readSize);
 
     if(readSize <= 0) {
       Serial1.println("Nothing to read!");
       return;
     }
+    
     if(readSize != PACKET_SIZE) {
       Serial1.print("Wrong size...");
       Serial1.print(" Read=");
@@ -113,9 +105,9 @@ void FishTank::readPacket(FishPacket &packet) {
       printArrayAsHex(buffer, readSize);
       return;
     }
-    */
+    
 
-    idx = 0;
+    int idx = 0;
     if(buffer[0] == STX) {
         // Packet received
         Serial1.println("Packet Received!");

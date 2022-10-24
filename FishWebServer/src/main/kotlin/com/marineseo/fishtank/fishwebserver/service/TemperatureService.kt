@@ -46,7 +46,7 @@ class TemperatureService(
     }
 
     private fun init() {
-        logger.info("Application start!")
+        logger.info("Init - Application start!")
         readTemperatureForever()
     }
 
@@ -55,7 +55,7 @@ class TemperatureService(
      */
     private fun readTemperatureForever() {
         if(isRunning) {
-            logger.error(TAG, "Already running!")
+            logger.error("Already running!")
             return
         }
 

@@ -224,7 +224,10 @@ fun SchedulePage(periodicTasks: List<PeriodicTask>, eventHandler: (UiEvent) -> U
             }
         }
     ) { padding ->
-        LazyColumn(Modifier.padding(padding).fillMaxSize()) {
+        LazyColumn(
+            Modifier
+                .padding(padding)
+                .fillMaxSize()) {
             for (task in periodicTasks) {
                 item {
                     PeriodicTaskItem(
@@ -491,10 +494,10 @@ fun Chart(
 fun ControlPage(uiState: UiState, eventHandler: (UiEvent) -> Unit) {
     Log.d(TAG, "Composing ControlTab! $uiState")
 
+    val state by remember { mutableStateOf(uiState) }
     val scrollState = rememberScrollState()
     var ratioValue by remember { mutableStateOf(20) }
     val context = LocalContext.current
-    var brightnessPosition by rememberSaveable { mutableStateOf(0) }
 
     Column(
         modifier = Modifier
@@ -522,12 +525,6 @@ fun ControlPage(uiState: UiState, eventHandler: (UiEvent) -> Unit) {
             onClick = { eventHandler(UiEvent.PurifierEvent(it)) }
         )
 
-        SwitchRow(
-            state = uiState.ledState,
-            text = stringResource(id = R.string.board_led),
-            onClick = { eventHandler(UiEvent.LedEvent(it)) }
-        )
-
         Divider(
             Modifier
                 .fillMaxWidth()
@@ -539,17 +536,17 @@ fun ControlPage(uiState: UiState, eventHandler: (UiEvent) -> Unit) {
                 .fillMaxWidth()
                 .padding(start = 20.dp, end = 20.dp)
         ) {
-            Text(text = "${stringResource(id = R.string.light_brightness)} (${uiState.brightness}%)")
+            Text(text = "${stringResource(id = R.string.light_brightness)} (${state.brightness}%)")
             Slider(
-                value = uiState.brightness.toFloat(),
+                value = state.brightness.toFloat(),
                 valueRange = 0f..100f,
                 onValueChange = { value: Float ->
                     Log.d(TAG, "Brightness onValueChange $value")
-                    brightnessPosition = value.toInt()
-                    eventHandler(UiEvent.OnLightBrightnessChange(brightnessPosition, false))
+                    state.brightness = value.toInt()
+                    eventHandler(UiEvent.OnLightBrightnessChange(state.brightness, false))
                 },
                 onValueChangeFinished = {
-                    eventHandler(UiEvent.OnLightBrightnessChange(brightnessPosition, true))
+                    eventHandler(UiEvent.OnLightBrightnessChange(state.brightness, true))
                 }
             )
         }
@@ -589,6 +586,16 @@ fun ControlPage(uiState: UiState, eventHandler: (UiEvent) -> Unit) {
                     }
                 }) {
                 Text(text = stringResource(id = R.string.replace_water))
+            }
+        }
+
+        Row(modifier = Modifier
+            .fillMaxWidth()
+            .padding(15.dp)) {
+            OutlinedButton(onClick = {
+                eventHandler(UiEvent.TryReconnect())
+            }) {
+                Text(text = "Reconnect")
             }
         }
     }

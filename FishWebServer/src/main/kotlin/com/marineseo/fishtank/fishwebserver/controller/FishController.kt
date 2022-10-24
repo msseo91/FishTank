@@ -240,4 +240,9 @@ class FishController(
         return ResponseEntity.ok(true)
     }
 
+    @PostMapping("/reconnect")
+    fun reconnectArduino(@RequestParam(KEY_TOKEN) token: String) {
+        arduinoService.reConnect()
+    }
+
 }

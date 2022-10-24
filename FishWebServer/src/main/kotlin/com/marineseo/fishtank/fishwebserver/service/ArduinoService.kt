@@ -32,7 +32,8 @@ const val LOW: Short = 0x00
 
 private const val TAG = "ArduinoService"
 
-private const val REPAIR_MAX_TRY = 5
+private const val REPAIR_MAX_TRY = 15
+private const val RETRY_INTERVAL = 50L
 private const val COMMON_CLIENT_ID = 56432
 
 @Service
@@ -306,7 +307,7 @@ class ArduinoService: ApplicationListener<ApplicationContextEvent> {
             logger.error("Fail to write!")
 
             if (depth < REPAIR_MAX_TRY) {
-                runBlocking { delay(150) }
+                runBlocking { delay(RETRY_INTERVAL) }
                 return sendAndGetResponse(packet, depth + 1)
             }
             return null
@@ -325,12 +326,12 @@ class ArduinoService: ApplicationListener<ApplicationContextEvent> {
         return response
     }
 
-    private fun repairConnection() {
+    fun reConnect() {
         runBlocking {
             disConnect()
-            delay(1000L)
+            delay(2000L)
             connect(portName)
-            delay(1000L)
+            delay(2000L)
         }
     }
 

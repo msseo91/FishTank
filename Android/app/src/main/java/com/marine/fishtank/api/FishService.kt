@@ -93,4 +93,8 @@ interface FishService {
         @Field(KEY_TOKEN) token: String,
         @Field(KEY_PERIODIC) periodicTask: PeriodicTask
     ): Call<Boolean>
+
+    @POST("/fish/reconnect")
+    @FormUrlEncoded
+    fun reconnect(@Field(KEY_TOKEN) token: String): Call<Void>
 }

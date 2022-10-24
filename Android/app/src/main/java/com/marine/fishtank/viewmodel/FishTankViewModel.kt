@@ -103,7 +103,7 @@ class FishTankViewModel(application: Application) : AndroidViewModel(application
                 }
                 is UiEvent.LedEvent -> {
                     tankApi.enableBoardLed(uiEvent.value)
-                    readState()
+                    //readState()
                 }
                 is UiEvent.OnChangeTemperatureRange -> {
                     startFetchTemperature(uiEvent.intValue)
@@ -126,6 +126,9 @@ class FishTankViewModel(application: Application) : AndroidViewModel(application
                     Log.d(TAG, "Add periodicTask! ${uiEvent.periodicTask}")
                     tankApi.addPeriodicTask(uiEvent.periodicTask)
                     tankApi.fetchPeriodicTasks()
+                }
+                is UiEvent.TryReconnect -> {
+                    tankApi.reconnect()
                 }
             }
         }
@@ -171,4 +174,6 @@ sealed class UiEvent(
 
     class OnLightBrightnessChange(val brightness: Int, val adjust: Boolean) : UiEvent()
     class AddPeriodicTask(val periodicTask: PeriodicTask): UiEvent()
+
+    class TryReconnect(): UiEvent()
 }

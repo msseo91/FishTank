@@ -232,6 +232,11 @@ class TankApi(
         return false
     }
 
+    fun reconnect() {
+        verifyTokenNull()
+        fishService.reconnect(token!!).execute().body()
+    }
+
     private fun verifyTokenNull() {
         if (token == null) {
             throw IllegalStateException("Token is null! You must success sign-in first.")

@@ -323,6 +323,8 @@ public abstract class DataSet<T extends Entry> extends BaseDataSet<T> {
         if (mEntries == null || mEntries.isEmpty())
             return -1;
 
+        if(Float.isNaN(xValue)) xValue = 0f;
+
         int low = 0;
         int high = mEntries.size() - 1;
         int closest = high;

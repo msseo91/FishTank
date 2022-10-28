@@ -85,22 +85,6 @@ class FishTankViewModel(application: Application) : AndroidViewModel(application
                     tankApi.enableInWater(uiEvent.value)
                     readState()
                 }
-                is UiEvent.LightEvent -> {
-                    tankApi.enableLight(uiEvent.value)
-                    readState()
-                }
-                is UiEvent.HeaterEvent -> {
-                    tankApi.enableHeater(uiEvent.value)
-                    readState()
-                }
-                is UiEvent.PurifierEvent -> {
-                    tankApi.enablePurifier(uiEvent.value)
-                    readState()
-                }
-                is UiEvent.ReplaceWater -> {
-                    tankApi.replaceWater(uiEvent.ratio * 0.01F)
-                    readState()
-                }
                 is UiEvent.LedEvent -> {
                     tankApi.enableBoardLed(uiEvent.value)
                     //readState()
@@ -127,8 +111,14 @@ class FishTankViewModel(application: Application) : AndroidViewModel(application
                     tankApi.addPeriodicTask(uiEvent.periodicTask)
                     tankApi.fetchPeriodicTasks()
                 }
+                is UiEvent.DeletePeriodicTask -> {
+                    tankApi.deletePeriodicTask(uiEvent.periodicTask)
+                }
                 is UiEvent.TryReconnect -> {
                     tankApi.reconnect()
+                }
+                else -> {
+                    Log.e(TAG, "This event is not supported anymore. ($uiEvent)")
                 }
             }
         }
@@ -174,6 +164,7 @@ sealed class UiEvent(
 
     class OnLightBrightnessChange(val brightness: Int, val adjust: Boolean) : UiEvent()
     class AddPeriodicTask(val periodicTask: PeriodicTask): UiEvent()
+    class DeletePeriodicTask(val periodicTask: PeriodicTask): UiEvent()
 
     class TryReconnect(): UiEvent()
 }

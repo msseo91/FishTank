@@ -18,6 +18,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.rounded.DeleteOutline
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -173,15 +175,15 @@ fun SchedulePage(periodicTasks: List<PeriodicTask>, eventHandler: (UiEvent) -> U
     val openDialog = remember { mutableStateOf(false) }
 
     val typeExpand = remember { mutableStateOf(false) }
-    val typeOptions = listOf( R.string.out_valve, R.string.in_valve, R.string.purifier, R.string.light)
+    val typeOptions = listOf(R.string.out_valve, R.string.in_valve)
     val selectedTypeOption = remember { mutableStateOf(typeOptions[0]) }
 
     val valueBooleanExpand = remember { mutableStateOf(false) }
-    val valueBooleanOptions = arrayOf( 0, 1)
+    val valueBooleanOptions = arrayOf(0, 1)
 
     val valueLightExpand = remember { mutableStateOf(false) }
     val valueLightOptions = (0..100).toList().toTypedArray()
-    val selectedOption = remember { mutableStateOf(valueLightOptions[0])}
+    val selectedOption = remember { mutableStateOf(valueLightOptions[0]) }
 
     val mCalendar = Calendar.getInstance()
     val currentHour = mCalendar[Calendar.HOUR_OF_DAY]
@@ -190,7 +192,7 @@ fun SchedulePage(periodicTasks: List<PeriodicTask>, eventHandler: (UiEvent) -> U
 
     val timePickerDialog = TimePickerDialog(
         context,
-        {_, hour : Int, minute: Int ->
+        { _, hour: Int, minute: Int ->
             actionTime.value = "$hour:${String.format("%02d", minute)}"
         }, currentHour, currentMinute, false
     )
@@ -230,7 +232,8 @@ fun SchedulePage(periodicTasks: List<PeriodicTask>, eventHandler: (UiEvent) -> U
         LazyColumn(
             Modifier
                 .padding(padding)
-                .fillMaxSize()) {
+                .fillMaxSize()
+        ) {
             for (task in periodicTasks) {
                 item {
                     PeriodicTaskItem(
@@ -249,12 +252,26 @@ fun PeriodicTaskItem(action: String, exeTime: String) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .heightIn(40.dp, 60.dp)
                 .border(width = 1.dp, color = androidx.compose.ui.graphics.Color.Black)
                 .padding(10.dp)
                 .align(Alignment.CenterHorizontally)
         ) {
             Text(text = action)
             Text(text = exeTime)
+
+            Button(
+                onClick = {
+                    // TODO Impl delete
+                },
+                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
+            ) {
+                Icon(
+                    Icons.Rounded.DeleteOutline,
+                    contentDescription = "Delete periodic task.",
+                    modifier = Modifier.size(ButtonDefaults.IconSize)
+                )
+            }
         }
     }
 }
@@ -523,7 +540,8 @@ fun ControlPage(uiState: UiState, eventHandler: (UiEvent) -> Unit) {
         Divider(
             Modifier
                 .fillMaxWidth()
-                .padding(vertical = 5.dp))
+                .padding(vertical = 5.dp)
+        )
         Spacer(modifier = Modifier.height(20.dp))
 
         Column(
@@ -549,7 +567,8 @@ fun ControlPage(uiState: UiState, eventHandler: (UiEvent) -> Unit) {
         Divider(
             Modifier
                 .fillMaxWidth()
-                .padding(vertical = 5.dp))
+                .padding(vertical = 5.dp)
+        )
         Spacer(modifier = Modifier.height(20.dp))
 
         Row(
@@ -584,9 +603,11 @@ fun ControlPage(uiState: UiState, eventHandler: (UiEvent) -> Unit) {
             }
         }
 
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            .padding(15.dp)) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(15.dp)
+        ) {
             OutlinedButton(onClick = {
                 eventHandler(UiEvent.TryReconnect())
             }) {
@@ -621,7 +642,7 @@ fun SwitchRow(
         Switch(
             modifier = Modifier.weight(1f),
             checked = state,
-            onCheckedChange =  onClick
+            onCheckedChange = onClick
         )
     }
 }

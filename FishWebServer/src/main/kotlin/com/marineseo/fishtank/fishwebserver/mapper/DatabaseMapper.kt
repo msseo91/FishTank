@@ -40,7 +40,7 @@ interface DatabaseMapper {
             "${Task.COL_DATA},${Task.COL_EXECUTE_TIME}, ${Task.COL_STATE}" +
             ")" +
             "VALUES(#{userId},#{type},#{data},#{executeTime},#{state})")
-    fun insertTask(@Param("task") task: Task)
+    fun insertTask(task: Task)
 
     @Select(
         "SELECT * FROM ${Task.TB_TASK} " +
@@ -64,7 +64,7 @@ interface DatabaseMapper {
                 "${Task.COL_USER_ID}=#{userId}, ${Task.COL_EXECUTE_TIME}=#{executeTime} " +
                 "WHERE ${Task.COL_ID}=#{id}"
     )
-    fun updateTask(@Param("task") task: Task)
+    fun updateTask(task: Task)
 
     @Insert("INSERT INTO ${PeriodicTask.TABLE_NAME}" +
             "(${PeriodicTask.COL_USER_ID}, ${PeriodicTask.COL_TYPE}, ${PeriodicTask.COL_DATA}, ${PeriodicTask.COL_TIME}) " +

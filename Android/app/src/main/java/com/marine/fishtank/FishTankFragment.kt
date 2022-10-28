@@ -38,13 +38,16 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
-import com.github.mikephil.charting.formatter.ValueFormatter
+import com.github.mikephil.charting.formatter.IAxisValueFormatter
+import com.github.mikephil.charting.formatter.IValueFormatter
 import com.github.mikephil.charting.utils.ColorTemplate
+import com.github.mikephil.charting.utils.ViewPortHandler
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.pagerTabIndicatorOffset
@@ -401,8 +404,8 @@ fun Chart(
                     setDrawAxisLine(true)
                     position = XAxis.XAxisPosition.BOTTOM
 
-                    valueFormatter = object : ValueFormatter() {
-                        override fun getFormattedValue(value: Float): String {
+                    valueFormatter = object : IAxisValueFormatter {
+                        override fun getFormattedValue(value: Float, axisBase: AxisBase): String {
                             if (data.dataSets.isEmpty()) {
                                 return ""
                             }
@@ -423,11 +426,7 @@ fun Chart(
                     setDrawAxisLine(true)
 
                     //String setter in x-Axis
-                    valueFormatter = object : ValueFormatter() {
-                        override fun getFormattedValue(value: Float): String {
-                            return String.format("%.2f", value)
-                        }
-                    }
+                    valueFormatter = IAxisValueFormatter { value, axisBase -> String.format("%.2f", value) }
                     //axisMaximum = LineChartConfig.YAXIS_MAX
                     //axisMinimum = LineChartConfig.YAXIS_MIN
 
@@ -460,11 +459,7 @@ fun Chart(
                 data = LineData(dataSet).apply {
                     setValueTextColor(android.graphics.Color.BLACK)
                     setValueTextSize(10f)
-                    setValueFormatter(object : ValueFormatter() {
-                        override fun getFormattedValue(value: Float): String {
-                            return String.format("%.2f", value)
-                        }
-                    })
+                    setValueFormatter { value, entry, dataSetIndex, viewPortHandler -> String.format("%.2f", value) }
                 }
             }
         },

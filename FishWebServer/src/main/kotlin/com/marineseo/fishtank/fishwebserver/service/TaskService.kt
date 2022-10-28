@@ -4,10 +4,7 @@ import com.marineseo.fishtank.fishwebserver.mapper.DatabaseMapper
 import com.marineseo.fishtank.fishwebserver.model.PeriodicTask
 import com.marineseo.fishtank.fishwebserver.model.Task
 import com.marineseo.fishtank.fishwebserver.util.TimeUtils
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationListener
 import org.springframework.context.event.*
@@ -30,7 +27,6 @@ class TaskService(
 ) : ApplicationListener<ApplicationContextEvent> {
     private val logger = LoggerFactory.getLogger(this.javaClass)
     private val scope = CoroutineScope(Dispatchers.IO)
-    private var run = false
 
     override fun onApplicationEvent(event: ApplicationContextEvent) {
         logger.warn("onApplicationEvent - $event")
@@ -51,9 +47,8 @@ class TaskService(
     }
 
     private fun start() {
-        run = true
         scope.launch {
-            while (run) {
+            while (isActive) {
                 fetchTask()?.let { task ->
                     logger.info("Executing $task")
 
@@ -89,7 +84,7 @@ class TaskService(
     }
 
     private fun stop() {
-        run = false
+        scope.cancel("Stop!")
     }
 
     fun createReplaceWaterTask(ratio: Float) {
@@ -155,7 +150,7 @@ class TaskService(
         )
     }
 
-    fun recentReplaceWaterTaskExist(): Boolean {
+    private fun recentReplaceWaterTaskExist(): Boolean {
         val replaceTask = mapper.getLastReplaceTask()
         replaceTask?.let { task ->
             if (task.executeTime < System.currentTimeMillis() + TimeUtils.MILS_HOUR) {

@@ -17,11 +17,6 @@ private const val PIN_BOARD_LED: Short = 13
 private const val PIN_RELAY_OUT_WATER: Short = 2
 private const val PIN_RELAY_IN_WATER: Short = 3
 
-private const val PIN_RELAY_LIGHT: Short = 10
-
-private const val PIN_RELAY_PURIFIER: Short = 7
-private const val PIN_RELAY_HEATER: Short = 8
-
 private const val PIN_LIGHT_BRIGHTNESS: Short = 5
 
 private const val MODE_INPUT: Short = 0x00
@@ -32,12 +27,12 @@ const val LOW: Short = 0x00
 
 private const val TAG = "ArduinoService"
 
-private const val REPAIR_MAX_TRY = 15
+private const val REPAIR_MAX_TRY = 100
 private const val RETRY_INTERVAL = 50L
 private const val COMMON_CLIENT_ID = 56432
 
 @Service
-class ArduinoService: ApplicationListener<ApplicationContextEvent> {
+class ArduinoService : ApplicationListener<ApplicationContextEvent> {
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
     private val scope = CoroutineScope(Dispatchers.IO)
@@ -51,11 +46,13 @@ class ArduinoService: ApplicationListener<ApplicationContextEvent> {
 
         //connect("COM4")
         val usbDevs = DeviceUtils.getFileList("/dev", "ttyUSB*")
-        for(devFile in usbDevs) {
-            when(DeviceUtils.getDriver(devFile)) {
+        for (devFile in usbDevs) {
+            when (DeviceUtils.getDriver(devFile)) {
                 "ch341" -> {
                     logger.info("${devFile.name} id Arduino!")
                     connect(devFile.absolutePath)
+
+                    setRelayHigh(listOf(PIN_RELAY_OUT_WATER, PIN_RELAY_OUT_WATER))
                 }
                 "ftdi_sio" -> {
                     logger.info("${devFile.name} is debug port")
@@ -72,7 +69,7 @@ class ArduinoService: ApplicationListener<ApplicationContextEvent> {
     override fun onApplicationEvent(event: ApplicationContextEvent) {
         logger.warn("onApplicationEvent - $event")
 
-        when(event) {
+        when (event) {
             is ContextStartedEvent -> {
                 init()
             }
@@ -94,7 +91,7 @@ class ArduinoService: ApplicationListener<ApplicationContextEvent> {
             try {
                 connectDebugPort(port)
                 runLog = true
-                while(runLog) {
+                while (runLog) {
                     debugPort?.readString().let {
                         logger.info("[ARDUINO] $it")
                     }
@@ -206,42 +203,6 @@ class ArduinoService: ApplicationListener<ApplicationContextEvent> {
         ) != null
     }
 
-    fun enableLight( enable: Boolean): Boolean {
-        return sendAndGetResponse(
-            FishPacket(
-                clientId = COMMON_CLIENT_ID,
-                opCode = OP_PIN_IO,
-                pin = PIN_RELAY_LIGHT,
-                pinMode = MODE_OUTPUT,
-                data = (if (enable) LOW else HIGH).toFloat()
-            )
-        ) != null
-    }
-
-    fun enablePurifier(enable: Boolean): Boolean {
-        return sendAndGetResponse(
-            FishPacket(
-                clientId = COMMON_CLIENT_ID,
-                opCode = OP_PIN_IO,
-                pin = PIN_RELAY_PURIFIER,
-                pinMode = MODE_OUTPUT,
-                data = (if (enable) LOW else HIGH).toFloat()
-            )
-        ) != null
-    }
-
-    fun enableHeater( enable: Boolean): Boolean {
-        return sendAndGetResponse(
-            FishPacket(
-                clientId = COMMON_CLIENT_ID,
-                opCode = OP_PIN_IO,
-                pin = PIN_RELAY_HEATER,
-                pinMode = MODE_OUTPUT,
-                data = (if (enable) LOW else HIGH).toFloat()
-            )
-        ) != null
-    }
-
     fun isInWaterValveOpen(): Boolean {
         val response = sendAndGetResponse(
             FishPacket(
@@ -280,7 +241,7 @@ class ArduinoService: ApplicationListener<ApplicationContextEvent> {
         )
 
         logger.info("brightness=${response?.data}")
-        val brightness =  response?.data ?: 0f
+        val brightness = response?.data ?: 0f
         return (brightness / 255) * 100
     }
 
@@ -298,6 +259,23 @@ class ArduinoService: ApplicationListener<ApplicationContextEvent> {
         )
 
         return response != null
+    }
+
+    /**
+     * Send HIGH to all relay pins to wakeup HW316(Relay)
+     */
+    private fun setRelayHigh(pins: List<Short>) {
+        pins.forEach { pinNumber ->
+            sendAndGetResponse(
+                FishPacket(
+                    clientId = COMMON_CLIENT_ID,
+                    opCode = OP_PIN_IO,
+                    pin = pinNumber,
+                    pinMode = MODE_OUTPUT,
+                    data = HIGH.toFloat()
+                )
+            )
+        }
     }
 
     private fun sendAndGetResponse(packet: FishPacket, depth: Int = 0): FishPacket? {

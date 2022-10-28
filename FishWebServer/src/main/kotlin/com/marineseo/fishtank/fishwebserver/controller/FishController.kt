@@ -107,45 +107,6 @@ class FishController(
         )
     }
 
-    @PostMapping("/light")
-    fun enableLight(
-        @RequestParam(KEY_TOKEN) token: String,
-        @RequestParam(KEY_ENABLE) enable: Boolean
-    ): ResponseEntity<Int> {
-        if (userService.getUserByToken(token) == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null)
-
-        return ResponseEntity.ok(
-            if (arduinoService.enableLight(enable)) RESULT_SUCCESS
-            else RESULT_FAIL_DEVICE_CONNECTION
-        )
-    }
-
-    @PostMapping("/purifier")
-    fun enablePurifier(
-        @RequestParam(KEY_TOKEN) token: String,
-        @RequestParam(KEY_ENABLE) enable: Boolean
-    ): ResponseEntity<Int> {
-        if (userService.getUserByToken(token) == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null)
-
-        return ResponseEntity.ok(
-            if (arduinoService.enablePurifier(enable)) RESULT_SUCCESS
-            else RESULT_FAIL_DEVICE_CONNECTION
-        )
-    }
-
-    @PostMapping("/heater")
-    fun enableHeater(
-        @RequestParam(KEY_TOKEN) token: String,
-        @RequestParam(KEY_ENABLE) enable: Boolean
-    ): ResponseEntity<Int> {
-        if (userService.getUserByToken(token) == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null)
-
-        return ResponseEntity.ok(
-            if (arduinoService.enableHeater(enable)) RESULT_SUCCESS
-            else RESULT_FAIL_DEVICE_CONNECTION
-        )
-    }
-
     @PostMapping("/read/inWater")
     fun readInWater(@RequestParam(KEY_TOKEN) token: String): ResponseEntity<Boolean> {
         if (userService.getUserByToken(token) == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null)

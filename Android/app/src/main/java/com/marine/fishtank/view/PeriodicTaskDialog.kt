@@ -88,7 +88,7 @@ fun PeriodicTaskDialog(
                     Divider(Modifier.fillMaxWidth())
                     Spacer(modifier = Modifier.height(15.dp))
 
-                    if (selectedTypeOption.value != R.string.light) {
+                    if (selectedTypeOption.value != R.string.light_brightness) {
                         ExposedDropdownMenuBox(
                             expanded = valueBooleanExpand.value,
                             onExpandedChange = { valueBooleanExpand.value = !valueBooleanExpand.value }

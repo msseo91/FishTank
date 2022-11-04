@@ -38,7 +38,7 @@ data class PeriodicTask(
                 R.string.out_valve -> TYPE_VALVE_OUT_WATER
                 R.string.replace_water -> TYPE_REPLACE_WATER
                 R.string.purifier -> TYPE_PURIFIER
-                R.string.light -> TYPE_LIGHT
+                R.string.light_brightness -> TYPE_LIGHT
                 else -> 0
             }
         }
@@ -51,7 +51,7 @@ fun PeriodicTask.typeAsString(context: Context): String {
         TYPE_VALVE_OUT_WATER -> context.getString(R.string.out_valve)
         TYPE_VALVE_IN_WATER -> context.getString(R.string.in_valve)
         TYPE_PURIFIER -> context.getString(R.string.purifier)
-        TYPE_LIGHT -> context.getString(R.string.light)
+        TYPE_LIGHT -> context.getString(R.string.light_brightness)
         else -> "UNKNOWN"
     }
 }

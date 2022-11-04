@@ -43,4 +43,9 @@
     <string name="purifier">여과기</string>
     <string name="light">조명</string>
     <string name="board_led">LED</string>
+
+    <string name="text_control">Control</string>
+    <string name="text_monitor">Monitor</string>
+    <string name="text_camera">Camera</string>
+    <string name="text_periodic">Periodic</string>
 </resources>

@@ -20,9 +20,11 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -31,6 +33,12 @@ import androidx.core.text.isDigitsOnly
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.XAxis
@@ -39,13 +47,8 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IAxisValueFormatter
-import com.github.mikephil.charting.formatter.IValueFormatter
 import com.github.mikephil.charting.utils.ColorTemplate
-import com.github.mikephil.charting.utils.ViewPortHandler
 import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.pagerTabIndicatorOffset
-import com.google.accompanist.pager.rememberPagerState
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.google.android.exoplayer2.ExoPlayer
@@ -61,9 +64,6 @@ import com.marine.fishtank.view.TemperatureMarker
 import com.marine.fishtank.viewmodel.FishTankViewModel
 import com.marine.fishtank.viewmodel.UiEvent
 import com.marine.fishtank.viewmodel.UiState
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -80,6 +80,7 @@ class FishTankFragment : Fragment() {
         Log.d(TAG, "onCreateView")
 
         return ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 MaterialTheme {
                     FishTankScreen(viewModel)
@@ -98,6 +99,15 @@ class FishTankFragment : Fragment() {
     }
 }
 
+sealed class BottomNavItem(
+    val titleRes: Int, val iconRes: Int, val screenRoute: String
+) {
+    object Control : BottomNavItem(R.string.text_control, R.drawable.chat_bubble, "Control")
+    object Monitor : BottomNavItem(R.string.text_monitor, R.drawable.chat_bubble,"Monitor")
+    object Camera : BottomNavItem(R.string.text_camera, R.drawable.chat_bubble,"Camera")
+    object Periodic : BottomNavItem(R.string.text_periodic, R.drawable.chat_bubble,"Periodic")
+}
+
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun FishTankScreen(viewModel: FishTankViewModel) {
@@ -106,54 +116,67 @@ fun FishTankScreen(viewModel: FishTankViewModel) {
     val temperatureState: List<Temperature> by viewModel.temperatureLiveData.observeAsState(emptyList())
     val periodicTasks: List<PeriodicTask> by viewModel.periodicTaskLiveData.observeAsState(emptyList())
     val eventHandler = { uiEvent: UiEvent -> viewModel.uiEvent(uiEvent) }
-    val isRefreshing by viewModel.isRefreshing.observeAsState(false)
 
-    val tabTitles = listOf("Control", "Monitor", "Camera", "Schedule")
+    val navController = rememberNavController()
 
-    // Default page -> monitor
-    val pagerState = rememberPagerState(0)
+    val items = listOf(
+        BottomNavItem.Control,
+        BottomNavItem.Monitor,
+        BottomNavItem.Camera,
+        BottomNavItem.Periodic
+    )
 
     // Surface = TAB 전체화면
-    Surface(
+    Scaffold(
         modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colors.background
-    ) {
-        SwipeRefresh(
-            state = rememberSwipeRefreshState(isRefreshing),
-            onRefresh = { viewModel.refreshState() }
-        ) {
-            Column {
-                TabRow(
-                    backgroundColor = colorResource(id = R.color.purple_500),
-                    selectedTabIndex = pagerState.currentPage,
-                    indicator = { tabPositions -> // 3.
-                        TabRowDefaults.Indicator(
-                            Modifier.pagerTabIndicatorOffset(
-                                pagerState,
-                                tabPositions
+        bottomBar = {
+            BottomNavigation() {
+                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                val currentDestination = navBackStackEntry?.destination
+
+                items.forEach { screen ->
+                    BottomNavigationItem(
+                        selectedContentColor = Color.Magenta,
+                        unselectedContentColor = Color.White,
+                        alwaysShowLabel = true,
+                        label = { Text(stringResource(id = screen.titleRes)) },
+                        selected = currentDestination?.hierarchy?.any { it.route == screen.screenRoute } == true,
+                        onClick = {
+                            navController.navigate(screen.screenRoute) {
+                                // Pop up to the start destination of the graph to
+                                // avoid building up a large stack of destinations
+                                // on the back stack as users select items
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                // Avoid multiple copies of the same destination when
+                                // reselecting the same item
+                                launchSingleTop = true
+                                // Restore state when reselecting a previously selected item
+                                restoreState = true
+                            }
+                        },
+                        icon = {
+                            Icon(
+                                painter = painterResource(id = screen.iconRes),
+                                contentDescription = stringResource(id = screen.titleRes),
+                                modifier = Modifier.width(26.dp).height(26.dp)
                             )
-                        )
-                    }) {
-                    tabTitles.forEachIndexed { index, title ->
-                        Tab(selected = pagerState.currentPage == index,
-                            onClick = { CoroutineScope(Dispatchers.Main).launch { pagerState.scrollToPage(index) } },
-                            text = { Text(text = title) })
-                    }
-                }
-                HorizontalPager(
-                    modifier = Modifier.fillMaxSize(),
-                    count = tabTitles.size,
-                    state = pagerState,
-                    verticalAlignment = Alignment.Top
-                ) { tabIndex ->
-                    when (tabIndex) {
-                        0 -> ControlPage(uiState, eventHandler)
-                        1 -> MonitorPage(temperatureState, eventHandler)
-                        2 -> CameraPage(uiState, eventHandler)
-                        3 -> SchedulePage(periodicTasks, eventHandler)
-                    }
+                        },
+                    )
                 }
             }
+        }
+    ) { padding ->
+        NavHost(
+            modifier = Modifier.padding(padding),
+            navController = navController,
+            startDestination = BottomNavItem.Control.screenRoute
+        ) {
+            composable(BottomNavItem.Control.screenRoute) { ControlPage(viewModel, uiState, eventHandler) }
+            composable(BottomNavItem.Monitor.screenRoute) { MonitorPage(temperatureState, eventHandler) }
+            composable(BottomNavItem.Camera.screenRoute) { CameraPage(uiState = uiState, eventHandler = eventHandler) }
+            composable(BottomNavItem.Periodic.screenRoute) { SchedulePage(periodicTasks = periodicTasks, eventHandler = eventHandler)}
         }
     }
 
@@ -385,6 +408,7 @@ fun Chart(
 
     AndroidView(
         modifier = modifier,
+
         factory = { context ->
             Log.d(TAG, "Factory LineChart")
             LineChart(context).apply {
@@ -501,115 +525,120 @@ fun Chart(
 }
 
 @Composable
-fun ControlPage(uiState: UiState, eventHandler: (UiEvent) -> Unit) {
+fun ControlPage(viewModel: FishTankViewModel, uiState: UiState, eventHandler: (UiEvent) -> Unit) {
     Log.d(TAG, "Composing ControlTab! $uiState")
-
+    val isRefreshing by viewModel.isRefreshing.observeAsState(false)
     val state by remember { mutableStateOf(uiState) }
     val scrollState = rememberScrollState()
     var ratioValue by remember { mutableStateOf(20) }
     val context = LocalContext.current
 
-    Column(
-        modifier = Modifier
-            .padding(10.dp)
-            .verticalScroll(scrollState)
+    SwipeRefresh(
+        state = rememberSwipeRefreshState(isRefreshing),
+        onRefresh = { viewModel.refreshState() }
     ) {
-        Text(text = "Functions")
-        Divider(modifier = Modifier.padding(vertical = 5.dp))
-
-        SwitchRow(
-            state = uiState.outWaterValveState,
-            text = stringResource(id = R.string.out_valve),
-            onClick = { eventHandler(UiEvent.OutWaterEvent(it)) }
-        )
-
-        SwitchRow(
-            state = uiState.inWaterValveState,
-            text = stringResource(id = R.string.in_valve),
-            onClick = { eventHandler(UiEvent.InWaterEvent(it)) }
-        )
-
-        SwitchRow(
-            state = uiState.purifierState,
-            text = stringResource(id = R.string.purifier),
-            onClick = { eventHandler(UiEvent.PurifierEvent(it)) }
-        )
-
-        Divider(
-            Modifier
-                .fillMaxWidth()
-                .padding(vertical = 5.dp)
-        )
-        Spacer(modifier = Modifier.height(20.dp))
-
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 20.dp, end = 20.dp)
+                .padding(10.dp)
+                .verticalScroll(scrollState)
         ) {
-            Text(text = "${stringResource(id = R.string.light_brightness)} (${state.brightness}%)")
-            Slider(
-                value = state.brightness.toFloat(),
-                valueRange = 0f..100f,
-                onValueChange = { value: Float ->
-                    Log.d(TAG, "Brightness onValueChange $value")
-                    state.brightness = value.toInt()
-                    eventHandler(UiEvent.OnLightBrightnessChange(state.brightness, false))
-                },
-                onValueChangeFinished = {
-                    eventHandler(UiEvent.OnLightBrightnessChange(state.brightness, true))
-                }
-            )
-        }
+            Text(text = "Functions")
+            Divider(modifier = Modifier.padding(vertical = 5.dp))
 
-        Divider(
-            Modifier
-                .fillMaxWidth()
-                .padding(vertical = 5.dp)
-        )
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(15.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            OutlinedTextField(
-                modifier = Modifier.weight(1f),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                trailingIcon = { Text(text = "%") },
-                label = { Text(text = stringResource(id = R.string.replace_ratio)) },
-                value = ratioValue.toString(),
-                onValueChange = { ratioValue = if (it.isNotEmpty() && it.isDigitsOnly()) it.toInt() else 0 }
+            SwitchRow(
+                state = uiState.outWaterValveState,
+                text = stringResource(id = R.string.out_valve),
+                onClick = { eventHandler(UiEvent.OutWaterEvent(it)) }
             )
 
-            OutlinedButton(
+            SwitchRow(
+                state = uiState.inWaterValveState,
+                text = stringResource(id = R.string.in_valve),
+                onClick = { eventHandler(UiEvent.InWaterEvent(it)) }
+            )
+
+            SwitchRow(
+                state = uiState.purifierState,
+                text = stringResource(id = R.string.purifier),
+                onClick = { eventHandler(UiEvent.PurifierEvent(it)) }
+            )
+
+            Divider(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 5.dp)
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Column(
                 modifier = Modifier
-                    .weight(1f)
-                    .padding(start = 10.dp),
-                onClick = {
-                    if (ratioValue > REPLACE_MAX || ratioValue <= 0) {
-                        Toast.makeText(context, "Replace amount should between 0 and $REPLACE_MAX", Toast.LENGTH_SHORT)
-                            .show()
-                    } else {
-                        eventHandler(UiEvent.ReplaceWater(ratioValue))
+                    .fillMaxWidth()
+                    .padding(start = 20.dp, end = 20.dp)
+            ) {
+                Text(text = "${stringResource(id = R.string.light_brightness)} (${state.brightness}%)")
+                Slider(
+                    value = state.brightness.toFloat(),
+                    valueRange = 0f..100f,
+                    onValueChange = { value: Float ->
+                        Log.d(TAG, "Brightness onValueChange $value")
+                        state.brightness = value.toInt()
+                        eventHandler(UiEvent.OnLightBrightnessChange(state.brightness, false))
+                    },
+                    onValueChangeFinished = {
+                        eventHandler(UiEvent.OnLightBrightnessChange(state.brightness, true))
                     }
-                }) {
-                Text(text = stringResource(id = R.string.replace_water))
+                )
             }
-        }
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(15.dp)
-        ) {
-            OutlinedButton(onClick = {
-                eventHandler(UiEvent.TryReconnect())
-            }) {
-                Text(text = "Reconnect")
+            Divider(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 5.dp)
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(15.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                OutlinedTextField(
+                    modifier = Modifier.weight(1f),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    trailingIcon = { Text(text = "%") },
+                    label = { Text(text = stringResource(id = R.string.replace_ratio)) },
+                    value = ratioValue.toString(),
+                    onValueChange = { ratioValue = if (it.isNotEmpty() && it.isDigitsOnly()) it.toInt() else 0 }
+                )
+
+                OutlinedButton(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(start = 10.dp),
+                    onClick = {
+                        if (ratioValue > REPLACE_MAX || ratioValue <= 0) {
+                            Toast.makeText(context, "Replace amount should between 0 and $REPLACE_MAX", Toast.LENGTH_SHORT)
+                                .show()
+                        } else {
+                            eventHandler(UiEvent.ReplaceWater(ratioValue))
+                        }
+                    }) {
+                    Text(text = stringResource(id = R.string.replace_water))
+                }
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(15.dp)
+            ) {
+                OutlinedButton(onClick = {
+                    eventHandler(UiEvent.TryReconnect())
+                }) {
+                    Text(text = "Reconnect")
+                }
             }
         }
     }

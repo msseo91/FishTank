@@ -102,10 +102,10 @@ class FishTankFragment : Fragment() {
 sealed class BottomNavItem(
     val titleRes: Int, val iconRes: Int, val screenRoute: String
 ) {
-    object Control : BottomNavItem(R.string.text_control, R.drawable.chat_bubble, "Control")
-    object Monitor : BottomNavItem(R.string.text_monitor, R.drawable.chat_bubble,"Monitor")
-    object Camera : BottomNavItem(R.string.text_camera, R.drawable.chat_bubble,"Camera")
-    object Periodic : BottomNavItem(R.string.text_periodic, R.drawable.chat_bubble,"Periodic")
+    object Control : BottomNavItem(R.string.text_control, R.drawable.control, "Control")
+    object Monitor : BottomNavItem(R.string.text_monitor, R.drawable.graph, "Monitor")
+    object Camera : BottomNavItem(R.string.text_camera, R.drawable.camera, "Camera")
+    object Periodic : BottomNavItem(R.string.text_periodic, R.drawable.schedule, "Periodic")
 }
 
 @OptIn(ExperimentalPagerApi::class)
@@ -128,6 +128,11 @@ fun FishTankScreen(viewModel: FishTankViewModel) {
 
     // Surface = TAB 전체화면
     Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("FishTank")}
+            )
+        },
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
             BottomNavigation() {
@@ -160,7 +165,9 @@ fun FishTankScreen(viewModel: FishTankViewModel) {
                             Icon(
                                 painter = painterResource(id = screen.iconRes),
                                 contentDescription = stringResource(id = screen.titleRes),
-                                modifier = Modifier.width(26.dp).height(26.dp)
+                                modifier = Modifier
+                                    .width(26.dp)
+                                    .height(26.dp)
                             )
                         },
                     )
@@ -176,7 +183,12 @@ fun FishTankScreen(viewModel: FishTankViewModel) {
             composable(BottomNavItem.Control.screenRoute) { ControlPage(viewModel, uiState, eventHandler) }
             composable(BottomNavItem.Monitor.screenRoute) { MonitorPage(temperatureState, eventHandler) }
             composable(BottomNavItem.Camera.screenRoute) { CameraPage(uiState = uiState, eventHandler = eventHandler) }
-            composable(BottomNavItem.Periodic.screenRoute) { SchedulePage(periodicTasks = periodicTasks, eventHandler = eventHandler)}
+            composable(BottomNavItem.Periodic.screenRoute) {
+                SchedulePage(
+                    periodicTasks = periodicTasks,
+                    eventHandler = eventHandler
+                )
+            }
         }
     }
 
@@ -619,7 +631,11 @@ fun ControlPage(viewModel: FishTankViewModel, uiState: UiState, eventHandler: (U
                         .padding(start = 10.dp),
                     onClick = {
                         if (ratioValue > REPLACE_MAX || ratioValue <= 0) {
-                            Toast.makeText(context, "Replace amount should between 0 and $REPLACE_MAX", Toast.LENGTH_SHORT)
+                            Toast.makeText(
+                                context,
+                                "Replace amount should between 0 and $REPLACE_MAX",
+                                Toast.LENGTH_SHORT
+                            )
                                 .show()
                         } else {
                             eventHandler(UiEvent.ReplaceWater(ratioValue))

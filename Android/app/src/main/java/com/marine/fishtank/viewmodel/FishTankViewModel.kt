@@ -27,6 +27,7 @@ class FishTankViewModel(application: Application) : AndroidViewModel(application
         get() = _uiState
 
     var isRefreshing = MutableLiveData<Boolean>(false)
+    val message = MutableLiveData<String>()
 
     fun refreshState() {
         viewModelScope.launch {
@@ -112,7 +113,8 @@ class FishTankViewModel(application: Application) : AndroidViewModel(application
                     tankApi.fetchPeriodicTasks()
                 }
                 is UiEvent.DeletePeriodicTask -> {
-                    tankApi.deletePeriodicTask(uiEvent.periodicTask)
+                    val result = tankApi.deletePeriodicTask(uiEvent.periodicTask)
+                    message.postValue("Delete task result=$result")
                 }
                 is UiEvent.TryReconnect -> {
                     tankApi.reconnect()

@@ -103,12 +103,11 @@ sealed class BottomNavItem(
     val titleRes: Int, val iconRes: Int, val screenRoute: String
 ) {
     object Control : BottomNavItem(R.string.text_control, R.drawable.control, "Control")
-    object Monitor : BottomNavItem(R.string.text_monitor, R.drawable.graph, "Monitor")
+    object Monitor : BottomNavItem(R.string.text_monitor, R.drawable.bar_chart, "Monitor")
     object Camera : BottomNavItem(R.string.text_camera, R.drawable.camera, "Camera")
-    object Periodic : BottomNavItem(R.string.text_periodic, R.drawable.schedule, "Periodic")
+    object Periodic : BottomNavItem(R.string.text_periodic, R.drawable.calendar, "Periodic")
 }
 
-@OptIn(ExperimentalPagerApi::class)
 @Composable
 fun FishTankScreen(viewModel: FishTankViewModel) {
     Log.d(TAG, "Composing FishTankScreen")

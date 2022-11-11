@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -186,11 +187,10 @@ class FishController(
     @PostMapping("/periodic/delete")
     fun deletePeriodicTask(
         @RequestParam(KEY_TOKEN) token: String,
-        @RequestParam(KEY_PERIODIC) periodicTask: PeriodicTask
+        @RequestParam(KEY_PERIODIC) taskId: Int
     ): ResponseEntity<Boolean> {
         val user = userService.getUserByToken(token) ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null)
-        if(user.id != periodicTask.userId) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null)
-        val targetPeriodicTask = taskService.selectPeriodicTasK(periodicTask.id) ?:return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null)
+        val targetPeriodicTask = taskService.selectPeriodicTasK(taskId) ?:return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null)
 
         if(user.id != targetPeriodicTask.userId) {
             // Only owner can delete task.

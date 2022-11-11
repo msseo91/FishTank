@@ -70,7 +70,7 @@
         <appender-ref ref="RollingError" />
     </root>
 
-    <logger name="com.marineseo.fishtank" level="INFO">
+    <logger name="com.marineseo.fishtank" level="DEBUG">
         <appender-ref ref="RollingGeneral" />
     </logger>
 

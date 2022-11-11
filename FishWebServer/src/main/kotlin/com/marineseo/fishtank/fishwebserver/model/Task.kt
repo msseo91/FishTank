@@ -1,12 +1,14 @@
 package com.marineseo.fishtank.fishwebserver.model
 
+import java.sql.Timestamp
+
 
 data class Task(
     val id: Int = 0,
     var userId: String = "System",
     var type: Int,
     var data: Int = 0,
-    var executeTime: Long = System.currentTimeMillis(),
+    var executeTime: Timestamp = Timestamp(System.currentTimeMillis()),
     var state: Int = STATE_STANDBY
 ) {
     companion object {

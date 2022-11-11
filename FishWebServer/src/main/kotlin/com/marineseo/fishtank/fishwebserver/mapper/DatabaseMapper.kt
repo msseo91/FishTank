@@ -39,8 +39,11 @@ interface DatabaseMapper {
             "(${Task.COL_USER_ID}, ${Task.COL_TYPE}, " +
             "${Task.COL_DATA},${Task.COL_EXECUTE_TIME}, ${Task.COL_STATE}" +
             ")" +
-            "VALUES(#{userId},#{type},#{data},#{executeTime},#{state})")
+            "VALUES(#{userId},#{type},#{data},#{executeTime, jdbcType=TIMESTAMP},#{state})")
     fun insertTask(task: Task)
+
+    @Delete("DELETE FROM ${Task.TB_TASK}")
+    fun deleteAllTasks()
 
     @Select(
         "SELECT * FROM ${Task.TB_TASK} " +

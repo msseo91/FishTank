@@ -50,6 +50,10 @@ class TaskService(
         scope.launch {
             while (isActive) {
                 fetchTask()?.let { task ->
+                    if(task.state != Task.STATE_STANDBY) {
+                        logger.warn("Pass this task. State is not STANDBY.")
+                        return@let
+                    }
                     logger.info("Executing $task")
 
                     when (task.type) {
@@ -135,7 +139,7 @@ class TaskService(
             Task(
                 type = Task.TYPE_VALVE_OUT_WATER,
                 data = Task.DATA_CLOSE,
-                executeTime = finishTime,
+                executeTime = Timestamp(finishTime),
                 state = Task.STATE_STANDBY
             )
         )
@@ -144,7 +148,7 @@ class TaskService(
             Task(
                 type = Task.TYPE_VALVE_IN_WATER,
                 data = Task.DATA_OPEN,
-                executeTime = finishTime + 1000L,
+                executeTime = Timestamp(finishTime + 1000L),
                 state = Task.STATE_STANDBY
             )
         )
@@ -153,7 +157,7 @@ class TaskService(
     private fun recentReplaceWaterTaskExist(): Boolean {
         val replaceTask = mapper.getLastReplaceTask()
         replaceTask?.let { task ->
-            if (task.executeTime < System.currentTimeMillis() + TimeUtils.MILS_HOUR) {
+            if (task.executeTime.time < System.currentTimeMillis() + TimeUtils.MILS_HOUR) {
                 return true
             }
         }
@@ -163,6 +167,8 @@ class TaskService(
     @Scheduled(cron = "0 0 0 * * ?")
     fun periodicToTask() {
         logger.info("Start periodicToTask!")
+        // Delete previous task
+        mapper.deleteAllTasks()
 
         val periodicTasks = mapper.getAllPeriodicTask()
         for(periodicTask in periodicTasks) {
@@ -170,11 +176,11 @@ class TaskService(
                 userId = periodicTask.userId,
                 type = periodicTask.type,
                 data = periodicTask.data,
-                executeTime = Calendar.getInstance().apply {
+                executeTime = Timestamp(Calendar.getInstance().apply {
                     val divided = periodicTask.time.split(":")
                     set(Calendar.HOUR_OF_DAY, divided[0].toInt())
                     set(Calendar.MINUTE, divided[1].toInt())
-                }.timeInMillis
+                }.timeInMillis)
             ))
         }
     }
@@ -189,10 +195,12 @@ class TaskService(
 
     fun addPeriodicTask(periodicTask: PeriodicTask) {
         mapper.insertPeriodicTask(periodicTask)
+        periodicToTask()
     }
 
     fun deletePeriodicTask(id: Int) {
         mapper.deletePeriodicTask(id)
+        periodicToTask()
     }
 
     fun selectPeriodicTasK(id: Int): PeriodicTask? {

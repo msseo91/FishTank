@@ -235,7 +235,7 @@ class TankApi(
     fun deletePeriodicTask(periodicTask: PeriodicTask): Boolean {
         verifyTokenNull()
         try {
-            return fishService.deletePeriodicTask(token!!,periodicTask).execute().body() ?: false
+            return fishService.deletePeriodicTask(token!!, periodicTask.id).execute().body() ?: false
         } catch (e: Exception) {
             e.printStackTrace()
         }

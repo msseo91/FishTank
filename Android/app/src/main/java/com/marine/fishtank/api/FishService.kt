@@ -3,6 +3,7 @@ package com.marine.fishtank.api
 import com.marine.fishtank.model.PeriodicTask
 import com.marine.fishtank.model.Temperature
 import retrofit2.Call
+import retrofit2.http.Body
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.POST
@@ -91,7 +92,7 @@ interface FishService {
     @FormUrlEncoded
     fun deletePeriodicTask(
         @Field(KEY_TOKEN) token: String,
-        @Field(KEY_PERIODIC) periodicTask: PeriodicTask
+        @Field(KEY_PERIODIC) taskId: Int
     ): Call<Boolean>
 
     @POST("/fish/reconnect")

@@ -79,6 +79,10 @@ class FishTankFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         Log.d(TAG, "onCreateView")
 
+        viewModel.message.observe(viewLifecycleOwner) {
+            Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+        }
+
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
@@ -278,7 +282,7 @@ fun PeriodicTaskItem(task: PeriodicTask, eventHandler: (UiEvent) -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .heightIn(40.dp, 60.dp)
-            .border(width = 1.dp, color = androidx.compose.ui.graphics.Color.Black)
+            .border(width = 1.dp, color = Color.Black)
             .padding(10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {

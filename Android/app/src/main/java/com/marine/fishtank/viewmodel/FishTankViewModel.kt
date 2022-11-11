@@ -110,11 +110,12 @@ class FishTankViewModel(application: Application) : AndroidViewModel(application
                 is UiEvent.AddPeriodicTask -> {
                     Log.d(TAG, "Add periodicTask! ${uiEvent.periodicTask}")
                     tankApi.addPeriodicTask(uiEvent.periodicTask)
-                    tankApi.fetchPeriodicTasks()
+                    fetchPeriodicTasks()
                 }
                 is UiEvent.DeletePeriodicTask -> {
                     val result = tankApi.deletePeriodicTask(uiEvent.periodicTask)
                     message.postValue("Delete task result=$result")
+                    fetchPeriodicTasks()
                 }
                 is UiEvent.TryReconnect -> {
                     tankApi.reconnect()

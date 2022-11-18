@@ -185,7 +185,7 @@ fun FishTankScreen(viewModel: FishTankViewModel) {
         ) {
             composable(BottomNavItem.Control.screenRoute) { ControlPage(viewModel, uiState, eventHandler) }
             composable(BottomNavItem.Monitor.screenRoute) { MonitorPage(temperatureState, eventHandler) }
-            composable(BottomNavItem.Camera.screenRoute) { CameraPage(uiState = uiState, eventHandler = eventHandler) }
+            composable(BottomNavItem.Camera.screenRoute) { CameraPage(uiState = uiState) }
             composable(BottomNavItem.Periodic.screenRoute) {
                 SchedulePage(
                     periodicTasks = periodicTasks,
@@ -313,7 +313,7 @@ fun PeriodicTaskItem(task: PeriodicTask, eventHandler: (UiEvent) -> Unit) {
 }
 
 @Composable
-fun CameraPage(uiState: UiState, eventHandler: (UiEvent) -> Unit) {
+fun CameraPage(uiState: UiState) {
     Log.d(TAG, "Composing CameraPage!")
 
     val context = LocalContext.current
@@ -365,7 +365,6 @@ fun MonitorPage(temperatureList: List<Temperature>, eventHandler: (UiEvent) -> U
                 .heightIn(400.dp, 600.dp)
                 .verticalScroll(scrollState),
             maximumCount = positionRange.value,
-            eventHandler = eventHandler
         )
 
         Log.d(TAG, "Slider! days=${position.value}")
@@ -416,8 +415,7 @@ fun MonitorPage(temperatureList: List<Temperature>, eventHandler: (UiEvent) -> U
 fun Chart(
     temperatureList: List<Temperature>,
     modifier: Modifier,
-    maximumCount: Float,
-    eventHandler: (UiEvent) -> Unit
+    maximumCount: Float
 ) {
     Log.d(TAG, "Composing Chart!")
 

@@ -75,7 +75,7 @@ interface DatabaseMapper {
     fun insertPeriodicTask(periodicTask: PeriodicTask)
 
     @Select("SELECT * FROM ${PeriodicTask.TABLE_NAME} " +
-            "WHERE userId=#{userId}")
+            "WHERE userId=#{userId} ORDER BY ${PeriodicTask.COL_TIME} ASC")
     fun fetchPeriodicTasks(@Param("userId") userId: String): List<PeriodicTask>
 
     @Update("Update ${PeriodicTask.TABLE_NAME} " +

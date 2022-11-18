@@ -47,7 +47,7 @@ interface DatabaseMapper {
 
     @Select(
         "SELECT * FROM ${Task.TB_TASK} " +
-                "WHERE ${Task.COL_STATE}=${Task.STATE_STANDBY} AND ${Task.COL_EXECUTE_TIME} < #{time}" +
+                "WHERE ${Task.COL_STATE}=${Task.STATE_STANDBY} AND ${Task.COL_EXECUTE_TIME} < #{time, jdbcType=TIMESTAMP}" +
                 "ORDER BY ${Task.COL_EXECUTE_TIME} ASC " +
                 "LIMIT 1"
     )
@@ -64,7 +64,7 @@ interface DatabaseMapper {
     @Update(
         "UPDATE ${Task.TB_TASK} " +
                 "SET ${Task.COL_TYPE}=#{type}, ${Task.COL_STATE}=#{state}, ${Task.COL_DATA}=#{data}, " +
-                "${Task.COL_USER_ID}=#{userId}, ${Task.COL_EXECUTE_TIME}=#{executeTime} " +
+                "${Task.COL_USER_ID}=#{userId}, ${Task.COL_EXECUTE_TIME}=#{executeTime, jdbcType=TIMESTAMP} " +
                 "WHERE ${Task.COL_ID}=#{id}"
     )
     fun updateTask(task: Task)

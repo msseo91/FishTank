@@ -27,6 +27,7 @@ class TaskService(
 ) : ApplicationListener<ApplicationContextEvent> {
     private val logger = LoggerFactory.getLogger(this.javaClass)
     private val scope = CoroutineScope(Dispatchers.IO)
+    private var runningJob: Job = Job()
 
     override fun onApplicationEvent(event: ApplicationContextEvent) {
         logger.warn("onApplicationEvent - $event")
@@ -47,7 +48,7 @@ class TaskService(
     }
 
     private fun start() {
-        scope.launch {
+        runningJob = scope.launch {
             while (isActive) {
                 fetchTask()?.let { task ->
                     if(task.state != Task.STATE_STANDBY) {
@@ -71,7 +72,7 @@ class TaskService(
                             )
                         }
                         Task.TYPE_LIGHT -> {
-                            // TODO
+                            arduinoService.adjustBrightness(task.data * 0.01f)
                         }
                         Task.TYPE_PURIFIER -> {
                             // TODO
@@ -88,7 +89,7 @@ class TaskService(
     }
 
     private fun stop() {
-        scope.cancel("Stop!")
+        runningJob.cancel("Stop!")
     }
 
     fun createReplaceWaterTask(ratio: Float) {

@@ -20,6 +20,7 @@
 
     <string name="heater_on">Heater On</string>
     <string name="heater_off">Heater Off</string>
+    <string name="heater">Heater</string>
 
     <string name="setting_server_url">Server URL</string>
     <string name="setting_server_port">Server Port</string>

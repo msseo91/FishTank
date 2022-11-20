@@ -571,9 +571,9 @@ fun ControlPage(viewModel: FishTankViewModel, uiState: UiState, eventHandler: (U
             )
 
             SwitchRow(
-                state = uiState.purifierState,
-                text = stringResource(id = R.string.purifier),
-                onClick = { eventHandler(UiEvent.PurifierEvent(it)) }
+                state = uiState.heaterState,
+                text = stringResource(id = R.string.heater),
+                onClick = { eventHandler(UiEvent.HeaterEvent(it)) }
             )
 
             Divider(

@@ -143,6 +143,17 @@ class TankApi(
         return RESULT_FAIL_HTTP
     }
 
+    fun readHeaterState(): Boolean {
+        verifyTokenNull()
+        try {
+            val response = fishService.readHeaterState(token!!).execute()
+            return response.body() ?: false
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return false
+    }
+
     fun readInWaterState(): Boolean {
         verifyTokenNull()
 

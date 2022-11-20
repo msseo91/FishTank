@@ -46,14 +46,17 @@ class FishTankViewModel(application: Application) : AndroidViewModel(application
             val inWaterState = tankApi.readInWaterState()
             val outWaterState = tankApi.readOutWaterState()
             val brightness = tankApi.readLightBrightness()
+            val heaterState = tankApi.readHeaterState()
 
-            Log.d(TAG, "readState - inWaterState=$inWaterState, outWaterState=$outWaterState, brightness=$brightness")
+            Log.d(TAG, "readState - inWaterState=$inWaterState, outWaterState=$outWaterState," +
+                    "Heater=$heaterState, brightness=$brightness")
 
             _uiState.postValue(
                 _uiState.value?.copy(
                     inWaterValveState = inWaterState,
                     outWaterValveState = outWaterState,
-                    brightness = brightness.toInt()
+                    brightness = brightness.toInt(),
+                    heaterState = heaterState
                 )
             )
         }
@@ -89,6 +92,9 @@ class FishTankViewModel(application: Application) : AndroidViewModel(application
                 is UiEvent.LedEvent -> {
                     tankApi.enableBoardLed(uiEvent.value)
                     //readState()
+                }
+                is UiEvent.HeaterEvent -> {
+                    tankApi.enableHeater(uiEvent.value)
                 }
                 is UiEvent.OnChangeTemperatureRange -> {
                     startFetchTemperature(uiEvent.intValue)

@@ -55,6 +55,10 @@ interface FishService {
     @FormUrlEncoded
     fun enableHeater(@Field(KEY_TOKEN) token: String, @Field(KEY_ENABLE) enable: Boolean): Call<Int>
 
+    @POST("/fish/read/heater")
+    @FormUrlEncoded
+    fun readHeaterState(@Field(KEY_TOKEN) token: String): Call<Boolean>
+
     @POST("/fish/read/inWater")
     @FormUrlEncoded
     fun readInWaterState(@Field(KEY_TOKEN) token: String): Call<Boolean>

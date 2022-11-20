@@ -206,4 +206,22 @@ class FishController(
         arduinoService.reConnect()
     }
 
+    @PostMapping("/heater")
+    fun enableHeater(@RequestParam(KEY_TOKEN) token: String, @RequestParam(KEY_ENABLE) enable: Boolean): ResponseEntity<Int> {
+        if (userService.getUserByToken(token) == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null)
+
+        return ResponseEntity.ok(
+            if (arduinoService.enableHeater(enable)) RESULT_SUCCESS
+            else RESULT_FAIL_DEVICE_CONNECTION
+        )
+    }
+
+    @PostMapping("/read/heater")
+    fun isHeaterEnabled(@RequestParam(KEY_TOKEN) token: String): ResponseEntity<Boolean> {
+        if (userService.getUserByToken(token) == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null)
+
+        return ResponseEntity.ok(
+            arduinoService.isHeaterOn()
+        )
+    }
 }

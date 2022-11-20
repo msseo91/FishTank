@@ -12,10 +12,13 @@ import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.util.*
 
-private const val TEMPERATURE_INTERVAL = TimeUtils.MILS_MINUTE * 5
+private const val TEMPERATURE_INTERVAL = TimeUtils.MILS_SECOND * 30
+private const val TEMPERATURE_SAVE_INTERVAL = 10
 private const val SERVICE_ID = Integer.MAX_VALUE
 
 private const val TAG = "TemperatureService"
+
+private const val TARGET_TEMPERATURE = 26
 
 @Service
 class TemperatureService(
@@ -62,15 +65,17 @@ class TemperatureService(
         isRunning = true
 
         scope.launch {
+            var times = 0
             while(isRunning) {
+                times++
                 val temperature = arduinoService.getTemperature()
-                if(temperature > 0) {
-                    mapper.insertTemperature(
-                        Temperature(
-                            temperature = temperature
-                        )
-                    )
+                if(temperature > 0 && (times % TEMPERATURE_SAVE_INTERVAL == 0)) {
+                    mapper.insertTemperature(Temperature(temperature = temperature))
                 }
+
+                // Turn on/off heater based on temperature.
+                arduinoService.enableHeater(temperature < TARGET_TEMPERATURE)
+
                 delay(TEMPERATURE_INTERVAL)
             }
         }

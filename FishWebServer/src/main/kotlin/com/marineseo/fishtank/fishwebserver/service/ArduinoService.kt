@@ -16,6 +16,7 @@ private const val PIN_BOARD_LED: Short = 13
 // HW316 Relay - Low Trigger
 private const val PIN_RELAY_OUT_WATER: Short = 2
 private const val PIN_RELAY_IN_WATER: Short = 3
+private const val PIN_RELAY_HEATER: Short = 4
 
 private const val PIN_LIGHT_BRIGHTNESS: Short = 5
 
@@ -259,6 +260,30 @@ class ArduinoService : ApplicationListener<ApplicationContextEvent> {
         )
 
         return response != null
+    }
+
+    fun enableHeater(enable: Boolean): Boolean {
+        return sendAndGetResponse(
+            FishPacket(
+                clientId = COMMON_CLIENT_ID,
+                opCode = OP_PIN_IO,
+                pin = PIN_RELAY_HEATER,
+                pinMode = MODE_OUTPUT,
+                data = (if(enable) LOW else HIGH).toFloat()
+            )
+        ) != null
+    }
+
+    fun isHeaterOn(): Boolean {
+        val response = sendAndGetResponse(
+            FishPacket(
+                clientId = COMMON_CLIENT_ID,
+                opCode = OP_READ_DIGIT_PIN,
+                pin = PIN_RELAY_HEATER,
+                pinMode = MODE_INPUT
+            )
+        )
+        return response?.data?.toInt()?.toShort() == LOW
     }
 
     /**

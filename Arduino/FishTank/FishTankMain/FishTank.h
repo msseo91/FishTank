@@ -11,7 +11,7 @@
 
 #define READ_TIMEOUT 5000
 
-#define ONE_WIRE_BUS 52
+#define ONE_WIRE_BUS 6
 #define BAUD_RATE 57600
 
 #define OP_GET_TEMPERATURE 1000

@@ -15,7 +15,7 @@ private const val READ_TIMEOUT = MAX_READ_ATTEMPT * READ_INTERVAL // ms
 /**
  * minimum interval to communicate.
  */
-private const val MINIMUM_INTERVAL = 300
+private const val MINIMUM_INTERVAL = 150
 
 class ArduinoSerialPort(portName: String): SerialPort(portName) {
     private val logger = LoggerFactory.getLogger(this.javaClass)

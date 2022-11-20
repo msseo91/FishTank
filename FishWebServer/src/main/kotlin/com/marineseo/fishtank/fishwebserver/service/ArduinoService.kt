@@ -53,7 +53,7 @@ class ArduinoService : ApplicationListener<ApplicationContextEvent> {
                     logger.info("${devFile.name} id Arduino!")
                     connect(devFile.absolutePath)
 
-                    setRelayHigh(listOf(PIN_RELAY_OUT_WATER, PIN_RELAY_OUT_WATER))
+                    setRelayHigh(listOf(PIN_RELAY_OUT_WATER, PIN_RELAY_OUT_WATER, PIN_RELAY_HEATER))
                 }
                 "ftdi_sio" -> {
                     logger.info("${devFile.name} is debug port")

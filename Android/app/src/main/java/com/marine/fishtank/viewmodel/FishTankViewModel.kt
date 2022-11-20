@@ -95,6 +95,7 @@ class FishTankViewModel(application: Application) : AndroidViewModel(application
                 }
                 is UiEvent.HeaterEvent -> {
                     tankApi.enableHeater(uiEvent.value)
+                    readState()
                 }
                 is UiEvent.OnChangeTemperatureRange -> {
                     startFetchTemperature(uiEvent.intValue)

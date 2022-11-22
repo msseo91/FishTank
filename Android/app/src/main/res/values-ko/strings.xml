@@ -1,0 +1,53 @@
+<resources>
+    <string name="app_name">FishTank</string>
+
+    <string name="change_water">환수</string>
+
+    <string name="open_water_in">상수도 열기</string>
+    <string name="close_water_in">상수도 닫기</string>
+
+    <string name="open_water_out">하수도 열기</string>
+    <string name="close_water_out">하수도 닫기</string>
+
+    <string name="pump_run">Run pump</string>
+    <string name="pump_stop">Stop pump</string>
+
+    <string name="light_on">조명 켜기</string>
+    <string name="light_off">조명 끄기</string>
+
+    <string name="purifier_on">여과기 켜기</string>
+    <string name="purifier_off">여과기 끄기</string>
+
+    <string name="heater_on">히터 켜기</string>
+    <string name="heater_off">히터 끄기</string>
+    <string name="heater">히터</string>
+
+    <string name="setting_server_url">서버 URL</string>
+    <string name="setting_server_port">서버 Port</string>
+    <string name="setting_rtsp_url">RTSP URL</string>
+    <string name="setting_save">저장</string>
+
+    <string name="replace_ratio">Replace ratio</string>
+
+    <string name="light_brightness">조명 밝기</string>
+
+    <string name="periodic_dialog_title">작업</string>
+    <string name="periodic_dialog_task_type">타입</string>
+    <string name="periodic_dialog_task_value">값</string>
+    <string name="periodic_dialog_save">저장</string>
+    <string name="periodic_dialog_cancel">취소</string>
+    <string name="periodic_dialog_task_time">시간</string>
+
+    <string name="replace_water">환수</string>
+    <string name="out_valve">하수밸브</string>
+    <string name="in_valve">상수밸브</string>
+    <string name="purifier">여과기</string>
+    <string name="light">조명</string>
+    <string name="board_led">LED</string>
+
+    <string name="text_control">Control</string>
+    <string name="text_monitor">Monitor</string>
+    <string name="text_camera">Camera</string>
+    <string name="text_periodic">Periodic</string>
+
+</resources>

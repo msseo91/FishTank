@@ -2,11 +2,10 @@ package com.marine.fishtank.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.marine.fishtank.SettingsRepository
 import com.marine.fishtank.api.TankDataSource
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,7 +19,6 @@ class LogInViewModel @Inject constructor(
     private val tankDataSource: TankDataSource,
     private val settingsRepository: SettingsRepository
 ) : ViewModel() {
-    private val scope = CoroutineScope(Dispatchers.IO)
 
     val signInResult = MutableLiveData<SignInResult>()
     val userIdData = MutableLiveData<String>()
@@ -34,13 +32,13 @@ class LogInViewModel @Inject constructor(
     fun isAlreadySignIn() = tankDataSource.isAlreadySignIn()
 
     fun fetchSavedUser() {
-        scope.launch {
+        viewModelScope.launch {
             settingsRepository.userIdFlow.collect { id ->
                 userIdData.postValue(id)
             }
         }
 
-        scope.launch {
+        viewModelScope.launch {
             settingsRepository.userPasswordFlow.collect { password ->
                 userPasswordData.postValue(password)
             }
@@ -48,14 +46,16 @@ class LogInViewModel @Inject constructor(
     }
 
     fun signIn(userId: String, password: String) {
-        scope.launch {
-            val result = tankDataSource.signIn(userId, password)
-            if(result) {
-                saveUser(userId, password)
+        viewModelScope.launch {
+            tankDataSource.signIn(userId, password).collect { result ->
+                if(result) {
+                    saveUser(userId, password)
+                }
+
+                signInResult.postValue(
+                    SignInResult(result, "Success")
+                )
             }
-            signInResult.postValue(
-                SignInResult(result, "Success")
-            )
         }
     }
 }

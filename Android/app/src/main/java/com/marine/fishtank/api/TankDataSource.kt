@@ -1,7 +1,10 @@
 package com.marine.fishtank.api
 
 import com.marine.fishtank.model.*
-import java.net.HttpURLConnection
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -21,226 +24,116 @@ class TankDataSource @Inject constructor(
 
     private var token: String? = null
 
-    fun isAlreadySignIn(): Boolean {
-        return token != null
-    }
+    fun isAlreadySignIn(): Boolean = !token.isNullOrEmpty()
 
-    fun signIn(id: String, password: String): Boolean {
-        try {
-            val call = fishService.signIn(id, password)
-            val response = call.execute()
-            if (response.code() == HttpURLConnection.HTTP_OK) {
-                token = response.body()
-                return true
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
+    fun signIn(id: String, password: String): Flow<Boolean> = flow {
+        token = fishService.signIn(id, password)
+        emit(!token.isNullOrEmpty())
+    }.flowOn(Dispatchers.IO)
+
+    fun enableBoardLed(enable: Boolean): Flow<Int> = flow {
+        token?.let {
+            emit(fishService.enableBoardLed(it, enable))
+        } ?: emit(RESULT_FAIL_AUTH)
+    }.flowOn(Dispatchers.IO)
+
+    fun readDBTemperature(days: Int): Flow<List<Temperature>> = flow {
+        token?.let {
+            emit(fishService.readDBTemperature(it, days))
+        } ?: emit(emptyList())
+    }.flowOn(Dispatchers.IO)
+
+    fun enableOutWater(enable: Boolean): Flow<Int> = flow {
+        token?.let {
+            emit(fishService.enableOutWater(it, enable))
+        } ?: emit(RESULT_FAIL_HTTP)
+    }.flowOn(Dispatchers.IO)
+
+    fun enableInWater(enable: Boolean): Flow<Int> = flow {
+        token?.let {
+            emit(fishService.enableInWater(it, enable))
+        } ?: emit(RESULT_FAIL_HTTP)
+    }.flowOn(Dispatchers.IO)
+
+    fun enableLight(enable: Boolean): Flow<Int> = flow {
+        token?.let {
+            emit(fishService.enableLight(it, enable))
+        } ?: emit(RESULT_FAIL_HTTP)
+    }.flowOn(Dispatchers.IO)
+
+    fun enablePurifier(enable: Boolean): Flow<Int> = flow {
+        token?.let {
+            emit(fishService.enablePurifier(it, enable))
+        } ?: emit(RESULT_FAIL_HTTP)
+    }.flowOn(Dispatchers.IO)
+
+    fun enableHeater(enable: Boolean): Flow<Int> = flow {
+        token?.let {
+            emit(fishService.enableHeater(it, enable))
+        } ?: emit(RESULT_FAIL_HTTP)
+    }.flowOn(Dispatchers.IO)
+
+    fun readHeaterState(): Flow<Boolean> = flow {
+        token?.let {
+            emit(fishService.readHeaterState(it))
+        } ?: emit(false)
+    }.flowOn(Dispatchers.IO)
+
+    fun readInWaterState(): Flow<Boolean> = flow {
+        token?.let {
+            emit(fishService.readInWaterState(it))
+        } ?: emit(false)
+    }.flowOn(Dispatchers.IO)
+
+    fun readOutWaterState(): Flow<Boolean> = flow {
+        token?.let {
+            emit(fishService.readOutWaterState(it))
+        } ?: emit(false)
+    }.flowOn(Dispatchers.IO)
+
+    fun replaceWater(percentage: Float): Flow<Int> = flow {
+        token?.let {
+            emit(fishService.replaceWater(it, percentage))
+        } ?: emit(RESULT_FAIL_HTTP)
+    }.flowOn(Dispatchers.IO)
+
+    fun changeLightBrightness(percentage: Float): Flow<Boolean> = flow {
+        token?.let {
+            emit(fishService.changeBrightness(it, percentage))
+        } ?: emit(false)
+    }.flowOn(Dispatchers.IO)
+
+    fun readLightBrightness(): Flow<Float> = flow {
+        token?.let {
+            emit(fishService.readLightBrightness(it))
+        } ?: emit(0f)
+    }.flowOn(Dispatchers.IO)
+
+    fun fetchPeriodicTasks(): Flow<List<PeriodicTask>> = flow {
+        token?.let {
+            emit(fishService.fetchPeriodicTasks(it))
+        } ?: emit(emptyList())
+    }.flowOn(Dispatchers.IO)
+
+    fun addPeriodicTask(periodicTask: PeriodicTask): Flow<Boolean> = flow {
+        token?.let {
+            emit(
+                fishService.addPeriodicTask(
+                    it, periodicTask.type, periodicTask.data, periodicTask.time
+                )
+            )
+        } ?: emit(false)
+    }.flowOn(Dispatchers.IO)
+
+    fun deletePeriodicTask(periodicTask: PeriodicTask): Flow<Boolean> = flow {
+        token?.let {
+            emit(fishService.deletePeriodicTask(it, periodicTask.id))
+        } ?: emit(false)
+    }.flowOn(Dispatchers.IO)
+
+    fun reconnect() = flow<Void> {
+        token?.let {
+            fishService.reconnect(it)
         }
-
-        return false
-    }
-
-    fun enableBoardLed(enable: Boolean): Int {
-        verifyTokenNull()
-
-        try {
-            val response = fishService.enableBoardLed(token!!, enable).execute()
-            return response.body() ?: RESULT_FAIL_HTTP
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        return RESULT_FAIL_HTTP
-    }
-
-    fun readDBTemperature(days: Int): List<Temperature> {
-        verifyTokenNull()
-
-        try {
-            val response = fishService.readDBTemperature(token!!, days).execute()
-            return response.body() ?: emptyList()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        return emptyList()
-    }
-
-    fun enableOutWater(enable: Boolean): Int {
-        verifyTokenNull()
-
-        try {
-            val response = fishService.enableOutWater(token!!, enable).execute()
-            return response.body() ?: RESULT_FAIL_HTTP
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        return RESULT_FAIL_HTTP
-    }
-
-    fun enableInWater(enable: Boolean): Int {
-        verifyTokenNull()
-
-        try {
-            val response = fishService.enableInWater(token!!, enable).execute()
-            return response.body() ?: RESULT_FAIL_HTTP
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        return RESULT_FAIL_HTTP
-    }
-
-    fun enableLight(enable: Boolean): Int {
-        verifyTokenNull()
-
-        try {
-            val response = fishService.enableLight(token!!, enable).execute()
-            return response.body() ?: RESULT_FAIL_HTTP
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        return RESULT_FAIL_HTTP
-    }
-
-    fun enablePurifier(enable: Boolean): Int {
-        verifyTokenNull()
-
-        try {
-            val response = fishService.enablePurifier(token!!, enable).execute()
-            return response.body() ?: RESULT_FAIL_HTTP
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        return RESULT_FAIL_HTTP
-    }
-
-    fun enableHeater(enable: Boolean): Int {
-        verifyTokenNull()
-        try {
-            val response = fishService.enableHeater(token!!, enable).execute()
-            return response.body() ?: RESULT_FAIL_HTTP
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        return RESULT_FAIL_HTTP
-    }
-
-    fun readHeaterState(): Boolean {
-        verifyTokenNull()
-        try {
-            val response = fishService.readHeaterState(token!!).execute()
-            return response.body() ?: false
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        return false
-    }
-
-    fun readInWaterState(): Boolean {
-        verifyTokenNull()
-
-        try {
-            val response = fishService.readInWaterState(token!!).execute()
-
-            return response.body() ?: false
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-
-        return false
-    }
-
-    fun readOutWaterState(): Boolean {
-        verifyTokenNull()
-
-        try {
-            val response = fishService.readOutWaterState(token!!).execute()
-            return response.body() ?: false
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        return false
-    }
-
-    fun replaceWater(percentage: Float): Int {
-        verifyTokenNull()
-
-        try {
-            val response = fishService.replaceWater(token!!, percentage).execute()
-            return response.body() ?: RESULT_FAIL_HTTP
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-
-        return RESULT_FAIL_HTTP
-    }
-
-    fun changeLightBrightness(percentage: Float): Boolean {
-        verifyTokenNull()
-        try {
-            val response = fishService.changeBrightness(token!!, percentage).execute()
-            return response.body() ?: false
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-
-        return false
-    }
-
-    fun readLightBrightness(): Float {
-        verifyTokenNull()
-        try {
-            return fishService.readLightBrightness(token!!).execute().body() ?: 0f
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-
-        return 0f
-    }
-
-    fun fetchPeriodicTasks(): List<PeriodicTask> {
-        verifyTokenNull()
-        try {
-            return fishService.fetchPeriodicTasks(token!!).execute().body() ?: emptyList()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-
-        return emptyList()
-    }
-
-    fun addPeriodicTask(periodicTask: PeriodicTask): Boolean {
-        verifyTokenNull()
-        try {
-            return fishService.addPeriodicTask(
-                token!!,
-                periodicTask.type,
-                periodicTask.data,
-                periodicTask.time
-            ).execute().body() ?: false
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-
-        return false
-    }
-
-    fun deletePeriodicTask(periodicTask: PeriodicTask): Boolean {
-        verifyTokenNull()
-        try {
-            return fishService.deletePeriodicTask(token!!, periodicTask.id).execute().body() ?: false
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        return false
-    }
-
-    fun reconnect() {
-        verifyTokenNull()
-        fishService.reconnect(token!!).execute().body()
-    }
-
-    private fun verifyTokenNull() {
-        if (token == null) {
-            throw IllegalStateException("Token is null! You must success sign-in first.")
-        }
-    }
+    }.flowOn(Dispatchers.IO)
 }

@@ -8,6 +8,9 @@ import com.marine.fishtank.api.TankDataSource
 import com.marine.fishtank.model.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -41,64 +44,52 @@ class FishTankViewModel @Inject constructor(
     }
 
     fun readState() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val inWaterState = tankDataSource.readInWaterState()
-            val outWaterState = tankDataSource.readOutWaterState()
-            val brightness = tankDataSource.readLightBrightness()
-            val heaterState = tankDataSource.readHeaterState()
-
-            Log.d(TAG, "readState - inWaterState=$inWaterState, outWaterState=$outWaterState," +
-                    "Heater=$heaterState, brightness=$brightness")
-
-            _uiState.postValue(
+        viewModelScope.launch {
+            combine(
+                tankDataSource.readInWaterState(),
+                tankDataSource.readOutWaterState(),
+                tankDataSource.readLightBrightness(),
+                tankDataSource.readHeaterState()
+            ) { inWaterState, outWaterState, brightness, heaterState ->
                 _uiState.value?.copy(
                     inWaterValveState = inWaterState,
                     outWaterValveState = outWaterState,
                     brightness = brightness.toInt(),
                     heaterState = heaterState
                 )
-            )
+            }.collect {
+                _uiState.postValue(it)
+            }
         }
     }
 
     fun startFetchTemperature(days: Int) {
-        viewModelScope.launch(Dispatchers.IO) {
-            temperatureLiveData.postValue(
-                tankDataSource.readDBTemperature(days)
-            )
+        viewModelScope.launch {
+            tankDataSource.readDBTemperature(days)
+                .collect {
+                    temperatureLiveData.postValue(it)
+                }
         }
     }
 
     fun fetchPeriodicTasks() {
-        viewModelScope.launch(Dispatchers.IO) {
-            periodicTaskLiveData.postValue(
-                tankDataSource.fetchPeriodicTasks()
-            )
+        viewModelScope.launch {
+            tankDataSource.fetchPeriodicTasks().collect {
+                periodicTaskLiveData.postValue(it)
+            }
         }
     }
 
     fun uiEvent(uiEvent: UiEvent) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             when (uiEvent) {
-                is UiEvent.OutWaterEvent -> {
-                    tankDataSource.enableOutWater(uiEvent.value)
-                    readState()
-                }
-                is UiEvent.InWaterEvent -> {
-                    tankDataSource.enableInWater(uiEvent.value)
-                    readState()
-                }
-                is UiEvent.LedEvent -> {
-                    tankDataSource.enableBoardLed(uiEvent.value)
-                    //readState()
-                }
-                is UiEvent.HeaterEvent -> {
-                    tankDataSource.enableHeater(uiEvent.value)
-                    readState()
-                }
-                is UiEvent.OnChangeTemperatureRange -> {
-                    startFetchTemperature(uiEvent.intValue)
-                }
+                is UiEvent.OutWaterEvent -> tankDataSource.enableOutWater(uiEvent.value).collect { readState() }
+                is UiEvent.InWaterEvent -> tankDataSource.enableInWater(uiEvent.value).collect { readState() }
+                is UiEvent.LedEvent -> tankDataSource.enableBoardLed(uiEvent.value).collect()
+                is UiEvent.HeaterEvent -> tankDataSource.enableHeater(uiEvent.value).collect { readState() }
+                is UiEvent.OnChangeTemperatureRange -> startFetchTemperature(uiEvent.intValue)
+                is UiEvent.TryReconnect -> tankDataSource.reconnect().collect()
+                is UiEvent.AddPeriodicTask -> tankDataSource.addPeriodicTask(uiEvent.periodicTask).collect { fetchPeriodicTasks() }
                 is UiEvent.OnLightBrightnessChange -> {
                     Log.d(TAG, "OnLightBrightnessChange=${uiEvent.brightness}")
                     // First, post the value.
@@ -113,18 +104,11 @@ class FishTankViewModel @Inject constructor(
                         }
                     }
                 }
-                is UiEvent.AddPeriodicTask -> {
-                    Log.d(TAG, "Add periodicTask! ${uiEvent.periodicTask}")
-                    tankDataSource.addPeriodicTask(uiEvent.periodicTask)
-                    fetchPeriodicTasks()
-                }
                 is UiEvent.DeletePeriodicTask -> {
-                    val result = tankDataSource.deletePeriodicTask(uiEvent.periodicTask)
-                    message.postValue("Delete task result=$result")
-                    fetchPeriodicTasks()
-                }
-                is UiEvent.TryReconnect -> {
-                    tankDataSource.reconnect()
+                    tankDataSource.deletePeriodicTask(uiEvent.periodicTask).collect {
+                        message.postValue("Delete task result=$it")
+                        fetchPeriodicTasks()
+                    }
                 }
                 else -> {
                     Log.e(TAG, "This event is not supported anymore. ($uiEvent)")
@@ -172,8 +156,8 @@ sealed class UiEvent(
     class OnChangeTemperatureRange(count: Int) : UiEvent(intValue = count)
 
     class OnLightBrightnessChange(val brightness: Int, val adjust: Boolean) : UiEvent()
-    class AddPeriodicTask(val periodicTask: PeriodicTask): UiEvent()
-    class DeletePeriodicTask(val periodicTask: PeriodicTask): UiEvent()
+    class AddPeriodicTask(val periodicTask: PeriodicTask) : UiEvent()
+    class DeletePeriodicTask(val periodicTask: PeriodicTask) : UiEvent()
 
-    class TryReconnect(): UiEvent()
+    class TryReconnect() : UiEvent()
 }

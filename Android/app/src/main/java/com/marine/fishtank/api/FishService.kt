@@ -25,81 +25,81 @@ interface FishService {
      */
     @POST("/fish/signin")
     @FormUrlEncoded
-    fun signIn(@Field(KEY_ID) id: String, @Field(KEY_PASSWORD) password: String): Call<String>
+    suspend fun signIn(@Field(KEY_ID) id: String, @Field(KEY_PASSWORD) password: String): String
 
     @POST("/fish/boardLed")
     @FormUrlEncoded
-    fun enableBoardLed(@Field(KEY_TOKEN) token: String, @Field(KEY_ENABLE) enable: Boolean): Call<Int>
+    suspend fun enableBoardLed(@Field(KEY_TOKEN) token: String, @Field(KEY_ENABLE) enable: Boolean): Int
 
     @POST("/fish/readDBTemperature")
     @FormUrlEncoded
-    fun readDBTemperature(@Field(KEY_TOKEN) token: String, @Field(KEY_DAYS) days: Int): Call<List<Temperature>>
+    suspend fun readDBTemperature(@Field(KEY_TOKEN) token: String, @Field(KEY_DAYS) days: Int): List<Temperature>
 
     @POST("/fish/outWater")
     @FormUrlEncoded
-    fun enableOutWater(@Field(KEY_TOKEN) token: String, @Field(KEY_ENABLE) enable: Boolean): Call<Int>
+    suspend fun enableOutWater(@Field(KEY_TOKEN) token: String, @Field(KEY_ENABLE) enable: Boolean): Int
 
     @POST("/fish/inWater")
     @FormUrlEncoded
-    fun enableInWater(@Field(KEY_TOKEN) token: String, @Field(KEY_ENABLE) enable: Boolean): Call<Int>
+    suspend fun enableInWater(@Field(KEY_TOKEN) token: String, @Field(KEY_ENABLE) enable: Boolean): Int
 
     @POST("/fish/light")
     @FormUrlEncoded
-    fun enableLight(@Field(KEY_TOKEN) token: String, @Field(KEY_ENABLE) enable: Boolean): Call<Int>
+    suspend fun enableLight(@Field(KEY_TOKEN) token: String, @Field(KEY_ENABLE) enable: Boolean): Int
 
     @POST("/fish/purifier")
     @FormUrlEncoded
-    fun enablePurifier(@Field(KEY_TOKEN) token: String, @Field(KEY_ENABLE) enable: Boolean): Call<Int>
+    suspend fun enablePurifier(@Field(KEY_TOKEN) token: String, @Field(KEY_ENABLE) enable: Boolean): Int
 
     @POST("/fish/heater")
     @FormUrlEncoded
-    fun enableHeater(@Field(KEY_TOKEN) token: String, @Field(KEY_ENABLE) enable: Boolean): Call<Int>
+    suspend fun enableHeater(@Field(KEY_TOKEN) token: String, @Field(KEY_ENABLE) enable: Boolean): Int
 
     @POST("/fish/read/heater")
     @FormUrlEncoded
-    fun readHeaterState(@Field(KEY_TOKEN) token: String): Call<Boolean>
+    suspend fun readHeaterState(@Field(KEY_TOKEN) token: String): Boolean
 
     @POST("/fish/read/inWater")
     @FormUrlEncoded
-    fun readInWaterState(@Field(KEY_TOKEN) token: String): Call<Boolean>
+    suspend fun readInWaterState(@Field(KEY_TOKEN) token: String): Boolean
 
     @POST("/fish/read/outWater")
     @FormUrlEncoded
-    fun readOutWaterState(@Field(KEY_TOKEN) token: String): Call<Boolean>
+    suspend fun readOutWaterState(@Field(KEY_TOKEN) token: String): Boolean
 
-    @POST("/fish/func/replaceWater")
+    @POST("/fish/suspend func/replaceWater")
     @FormUrlEncoded
-    fun replaceWater(@Field(KEY_TOKEN) token: String, @Field(KEY_PERCENTAGE) percentage: Float): Call<Int>
+    suspend fun replaceWater(@Field(KEY_TOKEN) token: String, @Field(KEY_PERCENTAGE) percentage: Float): Int
 
     @POST("/fish/brightness")
     @FormUrlEncoded
-    fun changeBrightness(@Field(KEY_TOKEN) token: String, @Field(KEY_PERCENTAGE) percentage: Float): Call<Boolean>
+    suspend fun changeBrightness(@Field(KEY_TOKEN) token: String, @Field(KEY_PERCENTAGE) percentage: Float): Boolean
 
     @POST("/fish/brightness/read")
     @FormUrlEncoded
-    fun readLightBrightness(@Field(KEY_TOKEN) token: String): Call<Float>
+    suspend fun readLightBrightness(@Field(KEY_TOKEN) token: String): Float
 
     @POST("/fish/periodic/add")
     @FormUrlEncoded
-    fun addPeriodicTask(
+    suspend fun addPeriodicTask(
         @Field(KEY_TOKEN) token: String,
         @Field(KEY_TYPE) type: Int,
         @Field(KEY_DATA) data: Int,
         @Field(KEY_TIME) time: String
-    ): Call<Boolean>
+    ): Boolean
 
     @POST("/fish/periodic/fetch")
     @FormUrlEncoded
-    fun fetchPeriodicTasks(@Field(KEY_TOKEN) token: String): Call<List<PeriodicTask>>
+    suspend fun fetchPeriodicTasks(@Field(KEY_TOKEN) token: String): List<PeriodicTask>
 
     @POST("/fish/periodic/delete")
     @FormUrlEncoded
-    fun deletePeriodicTask(
+    suspend fun deletePeriodicTask(
         @Field(KEY_TOKEN) token: String,
         @Field(KEY_PERIODIC) taskId: Int
-    ): Call<Boolean>
+    ): Boolean
 
     @POST("/fish/reconnect")
     @FormUrlEncoded
-    fun reconnect(@Field(KEY_TOKEN) token: String): Call<Void>
+    suspend fun reconnect(@Field(KEY_TOKEN) token: String)
 }

@@ -7,7 +7,9 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 
 private const val DEFAULT_SERVER_URL = "fish.marineseo.xyz"
@@ -45,7 +47,9 @@ class SettingsRepository(private val context: Context) {
     private val keyUserPassword = stringPreferencesKey("user_password")
 
     val userIdFlow = context.dataStore.data.map { pref -> pref[keyUserId] ?: "" }
+        .flowOn(Dispatchers.IO)
     val userPasswordFlow = context.dataStore.data.map { pref -> pref[keyUserPassword] ?: "" }
+        .flowOn(Dispatchers.IO)
 
     suspend fun saveUserId(id: String) {
         context.dataStore.edit {

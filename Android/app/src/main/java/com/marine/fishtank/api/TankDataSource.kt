@@ -1,27 +1,12 @@
 package com.marine.fishtank.api
 
-import android.annotation.SuppressLint
-import android.content.Context
-import android.support.v4.media.session.MediaSessionCompat.KEY_TOKEN
-import android.util.Log
 import com.marine.fishtank.model.*
-import okhttp3.HttpUrl
-import retrofit2.Call
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.converter.scalars.ScalarsConverterFactory
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
-import retrofit2.http.POST
 import java.net.HttpURLConnection
-import java.security.InvalidParameterException
+import javax.inject.Inject
+import javax.inject.Singleton
 
 
 private const val TAG = "TankApi"
-
-interface OnServerPacketListener {
-    fun onServerPacket(packet: ServerPacket)
-}
 
 const val RESULT_FAIL_GENERAL = 0
 const val RESULT_SUCCESS = 100
@@ -29,15 +14,10 @@ const val RESULT_FAIL_AUTH = 1
 const val RESULT_FAIL_DEVICE_CONNECTION = 2
 const val RESULT_FAIL_HTTP = 3
 
-class TankApi(
-    private val url: String
+@Singleton
+class TankDataSource @Inject constructor(
+    private val fishService: FishService
 ) {
-    private val fishService = Retrofit.Builder()
-        .baseUrl(url)
-        .addConverterFactory(ScalarsConverterFactory.create())
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-        .create(FishService::class.java)
 
     private var token: String? = null
 
@@ -261,25 +241,6 @@ class TankApi(
     private fun verifyTokenNull() {
         if (token == null) {
             throw IllegalStateException("Token is null! You must success sign-in first.")
-        }
-    }
-
-
-    companion object {
-        @SuppressLint("StaticFieldLeak")
-        @Volatile
-        private var INSTANCE: TankApi? = null
-
-        fun getInstance(url: String): TankApi {
-            return INSTANCE ?: synchronized(this) {
-                INSTANCE?.let {
-                    return it
-                }
-
-                val instance = TankApi(url)
-                INSTANCE = instance
-                instance
-            }
         }
     }
 }

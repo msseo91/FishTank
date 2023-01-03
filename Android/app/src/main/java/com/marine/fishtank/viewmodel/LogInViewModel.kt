@@ -1,34 +1,37 @@
 package com.marine.fishtank.viewmodel
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import com.marine.fishtank.BuildConfig
+import androidx.lifecycle.ViewModel
 import com.marine.fishtank.SettingsRepository
-import com.marine.fishtank.api.TankApi
+import com.marine.fishtank.api.TankDataSource
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 data class SignInResult(
     val result: Boolean,
     val reason: String
 )
 
-class LogInViewModel(application: Application) : AndroidViewModel(application) {
+@HiltViewModel
+class LogInViewModel @Inject constructor(
+    private val tankDataSource: TankDataSource,
+    private val settingsRepository: SettingsRepository
+) : ViewModel() {
     private val scope = CoroutineScope(Dispatchers.IO)
-    private val settingsRepository = SettingsRepository.getInstance(context = application)
 
     val signInResult = MutableLiveData<SignInResult>()
     val userIdData = MutableLiveData<String>()
     val userPasswordData = MutableLiveData<String>()
 
-    private val tankApi = TankApi.getInstance(BuildConfig.SERVER_URL)
-
     private suspend fun saveUser(id: String, password: String) {
         settingsRepository.saveUserId(id)
         settingsRepository.saveUserPassword(password)
     }
+
+    fun isAlreadySignIn() = tankDataSource.isAlreadySignIn()
 
     fun fetchSavedUser() {
         scope.launch {
@@ -46,7 +49,7 @@ class LogInViewModel(application: Application) : AndroidViewModel(application) {
 
     fun signIn(userId: String, password: String) {
         scope.launch {
-            val result = tankApi.signIn(userId, password)
+            val result = tankDataSource.signIn(userId, password)
             if(result) {
                 saveUser(userId, password)
             }

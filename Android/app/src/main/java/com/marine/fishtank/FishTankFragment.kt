@@ -64,6 +64,7 @@ import com.marine.fishtank.view.TemperatureMarker
 import com.marine.fishtank.viewmodel.FishTankViewModel
 import com.marine.fishtank.viewmodel.UiEvent
 import com.marine.fishtank.viewmodel.UiState
+import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -71,10 +72,10 @@ private const val TAG = "FishTankFragment"
 
 private const val REPLACE_MAX = 70
 
+@AndroidEntryPoint
 class FishTankFragment : Fragment() {
-    private val viewModel: FishTankViewModel by viewModels {
-        ViewModelProvider.AndroidViewModelFactory(requireActivity().application)
-    }
+    private val _viewModel: Lazy<FishTankViewModel> by lazy { viewModels() }
+    private val viewModel by lazy { _viewModel.value }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         Log.d(TAG, "onCreateView")
@@ -129,7 +130,7 @@ fun FishTankScreen(viewModel: FishTankViewModel) {
         BottomNavItem.Periodic
     )
 
-    // Surface = TAB 전체화면
+    // Scaffold = TAB 전체화면
     Scaffold(
         topBar = {
             TopAppBar(
@@ -142,35 +143,27 @@ fun FishTankScreen(viewModel: FishTankViewModel) {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentDestination = navBackStackEntry?.destination
 
-                items.forEach { screen ->
+                items.forEach { navItem ->
                     BottomNavigationItem(
                         selectedContentColor = Color.Magenta,
                         unselectedContentColor = Color.White,
                         alwaysShowLabel = true,
-                        label = { Text(stringResource(id = screen.titleRes)) },
-                        selected = currentDestination?.hierarchy?.any { it.route == screen.screenRoute } == true,
+                        label = { Text(stringResource(id = navItem.titleRes)) },
+                        selected = currentDestination?.hierarchy?.any { it.route == navItem.screenRoute } == true,
                         onClick = {
-                            navController.navigate(screen.screenRoute) {
-                                // Pop up to the start destination of the graph to
-                                // avoid building up a large stack of destinations
-                                // on the back stack as users select items
+                            navController.navigate(navItem.screenRoute) {
                                 popUpTo(navController.graph.findStartDestination().id) {
                                     saveState = true
                                 }
-                                // Avoid multiple copies of the same destination when
-                                // reselecting the same item
                                 launchSingleTop = true
-                                // Restore state when reselecting a previously selected item
                                 restoreState = true
                             }
                         },
                         icon = {
                             Icon(
-                                painter = painterResource(id = screen.iconRes),
-                                contentDescription = stringResource(id = screen.titleRes),
-                                modifier = Modifier
-                                    .width(26.dp)
-                                    .height(26.dp)
+                                painter = painterResource(id = navItem.iconRes),
+                                contentDescription = stringResource(id = navItem.titleRes),
+                                modifier = Modifier.width(26.dp).height(26.dp)
                             )
                         },
                     )

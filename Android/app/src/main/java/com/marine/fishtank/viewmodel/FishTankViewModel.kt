@@ -1,26 +1,25 @@
 package com.marine.fishtank.viewmodel
 
-import android.app.Application
 import android.util.Log
 import androidx.lifecycle.*
-import com.marine.fishtank.BuildConfig
 import com.marine.fishtank.ConnectionSetting
 import com.marine.fishtank.DEFAULT_CONNECTION_SETTING
-import com.marine.fishtank.api.TankApi
+import com.marine.fishtank.api.TankDataSource
 import com.marine.fishtank.model.*
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlin.math.abs
+import javax.inject.Inject
 
 private const val TAG = "FishTankViewModel"
 
-class FishTankViewModel(application: Application) : AndroidViewModel(application) {
+@HiltViewModel
+class FishTankViewModel @Inject constructor(
+    private val tankDataSource: TankDataSource
+) : ViewModel() {
     val temperatureLiveData = MutableLiveData<List<Temperature>>()
     val periodicTaskLiveData = MutableLiveData<List<PeriodicTask>>()
-
-    private val tankApi: TankApi = TankApi.getInstance(BuildConfig.SERVER_URL)
 
     private val _uiState = MutableLiveData<UiState>().apply { value = UiState() }
     val uiState: LiveData<UiState>
@@ -43,10 +42,10 @@ class FishTankViewModel(application: Application) : AndroidViewModel(application
 
     fun readState() {
         viewModelScope.launch(Dispatchers.IO) {
-            val inWaterState = tankApi.readInWaterState()
-            val outWaterState = tankApi.readOutWaterState()
-            val brightness = tankApi.readLightBrightness()
-            val heaterState = tankApi.readHeaterState()
+            val inWaterState = tankDataSource.readInWaterState()
+            val outWaterState = tankDataSource.readOutWaterState()
+            val brightness = tankDataSource.readLightBrightness()
+            val heaterState = tankDataSource.readHeaterState()
 
             Log.d(TAG, "readState - inWaterState=$inWaterState, outWaterState=$outWaterState," +
                     "Heater=$heaterState, brightness=$brightness")
@@ -65,7 +64,7 @@ class FishTankViewModel(application: Application) : AndroidViewModel(application
     fun startFetchTemperature(days: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             temperatureLiveData.postValue(
-                tankApi.readDBTemperature(days)
+                tankDataSource.readDBTemperature(days)
             )
         }
     }
@@ -73,7 +72,7 @@ class FishTankViewModel(application: Application) : AndroidViewModel(application
     fun fetchPeriodicTasks() {
         viewModelScope.launch(Dispatchers.IO) {
             periodicTaskLiveData.postValue(
-                tankApi.fetchPeriodicTasks()
+                tankDataSource.fetchPeriodicTasks()
             )
         }
     }
@@ -82,19 +81,19 @@ class FishTankViewModel(application: Application) : AndroidViewModel(application
         viewModelScope.launch(Dispatchers.IO) {
             when (uiEvent) {
                 is UiEvent.OutWaterEvent -> {
-                    tankApi.enableOutWater(uiEvent.value)
+                    tankDataSource.enableOutWater(uiEvent.value)
                     readState()
                 }
                 is UiEvent.InWaterEvent -> {
-                    tankApi.enableInWater(uiEvent.value)
+                    tankDataSource.enableInWater(uiEvent.value)
                     readState()
                 }
                 is UiEvent.LedEvent -> {
-                    tankApi.enableBoardLed(uiEvent.value)
+                    tankDataSource.enableBoardLed(uiEvent.value)
                     //readState()
                 }
                 is UiEvent.HeaterEvent -> {
-                    tankApi.enableHeater(uiEvent.value)
+                    tankDataSource.enableHeater(uiEvent.value)
                     readState()
                 }
                 is UiEvent.OnChangeTemperatureRange -> {
@@ -110,22 +109,22 @@ class FishTankViewModel(application: Application) : AndroidViewModel(application
                     if (uiEvent.adjust) {
                         Log.d(TAG, "Request adjust brightness to ${uiEvent.brightness}")
                         viewModelScope.launch(Dispatchers.IO) {
-                            tankApi.changeLightBrightness(uiEvent.brightness * 0.01f)
+                            tankDataSource.changeLightBrightness(uiEvent.brightness * 0.01f)
                         }
                     }
                 }
                 is UiEvent.AddPeriodicTask -> {
                     Log.d(TAG, "Add periodicTask! ${uiEvent.periodicTask}")
-                    tankApi.addPeriodicTask(uiEvent.periodicTask)
+                    tankDataSource.addPeriodicTask(uiEvent.periodicTask)
                     fetchPeriodicTasks()
                 }
                 is UiEvent.DeletePeriodicTask -> {
-                    val result = tankApi.deletePeriodicTask(uiEvent.periodicTask)
+                    val result = tankDataSource.deletePeriodicTask(uiEvent.periodicTask)
                     message.postValue("Delete task result=$result")
                     fetchPeriodicTasks()
                 }
                 is UiEvent.TryReconnect -> {
-                    tankApi.reconnect()
+                    tankDataSource.reconnect()
                 }
                 else -> {
                     Log.e(TAG, "This event is not supported anymore. ($uiEvent)")

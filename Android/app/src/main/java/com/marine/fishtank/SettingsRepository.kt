@@ -40,9 +40,7 @@ data class ConnectionSetting(
 }
 
 
-class SettingsRepository private constructor(
-    private val context: Context
-) {
+class SettingsRepository(private val context: Context) {
     private val keyUserId = stringPreferencesKey("user_id")
     private val keyUserPassword = stringPreferencesKey("user_password")
 
@@ -60,24 +58,4 @@ class SettingsRepository private constructor(
             it[keyUserPassword] = password
         }
     }
-
-    companion object {
-        @Volatile
-        private var INSTANCE: SettingsRepository? = null
-
-        fun getInstance(context: Context): SettingsRepository {
-            return INSTANCE ?: synchronized(this) {
-                INSTANCE?.let {
-                    return it
-                }
-
-                val instance = SettingsRepository(context)
-                INSTANCE = instance
-                instance
-            }
-        }
-    }
-
-
-
 }

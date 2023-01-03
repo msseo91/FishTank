@@ -2,6 +2,8 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("kotlin-parcelize")
+    kotlin("kapt")
+    id("com.google.dagger.hilt.android")
 }
 
 val composeVersion = "1.3.1"
@@ -64,6 +66,10 @@ android {
         kotlinCompilerExtensionVersion = composeVersion
     }
 
+    kapt {
+        correctErrorTypes = true
+    }
+
     packagingOptions {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -83,6 +89,10 @@ dependencies {
     implementation("androidx.navigation:navigation-fragment-ktx:$navigationVersion")
     implementation("androidx.navigation:navigation-ui-ktx:$navigationVersion")
     implementation("androidx.navigation:navigation-compose:$navigationVersion")
+
+    // Hilt
+    implementation("com.google.dagger:hilt-android:2.44")
+    kapt("com.google.dagger:hilt-android-compiler:2.44")
 
     // ETC
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")

@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -21,26 +20,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
-import com.marine.fishtank.api.TankApi
 import com.marine.fishtank.viewmodel.LogInViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
 sealed class LogInEvent {
     data class SignIn(val userId: String, val password: String) : LogInEvent()
 }
 
 private const val TAG = "LogInFragment"
+
+@AndroidEntryPoint
 class LogInFragment : Fragment() {
-    private val viewModel: LogInViewModel by viewModels {
-        ViewModelProvider.AndroidViewModelFactory(requireActivity().application)
-    }
+    private val _viewModel: Lazy<LogInViewModel> by lazy { viewModels() }
+    private val viewModel by lazy { _viewModel.value }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -48,7 +44,7 @@ class LogInFragment : Fragment() {
     ): View {
         Log.d(TAG, "onCreateView")
 
-        if(TankApi.getInstance(BuildConfig.SERVER_URL).isAlreadySignIn()) {
+        if(viewModel.isAlreadySignIn()) {
             Log.d(TAG, "Already sign-in")
             navigate(Screen.LogIn, Screen.FishTank)
         }

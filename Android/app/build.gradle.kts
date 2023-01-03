@@ -12,6 +12,7 @@ val coroutineVersion = "1.6.4"
 val navigationVersion = "2.5.3"
 val exoplayerVersion = "2.18.2"
 val retrofit2Version = "2.9.0"
+val lifeCycle = "2.5.1"
 
 android {
     compileSdk = 33
@@ -94,11 +95,18 @@ dependencies {
     implementation("com.google.dagger:hilt-android:2.44")
     kapt("com.google.dagger:hilt-android-compiler:2.44")
 
+    // LifeCycle
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifeCycle")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lifeCycle")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$lifeCycle")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.0-alpha03")
+
     // ETC
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.5.1")
     implementation("androidx.datastore:datastore-preferences:1.0.0")
-    implementation("com.google.code.gson:gson:2.9.0")
+    implementation("com.google.code.gson:gson:2.10")
+    implementation("com.orhanobut:logger:2.2.0")
 
     // Compose
     implementation("androidx.compose.ui:ui:$composeVersion")

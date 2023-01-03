@@ -17,9 +17,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.marine.fishtank.R
-import com.marine.fishtank.model.PeriodicTask
-import com.marine.fishtank.viewmodel.UiEvent
-import kotlin.math.exp
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable

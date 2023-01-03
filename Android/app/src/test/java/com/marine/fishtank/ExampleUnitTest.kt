@@ -1,5 +1,8 @@
 package com.marine.fishtank
 
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -11,7 +14,22 @@ import org.junit.Assert.*
  */
 class ExampleUnitTest {
     @Test
-    fun addition_isCorrect() {
-        assertEquals(4, 2 + 2)
+    fun flowTest() = runBlocking {
+        val state = MutableSharedFlow<Int>(
+            replay = 10
+        )
+        val scope = CoroutineScope(Dispatchers.IO)
+
+        scope.launch {
+            delay(100)
+            state.collect {
+                println(it)
+            }
+        }
+
+        for (i in 1..20) {
+            delay(10)
+            state.emit(i)
+        }
     }
 }

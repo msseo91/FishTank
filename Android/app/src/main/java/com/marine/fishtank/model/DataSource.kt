@@ -9,17 +9,17 @@ enum class Status {
     LOADING
 }
 
-data class DataSource<out T>(val status: Status, val data: T? ) {
+data class DataSource<out T>(val status: Status, val data: T ) {
     companion object {
-        fun <T> success(data: T?): DataSource<T> {
+        fun <T> success(data: T): DataSource<T> {
             return DataSource(Status.SUCCESS, data)
         }
 
-        fun <T> error(data: T?): DataSource<T> {
+        fun <T> error(data: T): DataSource<T> {
             return DataSource(Status.ERROR, data)
         }
 
-        fun <T> loading(data: T?): DataSource<T> {
+        fun <T> loading(data: T): DataSource<T> {
             return DataSource(Status.LOADING, data)
         }
     }

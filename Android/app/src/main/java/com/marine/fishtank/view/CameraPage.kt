@@ -15,11 +15,12 @@ import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.source.rtsp.RtspMediaSource
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
 import com.google.android.exoplayer2.ui.StyledPlayerView
+import com.marine.fishtank.DEFAULT_CONNECTION_SETTING
 import com.marine.fishtank.viewmodel.TankState
 import com.orhanobut.logger.Logger
 
 @Composable
-fun CameraPage(tankState: TankState) {
+fun CameraPage() {
     Logger.d("Composing CameraPage!")
 
     val context = LocalContext.current
@@ -45,7 +46,7 @@ fun CameraPage(tankState: TankState) {
                 if (!exoPlayer.isPlaying) {
                     val mediaSource = RtspMediaSource.Factory()
                         .setForceUseRtpTcp(true)
-                        .createMediaSource(MediaItem.fromUri(Uri.parse(tankState.connectionSetting.rtspUrl)))
+                        .createMediaSource(MediaItem.fromUri(Uri.parse(DEFAULT_CONNECTION_SETTING.rtspUrl)))
                     exoPlayer.setMediaSource(mediaSource)
                     exoPlayer.prepare()
                     exoPlayer.play()

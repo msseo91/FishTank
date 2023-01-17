@@ -7,11 +7,14 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Slider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.XAxis
@@ -22,14 +25,19 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IAxisValueFormatter
 import com.github.mikephil.charting.utils.ColorTemplate
 import com.marine.fishtank.R
+import com.marine.fishtank.model.DataSource
 import com.marine.fishtank.model.Temperature
 import com.marine.fishtank.viewmodel.FishTankViewModel
 import com.orhanobut.logger.Logger
 import java.text.SimpleDateFormat
 
+@OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
-fun MonitorPage(viewModel: FishTankViewModel, temperatureList: List<Temperature>) {
+fun MonitorPage(viewModel: FishTankViewModel) {
     Logger.d("MonitorPage!")
+
+    val dataSource by viewModel.temperatureFlow.collectAsStateWithLifecycle()
+    val temperatureList = dataSource.data
 
     val position = remember { mutableStateOf(1f) }
     val positionRange = remember { mutableStateOf(10f) }

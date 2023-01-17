@@ -17,6 +17,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.marine.fishtank.R
+import com.marine.fishtank.model.DataSource
 import com.marine.fishtank.viewmodel.FishTankViewModel
 import com.marine.fishtank.viewmodel.TankState
 import com.orhanobut.logger.Logger
@@ -24,8 +25,12 @@ import com.orhanobut.logger.Logger
 
 @OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
-fun ControlPage(viewModel: FishTankViewModel, tankState: TankState) {
+fun ControlPage(viewModel: FishTankViewModel) {
+    val dataSource by viewModel.tankControlStateFlow.collectAsStateWithLifecycle()
+    val tankState = dataSource.data
+
     Logger.d("Composing ControlTab! $tankState")
+
     val isRefreshing = viewModel.refreshFlow.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
     var brightnessValue by remember {

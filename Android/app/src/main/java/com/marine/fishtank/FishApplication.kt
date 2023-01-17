@@ -26,6 +26,7 @@ class FishApplication : Application() {
 
         Thread.setDefaultUncaughtExceptionHandler { thread, exception ->
             Logger.e("Exception on ${thread.name}(${thread.id})$exception")
+            exception.printStackTrace()
 
             startActivity(
                 Intent(this, ErrorActivity::class.java)

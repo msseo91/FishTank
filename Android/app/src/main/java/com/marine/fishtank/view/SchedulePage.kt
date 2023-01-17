@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.rounded.DeleteOutline
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -16,6 +17,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.marine.fishtank.R
 import com.marine.fishtank.model.PeriodicTask
 import com.marine.fishtank.model.typeAsString
@@ -24,9 +27,13 @@ import com.orhanobut.logger.Logger
 import java.util.*
 
 
+@OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
-fun SchedulePage(viewModel: FishTankViewModel, periodicTasks: List<PeriodicTask>) {
+fun SchedulePage(viewModel: FishTankViewModel) {
     Logger.d("Composing SchedulePage!")
+    val dataSource by viewModel.periodicTaskFlow.collectAsStateWithLifecycle()
+    val periodicTasks = dataSource.data
+
     val context = LocalContext.current
     val openDialog = remember { mutableStateOf(false) }
 

@@ -33,14 +33,10 @@ class FishTankViewModel @Inject constructor(
     }
 
     fun refreshState() {
-        //viewModelScope.launch {
-            Logger.d("emit - refreshState - loading")
-            //_tankStateFlow.emit(DataSource.loading(tankState))
-            readState()
-            fetchPeriodicTasks()
-            Logger.d("emit - refreshState - success")
-            //_tankStateFlow.emit(DataSource.success(tankState))
-        //}
+        Logger.d("emit - refreshState - loading")
+        readState()
+        fetchPeriodicTasks()
+        Logger.d("emit - refreshState - success")
     }
 
     private fun readState() {

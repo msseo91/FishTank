@@ -14,5 +14,5 @@ object RetrofitBuilder {
             .build()
     }
 
-    val fishService = getRetrofit().create(FishService::class.java)
+    val fishService: FishService = getRetrofit().create(FishService::class.java)
 }

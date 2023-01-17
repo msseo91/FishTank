@@ -16,7 +16,6 @@ import com.google.android.exoplayer2.source.rtsp.RtspMediaSource
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
 import com.google.android.exoplayer2.ui.StyledPlayerView
 import com.marine.fishtank.DEFAULT_CONNECTION_SETTING
-import com.marine.fishtank.viewmodel.TankState
 import com.orhanobut.logger.Logger
 
 @Composable

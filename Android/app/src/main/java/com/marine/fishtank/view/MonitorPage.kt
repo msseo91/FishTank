@@ -25,7 +25,6 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IAxisValueFormatter
 import com.github.mikephil.charting.utils.ColorTemplate
 import com.marine.fishtank.R
-import com.marine.fishtank.model.DataSource
 import com.marine.fishtank.model.Temperature
 import com.marine.fishtank.viewmodel.FishTankViewModel
 import com.orhanobut.logger.Logger

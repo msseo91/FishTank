@@ -1,17 +1,19 @@
 package com.marine.fishtank.viewmodel
 
-import androidx.lifecycle.*
-import com.marine.fishtank.ConnectionSetting
-import com.marine.fishtank.DEFAULT_CONNECTION_SETTING
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.marine.fishtank.api.TankDataSource
-import com.marine.fishtank.model.*
+import com.marine.fishtank.model.DataSource
+import com.marine.fishtank.model.PeriodicTask
+import com.marine.fishtank.model.Temperature
 import com.orhanobut.logger.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
-private const val TAG = "FishTankViewModel"
 
 @HiltViewModel
 class FishTankViewModel @Inject constructor(
@@ -25,9 +27,6 @@ class FishTankViewModel @Inject constructor(
 
     private val _periodicTaskFlow = MutableStateFlow<DataSource<List<PeriodicTask>>>(DataSource.loading(emptyList()))
     val periodicTaskFlow : StateFlow<DataSource<List<PeriodicTask>>> = _periodicTaskFlow
-
-    private val _refreshFlow = MutableStateFlow(false)
-    val refreshFlow: StateFlow<Boolean> = _refreshFlow
 
     private val _messageFlow = MutableStateFlow("")
     val messageFlow: StateFlow<String> = _messageFlow

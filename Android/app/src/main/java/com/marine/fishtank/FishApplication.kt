@@ -2,9 +2,7 @@ package com.marine.fishtank
 
 import android.app.Application
 import android.content.Intent
-import android.widget.Toast
 import com.orhanobut.logger.AndroidLogAdapter
-import com.orhanobut.logger.LogcatLogStrategy
 import com.orhanobut.logger.Logger
 import com.orhanobut.logger.PrettyFormatStrategy
 import dagger.hilt.android.HiltAndroidApp

@@ -2,6 +2,7 @@ package com.marine.fishtank.view
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
@@ -10,10 +11,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.marine.fishtank.R
@@ -24,17 +27,14 @@ import com.orhanobut.logger.Logger
 
 @OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
-fun ControlPage(viewModel: FishTankViewModel) {
+fun ControlPage(viewModel: FishTankViewModel = viewModel()) {
     val dataSource by viewModel.tankControlStateFlow.collectAsStateWithLifecycle()
     val tankState = dataSource.data
 
     Logger.d("Composing ControlTab! $tankState")
 
     val scrollState = rememberScrollState()
-    var brightnessValue by remember {
-        mutableStateOf(tankState.brightness)
-    }
-    var ratioValue by remember { mutableStateOf(20) }
+    var brightnessValue by remember { mutableStateOf(tankState.brightness) }
 
     SwipeRefresh(
         state = rememberSwipeRefreshState(dataSource.status == Status.LOADING),
@@ -99,48 +99,13 @@ fun ControlPage(viewModel: FishTankViewModel) {
             )
             Spacer(modifier = Modifier.height(20.dp))
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(15.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                OutlinedTextField(
-                    modifier = Modifier.weight(1f),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    trailingIcon = { Text(text = "%") },
-                    label = { Text(text = stringResource(id = R.string.replace_ratio)) },
-                    value = ratioValue.toString(),
-                    onValueChange = { ratioValue = if (it.isNotEmpty() && it.isDigitsOnly()) it.toInt() else 0 }
-                )
-
-                /*OutlinedButton(
+            Row {
+                OutlinedButton(
                     modifier = Modifier
-                        .weight(1f)
-                        .padding(start = 10.dp),
-                    onClick = {
-                        if (ratioValue > REPLACE_MAX || ratioValue <= 0) {
-                            Toast.makeText(
-                                context,
-                                "Replace amount should between 0 and $REPLACE_MAX",
-                                Toast.LENGTH_SHORT
-                            )
-                                .show()
-                        } else {
-                            eventHandler(UiEvent.ReplaceWater(ratioValue))
-                        }
-                    }) {
-                    Text(text = stringResource(id = R.string.replace_water))
-                }*/
-            }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(15.dp)
-            ) {
-                OutlinedButton(onClick = { viewModel.reconnect() }) {
+                        .fillMaxWidth()
+                        .padding(start = 15.dp, end = 15.dp),
+                    shape = RoundedCornerShape(20.dp),
+                    onClick = { viewModel.reconnect() }) {
                     Text(text = "Reconnect")
                 }
             }
@@ -176,4 +141,10 @@ fun SwitchRow(
             onCheckedChange = onClick
         )
     }
+}
+
+@Preview
+@Composable
+fun ControlPagePreview() {
+    ControlPage()
 }

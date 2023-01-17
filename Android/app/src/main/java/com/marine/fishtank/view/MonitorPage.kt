@@ -28,6 +28,7 @@ import com.marine.fishtank.R
 import com.marine.fishtank.model.Temperature
 import com.marine.fishtank.viewmodel.FishTankViewModel
 import com.orhanobut.logger.Logger
+import java.text.DateFormat
 import java.text.SimpleDateFormat
 
 @OptIn(ExperimentalLifecycleComposeApi::class)
@@ -163,7 +164,7 @@ fun Chart(
                     setDrawAxisLine(true)
 
                     //String setter in x-Axis
-                    valueFormatter = IAxisValueFormatter { value, axisBase -> String.format("%.2f", value) }
+                    valueFormatter = IAxisValueFormatter { value, _ -> String.format("%.2f", value) }
                     //axisMaximum = LineChartConfig.YAXIS_MAX
                     //axisMinimum = LineChartConfig.YAXIS_MIN
 
@@ -196,7 +197,7 @@ fun Chart(
                 data = LineData(dataSet).apply {
                     setValueTextColor(Color.BLACK)
                     setValueTextSize(10f)
-                    setValueFormatter { value, entry, dataSetIndex, viewPortHandler -> String.format("%.2f", value) }
+                    setValueFormatter { value, _, _, _ -> String.format("%.2f", value) }
                 }
             }
         },
@@ -211,7 +212,7 @@ fun Chart(
             }
 
             val dataSet = it.data.getDataSetByIndex(0) as LineDataSet
-            dataSet.values = entryList
+            dataSet.entries = entryList
 
             it.data.notifyDataChanged()
             it.notifyDataSetChanged()

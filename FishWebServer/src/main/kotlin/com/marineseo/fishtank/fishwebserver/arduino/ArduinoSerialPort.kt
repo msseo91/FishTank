@@ -72,7 +72,7 @@ class ArduinoSerialPort(portName: String): SerialPort(portName) {
 
         val interval = System.currentTimeMillis() - lastWriteTime
         if(interval < MINIMUM_INTERVAL) {
-            logger.error("You must wait. interval=$MINIMUM_INTERVAL, current=$interval, " +
+            logger.warn("You must wait. interval=$MINIMUM_INTERVAL, current=$interval, " +
                     "remain=${MINIMUM_INTERVAL - interval}")
             return false
         }

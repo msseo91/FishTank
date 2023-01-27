@@ -1,5 +1,7 @@
-import 'package:retrofit/http.dart';
 import 'package:dio/dio.dart';
+import 'package:retrofit/retrofit.dart';
+
+part 'fish_datasource.g.dart';
 
 class Key {
   static const String token = "token";
@@ -15,14 +17,14 @@ class Key {
 }
 
 
-@RestApi(baseUrl: "http://fish.marineseo.xyz:53265")
+@RestApi(baseUrl: "http://fish.marineseo.xyz:8080")
 abstract class FishTankApi {
   // API class
   factory FishTankApi(Dio dio, {String baseUrl}) = _FishTankApi;
 
   @POST("/fish/signin")
   @FormUrlEncoded()
-  String signIn(@Field(Key.id) String id, @Field(Key.password) String password);
+  Future<String> signIn(@Field(Key.id) String id, @Field(Key.password) String password);
 }
 
 

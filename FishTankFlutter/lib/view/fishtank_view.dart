@@ -11,10 +11,10 @@ class FishTankPage extends StatefulWidget {
 }
 
 class FishTankState extends State<FishTankPage> {
-  bool _switch1 = false;
-  bool _switch2 = false;
-  bool _switch3 = false;
-  double _slider = 0.0;
+  bool _inValveState = false;
+  bool _outValveState = false;
+  bool _heaterState = false;
+  double _lightValue = 0.0;
 
   @override
   Widget build(BuildContext context) {
@@ -25,40 +25,59 @@ class FishTankState extends State<FishTankPage> {
         body: Column(
           children: [
             SwitchListTile(
-              value: _switch1,
+              value: _inValveState,
               onChanged: (value) {
                 setState(() {
-                  _switch1 = value;
+                  _inValveState = value;
                 });
               },
               title: const Text(Strings.textInValve),
             ),
             SwitchListTile(
-              value: _switch2,
+              value: _outValveState,
               onChanged: (value) {
                 setState(() {
-                  _switch2 = value;
+                  _outValveState = value;
                 });
               },
               title: const Text(Strings.textOutValve),
             ),
             SwitchListTile(
-              value: _switch3,
+              value: _heaterState,
               onChanged: (value) {
                 setState(() {
-                  _switch3 = value;
+                  _heaterState = value;
                 });
               },
-              title: const Text(Strings.textInValve),
+              title: const Text(Strings.textHeater),
             ),
-            Slider(
-              value: _slider,
-              onChanged: (value) {
-                setState(() {
-                  _slider = value;
-                });
-              },
-            ),
+
+            Container(
+              margin: const EdgeInsets.only(top: 25.0, left: 10.0) ,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    style: TextStyle(fontSize: 17),
+                      Strings.textLight
+                  ),
+                  Slider(
+                    label: "${Strings.textLight} (${_lightValue.round()} %)",
+                    min: 0,
+                    max: 100,
+                    divisions: 100,
+                    value: _lightValue,
+                    onChanged: (value) {
+                      setState(() {
+                        _lightValue = value;
+                      });
+                    },
+                  ),
+                ],
+              )
+            )
+
+
           ],
         ));
   }

@@ -12,7 +12,6 @@ class UserService(
 ) {
    private val tokenMap = mutableMapOf<String, User>()
 
-
     fun signIn(id: String, password: String): User? {
         val user = mapper.getUser(id)
         return if(user.password == password) {

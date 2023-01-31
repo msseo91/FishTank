@@ -38,7 +38,7 @@ class SignInPageState extends State<SignInPage> {
             create: (BuildContext context) => viewModel,
             child: Consumer<SignInViewModel>(builder: (context, viewModel, _) {
               switch(viewModel.isSignIn.status) {
-                case Status.none: return _signInView();
+                case Status.none: return _signInView(viewModel.user.id, viewModel.user.password);
                 case Status.complete: {
                   _goNextPage();
                   break;
@@ -46,7 +46,7 @@ class SignInPageState extends State<SignInPage> {
                 case Status.error:
                   {
                     Fluttertoast.showToast(msg: viewModel.isSignIn.message ?? "Fail");
-                    return _signInView();
+                    return _signInView(viewModel.user.id, viewModel.user.password);
                   }
                 default: return Container();
               }
@@ -55,7 +55,10 @@ class SignInPageState extends State<SignInPage> {
             })));
   }
 
-  Widget _signInView() {
+  Widget _signInView(String id, String password) {
+    idTextController.text = id;
+    passwordTextController.text = password;
+
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: Column(

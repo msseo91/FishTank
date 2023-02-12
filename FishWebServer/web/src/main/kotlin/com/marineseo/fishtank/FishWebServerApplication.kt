@@ -1,4 +1,4 @@
-package com.marineseo.fishtank.fishwebserver
+package com.marineseo.fishtank
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication

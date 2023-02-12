@@ -1,4 +1,4 @@
-package com.marineseo.fishtank.fishwebserver.model
+package com.marineseo.fishtank.model
 
 import java.nio.ByteBuffer
 import java.nio.ByteOrder

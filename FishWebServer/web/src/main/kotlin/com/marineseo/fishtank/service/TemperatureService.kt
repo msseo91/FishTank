@@ -1,8 +1,8 @@
-package com.marineseo.fishtank.fishwebserver.service
+package com.marineseo.fishtank.service
 
-import com.marineseo.fishtank.fishwebserver.mapper.DatabaseMapper
-import com.marineseo.fishtank.fishwebserver.model.Temperature
-import com.marineseo.fishtank.fishwebserver.util.TimeUtils
+import com.marineseo.fishtank.mapper.DatabaseMapper
+import com.marineseo.fishtank.model.Temperature
+import com.marineseo.fishtank.util.TimeUtils
 import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationListener
@@ -22,8 +22,8 @@ private const val TARGET_TEMPERATURE = 26
 
 @Service
 class TemperatureService(
-    private val arduinoService: ArduinoService,
-    private val mapper: DatabaseMapper
+    private val mapper: DatabaseMapper,
+    private val raspberryService: RaspberryService
 ): ApplicationListener<ApplicationContextEvent> {
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
@@ -68,13 +68,13 @@ class TemperatureService(
             var times = 0
             while(isRunning) {
                 times++
-                val temperature = arduinoService.getTemperature()
+                val temperature = raspberryService.getTemperatureInTank()
                 if(temperature > 0 && (times % TEMPERATURE_SAVE_INTERVAL == 0)) {
                     mapper.insertTemperature(Temperature(temperature = temperature))
                 }
 
                 // Turn on/off heater based on temperature.
-                arduinoService.enableHeater(temperature < TARGET_TEMPERATURE)
+                raspberryService.enableHeater(temperature < TARGET_TEMPERATURE)
 
                 delay(TEMPERATURE_INTERVAL)
             }

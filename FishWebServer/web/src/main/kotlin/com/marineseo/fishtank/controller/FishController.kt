@@ -1,16 +1,15 @@
-package com.marineseo.fishtank.fishwebserver.controller
+package com.marineseo.fishtank.controller
 
-import com.marineseo.fishtank.fishwebserver.model.PeriodicTask
-import com.marineseo.fishtank.fishwebserver.model.RESULT_FAIL_DEVICE_CONNECTION
-import com.marineseo.fishtank.fishwebserver.model.RESULT_SUCCESS
-import com.marineseo.fishtank.fishwebserver.model.Temperature
-import com.marineseo.fishtank.fishwebserver.service.*
+import com.marineseo.fishtank.model.PeriodicTask
+import com.marineseo.fishtank.model.RESULT_FAIL_DEVICE_CONNECTION
+import com.marineseo.fishtank.model.RESULT_SUCCESS
+import com.marineseo.fishtank.model.Temperature
+import com.marineseo.fishtank.service.*
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -29,7 +28,6 @@ private const val KEY_TIME = "time"
 @RestController
 @RequestMapping("/fish")
 class FishController(
-    private val arduinoService: ArduinoService,
     private val raspberryService: RaspberryService,
     private val taskService: TaskService,
     private val userService: UserService,
@@ -56,19 +54,6 @@ class FishController(
         return ResponseEntity.ok(token)
     }
 
-    @PostMapping("/boardLed")
-    fun enableBoardLed(
-        @RequestParam(KEY_TOKEN) token: String,
-        @RequestParam(KEY_ENABLE) enable: Boolean
-    ): ResponseEntity<Int> {
-        if (userService.getUserByToken(token) == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null)
-
-        return ResponseEntity.ok(
-            if (arduinoService.enableBoardLed(enable)) RESULT_SUCCESS
-            else RESULT_FAIL_DEVICE_CONNECTION
-        )
-    }
-
     @PostMapping("/readDBTemperature")
     fun readDBTemperature(
         @RequestParam(KEY_TOKEN) token: String,
@@ -88,9 +73,7 @@ class FishController(
         if (userService.getUserByToken(token) == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null)
 
         raspberryService.enableOutWaterValve(enable)
-        return ResponseEntity.ok(
-            RESULT_SUCCESS
-        )
+        return ResponseEntity.ok(RESULT_SUCCESS)
     }
 
     @PostMapping("/inWater")
@@ -100,28 +83,22 @@ class FishController(
     ): ResponseEntity<Int> {
         if (userService.getUserByToken(token) == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null)
 
-        return ResponseEntity.ok(
-            if (arduinoService.enableInWaterValve(enable)) RESULT_SUCCESS
-            else RESULT_FAIL_DEVICE_CONNECTION
-        )
+        raspberryService.enableInWaterValve(enable)
+        return ResponseEntity.ok(RESULT_SUCCESS)
     }
 
     @PostMapping("/read/inWater")
     fun readInWater(@RequestParam(KEY_TOKEN) token: String): ResponseEntity<Boolean> {
         if (userService.getUserByToken(token) == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null)
 
-        return ResponseEntity.ok(
-            arduinoService.isInWaterValveOpen()
-        )
+        return ResponseEntity.ok(raspberryService.isInWaterValveOpen())
     }
 
     @PostMapping("/read/outWater")
     fun readOutWater(@RequestParam(KEY_TOKEN) token: String): ResponseEntity<Boolean> {
         if (userService.getUserByToken(token) == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null)
 
-        return ResponseEntity.ok(
-            arduinoService.isOutWaterValveOpen()
-        )
+        return ResponseEntity.ok(raspberryService.isOutWaterValveOpen())
     }
 
     @PostMapping("/func/replaceWater")
@@ -139,10 +116,11 @@ class FishController(
     fun adjustBrightness(
         @RequestParam(KEY_TOKEN) token: String,
         @RequestParam(KEY_PERCENTAGE) percentage: Float
-    ): ResponseEntity<Boolean> {
+    ): ResponseEntity<Int> {
         if (userService.getUserByToken(token) == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null)
 
-        return ResponseEntity.ok(arduinoService.adjustBrightness(percentage))
+        raspberryService.adjustBrightness(percentage)
+        return ResponseEntity.ok(RESULT_SUCCESS)
     }
 
     @PostMapping("/brightness/read")
@@ -150,7 +128,7 @@ class FishController(
         @RequestParam(KEY_TOKEN) token: String,
     ): ResponseEntity<Float> {
         if (userService.getUserByToken(token) == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null)
-        return ResponseEntity.ok(arduinoService.readBrightness())
+        return ResponseEntity.ok(raspberryService.readBrightness())
     }
 
     @PostMapping("/periodic/add")
@@ -188,9 +166,10 @@ class FishController(
         @RequestParam(KEY_PERIODIC) taskId: Int
     ): ResponseEntity<Boolean> {
         val user = userService.getUserByToken(token) ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null)
-        val targetPeriodicTask = taskService.selectPeriodicTasK(taskId) ?:return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null)
+        val targetPeriodicTask =
+            taskService.selectPeriodicTasK(taskId) ?: return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null)
 
-        if(user.id != targetPeriodicTask.userId) {
+        if (user.id != targetPeriodicTask.userId) {
             // Only owner can delete task.
             return ResponseEntity.ok(false)
         }
@@ -199,27 +178,21 @@ class FishController(
         return ResponseEntity.ok(true)
     }
 
-    @PostMapping("/reconnect")
-    fun reconnectArduino(@RequestParam(KEY_TOKEN) token: String) {
-        arduinoService.reConnect()
-    }
-
     @PostMapping("/heater")
-    fun enableHeater(@RequestParam(KEY_TOKEN) token: String, @RequestParam(KEY_ENABLE) enable: Boolean): ResponseEntity<Int> {
+    fun enableHeater(
+        @RequestParam(KEY_TOKEN) token: String,
+        @RequestParam(KEY_ENABLE) enable: Boolean
+    ): ResponseEntity<Int> {
         if (userService.getUserByToken(token) == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null)
 
-        return ResponseEntity.ok(
-            if (arduinoService.enableHeater(enable)) RESULT_SUCCESS
-            else RESULT_FAIL_DEVICE_CONNECTION
-        )
+        raspberryService.enableHeater(enable)
+        return ResponseEntity.ok(RESULT_SUCCESS)
     }
 
     @PostMapping("/read/heater")
     fun isHeaterEnabled(@RequestParam(KEY_TOKEN) token: String): ResponseEntity<Boolean> {
         if (userService.getUserByToken(token) == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null)
 
-        return ResponseEntity.ok(
-            arduinoService.isHeaterOn()
-        )
+        return ResponseEntity.ok(raspberryService.isHeaterOn())
     }
 }

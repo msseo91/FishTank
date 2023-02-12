@@ -1,4 +1,4 @@
-package com.marineseo.fishtank.fishwebserver
+package com.marineseo.fishtank
 
 import org.springframework.boot.builder.SpringApplicationBuilder
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer

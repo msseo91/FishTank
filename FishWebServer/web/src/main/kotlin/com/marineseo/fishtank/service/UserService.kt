@@ -1,8 +1,8 @@
-package com.marineseo.fishtank.fishwebserver.service
+package com.marineseo.fishtank.service
 
-import com.marineseo.fishtank.fishwebserver.mapper.DatabaseMapper
-import com.marineseo.fishtank.fishwebserver.model.User
-import com.marineseo.fishtank.fishwebserver.util.makeRandomString
+import com.marineseo.fishtank.mapper.DatabaseMapper
+import com.marineseo.fishtank.model.User
+import com.marineseo.fishtank.util.makeRandomString
 import org.springframework.stereotype.Service
 
 const val TOKEN_LENGTH = 64

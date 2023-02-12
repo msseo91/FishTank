@@ -1,4 +1,4 @@
-package com.marineseo.fishtank.fishwebserver.util
+package com.marineseo.fishtank.util
 
 import java.io.File
 import java.nio.file.Files

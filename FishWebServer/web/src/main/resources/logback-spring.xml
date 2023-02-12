@@ -74,7 +74,7 @@
         <appender-ref ref="RollingGeneral" />
     </logger>
 
-    <logger name="com.marineseo.fishtank.fishwebserver.service.ArduinoService" level="DEBUG">
+    <logger name="com.marineseo.fishtank.service.ArduinoService" level="DEBUG">
         <appender-ref ref="RollingArduino" />
     </logger>
 

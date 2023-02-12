@@ -1,6 +1,6 @@
-package com.marineseo.fishtank.fishwebserver.arduino
+package com.marineseo.fishtank.arduino
 
-import com.marineseo.fishtank.fishwebserver.model.*
+import com.marineseo.fishtank.model.*
 import jssc.SerialPort
 import jssc.SerialPortTimeoutException
 import org.slf4j.LoggerFactory

@@ -1,13 +1,16 @@
-package com.marineseo.fishtank.fishwebserver.device
+package com.marineseo.fishtank.device
 
-import com.marineseo.fishtank.fishwebserver.model.Pin
+import com.marineseo.fishtank.model.Pin
 import com.pi4j.Pi4J
 import com.pi4j.io.gpio.digital.DigitalOutput
 import com.pi4j.io.gpio.digital.DigitalState
+import com.pi4j.io.pwm.Pwm
+import com.pi4j.io.pwm.PwmType
 import org.springframework.stereotype.Component
 
 private const val PROVIDER_INPUT = "pigpio-digital-input"
 private const val PROVIDER_OUT = "pigpio-digital-output"
+private const val PROVIDER_PWM = "pigpio-pwm"
 
 @Component
 class FishTankDevice {
@@ -44,4 +47,24 @@ class FishTankDevice {
             .provider(PROVIDER_OUT)
             .build()
     )
+
+    val heater: DigitalOutput = pi4j.create(
+        DigitalOutput.newConfigBuilder(pi4j)
+            .address(Pin.HEATER.bsmPin)
+            .initial(DigitalState.HIGH)
+            .provider(PROVIDER_OUT)
+            .build()
+    )
+
+    val light = pi4j.create(
+        Pwm.newConfigBuilder(pi4j)
+            .address(Pin.LIGHT.bsmPin)
+            .pwmType(PwmType.HARDWARE)
+            .provider(PROVIDER_PWM)
+            .initial(0)
+            .shutdown(0)
+            .build()
+    )
+
+
 }

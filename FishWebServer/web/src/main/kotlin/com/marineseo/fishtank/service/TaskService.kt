@@ -1,9 +1,9 @@
-package com.marineseo.fishtank.fishwebserver.service
+package com.marineseo.fishtank.service
 
-import com.marineseo.fishtank.fishwebserver.mapper.DatabaseMapper
-import com.marineseo.fishtank.fishwebserver.model.PeriodicTask
-import com.marineseo.fishtank.fishwebserver.model.Task
-import com.marineseo.fishtank.fishwebserver.util.TimeUtils
+import com.marineseo.fishtank.mapper.DatabaseMapper
+import com.marineseo.fishtank.model.PeriodicTask
+import com.marineseo.fishtank.model.Task
+import com.marineseo.fishtank.util.TimeUtils
 import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationListener
@@ -22,7 +22,7 @@ private const val TASK_INTERVAL = 1000L * 3
 
 @Service
 class TaskService(
-    private val arduinoService: ArduinoService,
+    private val raspberryService: RaspberryService,
     private val mapper: DatabaseMapper
 ) : ApplicationListener<ApplicationContextEvent> {
     private val logger = LoggerFactory.getLogger(this.javaClass)
@@ -62,17 +62,17 @@ class TaskService(
 
                         }
                         Task.TYPE_VALVE_IN_WATER -> {
-                            arduinoService.enableInWaterValve(
+                            raspberryService.enableInWaterValve(
                                 open = task.data == Task.DATA_OPEN
                             )
                         }
                         Task.TYPE_VALVE_OUT_WATER -> {
-                            arduinoService.enableOutWaterValve(
+                            raspberryService.enableOutWaterValve(
                                 open = task.data == Task.DATA_OPEN
                             )
                         }
                         Task.TYPE_LIGHT -> {
-                            arduinoService.adjustBrightness(task.data * 0.01f)
+                            raspberryService.adjustBrightness(task.data * 0.01f)
                         }
                         Task.TYPE_PURIFIER -> {
                             // TODO

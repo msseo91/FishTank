@@ -1,9 +1,9 @@
-package com.marineseo.fishtank.fishwebserver.mapper
+package com.marineseo.fishtank.mapper
 
-import com.marineseo.fishtank.fishwebserver.model.PeriodicTask
-import com.marineseo.fishtank.fishwebserver.model.Task
-import com.marineseo.fishtank.fishwebserver.model.Temperature
-import com.marineseo.fishtank.fishwebserver.model.User
+import com.marineseo.fishtank.model.PeriodicTask
+import com.marineseo.fishtank.model.Task
+import com.marineseo.fishtank.model.Temperature
+import com.marineseo.fishtank.model.User
 import org.apache.ibatis.annotations.Delete
 import org.apache.ibatis.annotations.Insert
 import org.apache.ibatis.annotations.Mapper

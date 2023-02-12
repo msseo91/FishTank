@@ -1,4 +1,4 @@
-package com.marineseo.fishtank.fishwebserver.model
+package com.marineseo.fishtank.model
 
 data class User(
     var id: String = "",

@@ -306,13 +306,12 @@ class ArduinoService : ApplicationListener<ApplicationContextEvent> {
     private fun sendAndGetResponse(packet: FishPacket, depth: Int = 0): FishPacket? {
         val writeResult = port?.writePacket(packet)
         if (writeResult != true) {
-            // Fail to write.
-            logger.error("Fail to write!")
-
             if (depth < REPAIR_MAX_TRY) {
                 runBlocking { delay(RETRY_INTERVAL) }
                 return sendAndGetResponse(packet, depth + 1)
             }
+            // Fail to write.
+            logger.error("Fail to write!")
             return null
         }
 

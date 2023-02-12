@@ -1,16 +1,8 @@
-# fishtank
+# Fishtank
 
-A new Flutter project.
+FishTank in Flutter project.
 
-## Getting Started
+## Usage
 
-This project is a starting point for a Flutter application.
+이 프로젝트는 Android, IOS 에서 FishTank client 를 구현하기 위해 flutter 로 개발 되었습니다.
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.

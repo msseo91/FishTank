@@ -45,7 +45,8 @@ class FishTankViewModel @Inject constructor(
 
     private fun readState() {
         viewModelScope.launch {
-            _tankControlStateFlow.emit(DataSource.loading(TankState()))
+            // emit last TankState with 'Loading' state.
+            _tankControlStateFlow.emit(DataSource.loading(_tankControlStateFlow.value.data))
             combine(
                 tankDataSource.readInWaterState(),
                 tankDataSource.readOutWaterState(),
@@ -93,12 +94,12 @@ class FishTankViewModel @Inject constructor(
         tankDataSource.enableInWater(enable).collect { readState() }
     }
 
-    fun enableBoardLed(enable: Boolean) = viewModelScope.launch {
-        tankDataSource.enableBoardLed(enable).collect()
-    }
-
     fun enableHeater(enable: Boolean) = viewModelScope.launch {
         tankDataSource.enableHeater(enable).collect { readState() }
+    }
+
+    fun changeLightBrightness(brightness: Int) = viewModelScope.launch {
+        tankDataSource.changeLightBrightness(brightness * 0.01f).collect()
     }
 
     fun reconnect() = viewModelScope.launch {
@@ -111,10 +112,6 @@ class FishTankViewModel @Inject constructor(
 
     fun deletePeriodicTask(periodicTask: PeriodicTask) = viewModelScope.launch {
         tankDataSource.deletePeriodicTask(periodicTask).collect { fetchPeriodicTasks() }
-    }
-
-    fun changeLightBrightness(brightness: Int) = viewModelScope.launch {
-        tankDataSource.changeLightBrightness(brightness * 0.01f).collect()
     }
 }
 

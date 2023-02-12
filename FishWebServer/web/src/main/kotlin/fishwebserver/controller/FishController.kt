@@ -4,10 +4,7 @@ import com.marineseo.fishtank.fishwebserver.model.PeriodicTask
 import com.marineseo.fishtank.fishwebserver.model.RESULT_FAIL_DEVICE_CONNECTION
 import com.marineseo.fishtank.fishwebserver.model.RESULT_SUCCESS
 import com.marineseo.fishtank.fishwebserver.model.Temperature
-import com.marineseo.fishtank.fishwebserver.service.ArduinoService
-import com.marineseo.fishtank.fishwebserver.service.TaskService
-import com.marineseo.fishtank.fishwebserver.service.TemperatureService
-import com.marineseo.fishtank.fishwebserver.service.UserService
+import com.marineseo.fishtank.fishwebserver.service.*
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -33,6 +30,7 @@ private const val KEY_TIME = "time"
 @RequestMapping("/fish")
 class FishController(
     private val arduinoService: ArduinoService,
+    private val raspberryService: RaspberryService,
     private val taskService: TaskService,
     private val userService: UserService,
     private val temperatureService: TemperatureService
@@ -89,9 +87,9 @@ class FishController(
     ): ResponseEntity<Int> {
         if (userService.getUserByToken(token) == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null)
 
+        raspberryService.enableOutWaterValve(enable)
         return ResponseEntity.ok(
-            if (arduinoService.enableOutWaterValve(enable)) RESULT_SUCCESS
-            else RESULT_FAIL_DEVICE_CONNECTION
+            RESULT_SUCCESS
         )
     }
 

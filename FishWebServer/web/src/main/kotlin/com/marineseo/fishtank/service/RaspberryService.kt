@@ -42,6 +42,13 @@ class RaspberryService(
 
     fun isHeaterOn() = fishTankDevice.heater.isLow
 
+    fun enablePump(enable: Boolean) {
+        if(enable) fishTankDevice.pump.low()
+        else fishTankDevice.pump.high()
+    }
+
+    fun isPumpOn() = fishTankDevice.pump.isLow
+
     fun getTemperatureInTank(): Float {
         // TODO - IMPL
         return 0f

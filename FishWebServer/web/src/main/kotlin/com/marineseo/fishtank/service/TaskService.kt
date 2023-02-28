@@ -24,72 +24,46 @@ private const val TASK_INTERVAL = 1000L * 3
 class TaskService(
     private val raspberryService: RaspberryService,
     private val mapper: DatabaseMapper
-) : ApplicationListener<ApplicationContextEvent> {
+) {
     private val logger = LoggerFactory.getLogger(this.javaClass)
-    private val scope = CoroutineScope(Dispatchers.IO)
-    private var runningJob: Job = Job()
 
-    override fun onApplicationEvent(event: ApplicationContextEvent) {
-        logger.warn("onApplicationEvent - $event")
-
-        when (event) {
-            is ContextStartedEvent -> {
-                start()
+    @Scheduled(fixedDelay = TASK_INTERVAL)
+    fun executeTask() {
+        fetchTask()?.let { task ->
+            if(task.state != Task.STATE_STANDBY) {
+                logger.warn("Pass this task. State is not STANDBY.")
+                return@let
             }
-            is ContextRefreshedEvent -> {
-                // Refresh
-                stop()
-                start()
-            }
-            is ContextClosedEvent, is ContextStoppedEvent -> {
-                stop()
-            }
-        }
-    }
+            logger.info("Executing $task")
 
-    private fun start() {
-        runningJob = scope.launch {
-            while (isActive) {
-                fetchTask()?.let { task ->
-                    if(task.state != Task.STATE_STANDBY) {
-                        logger.warn("Pass this task. State is not STANDBY.")
-                        return@let
-                    }
-                    logger.info("Executing $task")
+            when (task.type) {
+                Task.TYPE_REPLACE_WATER -> {
 
-                    when (task.type) {
-                        Task.TYPE_REPLACE_WATER -> {
-
-                        }
-                        Task.TYPE_VALVE_IN_WATER -> {
-                            raspberryService.enableInWaterValve(
-                                open = task.data == Task.DATA_OPEN
-                            )
-                        }
-                        Task.TYPE_VALVE_OUT_WATER -> {
-                            raspberryService.enableOutWaterValve(
-                                open = task.data == Task.DATA_OPEN
-                            )
-                        }
-                        Task.TYPE_LIGHT -> {
-                            raspberryService.adjustBrightness(task.data * 0.01f)
-                        }
-                        Task.TYPE_PURIFIER -> {
-                            // TODO
-                        }
-                    }
-
-                    task.state = Task.STATE_FINISH
-                    mapper.updateTask(task)
                 }
-
-                delay(TASK_INTERVAL)
+                Task.TYPE_VALVE_IN_WATER -> {
+                    raspberryService.enableInWaterValve(
+                        open = task.data == Task.DATA_OPEN
+                    )
+                }
+                Task.TYPE_VALVE_OUT_WATER -> {
+                    raspberryService.enableOutWaterValve(
+                        open = task.data == Task.DATA_OPEN
+                    )
+                }
+                Task.TYPE_LIGHT -> {
+                    raspberryService.adjustBrightness(task.data * 0.01f)
+                }
+                Task.TYPE_PUMP -> {
+                    raspberryService.enablePump(task.data == Task.DATA_OPEN)
+                }
+                Task.TYPE_PURIFIER -> {
+                    // TODO
+                }
             }
-        }
-    }
 
-    private fun stop() {
-        runningJob.cancel("Stop!")
+            task.state = Task.STATE_FINISH
+            mapper.updateTask(task)
+        }
     }
 
     fun createReplaceWaterTask(ratio: Float) {

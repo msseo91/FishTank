@@ -18,9 +18,21 @@ data class Task(
         const val TYPE_VALVE_IN_WATER = 2
         const val TYPE_PURIFIER = 3
         const val TYPE_LIGHT = 4
+        const val TYPE_PUMP = 5
 
+        /**
+         * Task is standby, waiting to execute
+         */
         const val STATE_STANDBY = 0
+
+        /**
+         * Task is executing
+         */
         const val STATE_EXECUTING = 1
+
+        /**
+         * Task is finished
+         */
         const val STATE_FINISH = 2
 
         const val DATA_CLOSE = 0

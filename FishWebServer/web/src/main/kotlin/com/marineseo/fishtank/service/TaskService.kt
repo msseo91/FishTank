@@ -1,6 +1,7 @@
 package com.marineseo.fishtank.service
 
 import com.marineseo.fishtank.mapper.DatabaseMapper
+import com.marineseo.fishtank.mapper.PeriodicTaskRepository
 import com.marineseo.fishtank.model.PeriodicTask
 import com.marineseo.fishtank.model.Task
 import com.marineseo.fishtank.util.TimeUtils
@@ -23,7 +24,8 @@ private const val TASK_INTERVAL = 1000L * 3
 @Service
 class TaskService(
     private val raspberryService: RaspberryService,
-    private val mapper: DatabaseMapper
+    private val mapper: DatabaseMapper,
+    private val periodicTaskRepository: PeriodicTaskRepository
 ) {
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
@@ -145,7 +147,7 @@ class TaskService(
         // Delete previous task
         mapper.deleteAllTasks()
 
-        val periodicTasks = mapper.getAllPeriodicTask()
+        val periodicTasks = periodicTaskRepository.findAll()
         for(periodicTask in periodicTasks) {
             mapper.insertTask(Task(
                 userId = periodicTask.userId,
@@ -165,20 +167,20 @@ class TaskService(
     }
 
     fun fetchPeriodicTask(userId: String): List<PeriodicTask> {
-        return mapper.fetchPeriodicTasks(userId)
+        return periodicTaskRepository.findAllByUserId(userId)
     }
 
     fun addPeriodicTask(periodicTask: PeriodicTask) {
-        mapper.insertPeriodicTask(periodicTask)
+        periodicTaskRepository.save(periodicTask)
         periodicToTask()
     }
 
     fun deletePeriodicTask(id: Int) {
-        mapper.deletePeriodicTask(id)
+        periodicTaskRepository.deleteById(id)
         periodicToTask()
     }
 
     fun selectPeriodicTasK(id: Int): PeriodicTask? {
-        return mapper.selectPeriodicTask(id)
+        return periodicTaskRepository.findById(id).orElse(null)
     }
 }

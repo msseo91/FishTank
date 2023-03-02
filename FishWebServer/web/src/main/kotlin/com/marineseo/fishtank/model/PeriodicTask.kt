@@ -1,11 +1,29 @@
 package com.marineseo.fishtank.model
 
+import javax.persistence.Column
+import javax.persistence.Entity
+import javax.persistence.GeneratedValue
+import javax.persistence.GenerationType
+import javax.persistence.Id
+import javax.persistence.Table
 
+@Entity
+@Table(name = PeriodicTask.TABLE_NAME)
 data class PeriodicTask(
-    var id: Int = 0,
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    val id: Int = 0,
+
+    @Column(nullable = false)
     var userId: String = "",
+
+    @Column(nullable = false)
     var type: Int = 0,
+
+    @Column
     var data: Int = 0,
+
+    @Column
     var time: String = ""
 ) {
     companion object {

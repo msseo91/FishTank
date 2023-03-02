@@ -1,6 +1,5 @@
 package com.marineseo.fishtank.device
 
-import com.marineseo.fishtank.model.Pin
 import com.pi4j.Pi4J
 import com.pi4j.io.gpio.digital.DigitalOutput
 import com.pi4j.io.gpio.digital.DigitalState

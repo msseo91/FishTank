@@ -1,4 +1,4 @@
-package com.marineseo.fishtank.model
+package com.marineseo.fishtank.device
 
 enum class Pin(val bsmPin: Int) {
     // PIN 22

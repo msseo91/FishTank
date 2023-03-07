@@ -1,6 +1,5 @@
 package com.marineseo.fishtank.model
 
-import java.sql.Timestamp
 import java.util.Date
 import javax.persistence.*
 

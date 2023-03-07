@@ -1,6 +1,6 @@
 package com.marineseo.fishtank.service
 
-import com.marineseo.fishtank.mapper.UserRepository
+import com.marineseo.fishtank.repo.UserRepository
 import com.marineseo.fishtank.model.User
 import com.marineseo.fishtank.util.makeRandomString
 import org.springframework.data.repository.findByIdOrNull

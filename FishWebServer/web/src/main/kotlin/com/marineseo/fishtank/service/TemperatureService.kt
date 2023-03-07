@@ -1,6 +1,6 @@
 package com.marineseo.fishtank.service
 
-import com.marineseo.fishtank.mapper.TemperatureRepository
+import com.marineseo.fishtank.repo.TemperatureRepository
 import com.marineseo.fishtank.model.Temperature
 import com.marineseo.fishtank.util.TimeUtils
 import org.slf4j.LoggerFactory

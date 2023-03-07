@@ -1,4 +1,4 @@
-package com.marineseo.fishtank.mapper
+package com.marineseo.fishtank.repo
 
 import com.marineseo.fishtank.model.PeriodicTask
 import org.springframework.data.repository.CrudRepository

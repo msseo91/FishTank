@@ -1,7 +1,7 @@
 package com.marineseo.fishtank.service
 
-import com.marineseo.fishtank.mapper.PeriodicTaskRepository
-import com.marineseo.fishtank.mapper.TaskRepository
+import com.marineseo.fishtank.repo.PeriodicTaskRepository
+import com.marineseo.fishtank.repo.TaskRepository
 import com.marineseo.fishtank.model.PeriodicTask
 import com.marineseo.fishtank.model.Task
 import org.slf4j.LoggerFactory

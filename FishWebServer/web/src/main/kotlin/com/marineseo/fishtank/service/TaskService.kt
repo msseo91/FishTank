@@ -1,11 +1,9 @@
 package com.marineseo.fishtank.service
 
-import com.marineseo.fishtank.mapper.DatabaseMapper
 import com.marineseo.fishtank.mapper.PeriodicTaskRepository
 import com.marineseo.fishtank.mapper.TaskRepository
 import com.marineseo.fishtank.model.PeriodicTask
 import com.marineseo.fishtank.model.Task
-import com.marineseo.fishtank.util.TimeUtils
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service

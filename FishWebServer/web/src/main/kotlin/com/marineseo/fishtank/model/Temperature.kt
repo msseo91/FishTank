@@ -1,6 +1,6 @@
 package com.marineseo.fishtank.model
 
-import java.util.Date
+import java.util.*
 import javax.persistence.*
 
 const val TB_TEMPERATURE = "temperature"

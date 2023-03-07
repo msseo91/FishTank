@@ -1,11 +1,6 @@
 package com.marineseo.fishtank.model
 
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.Id
-import javax.persistence.JoinColumn
-import javax.persistence.Table
-import javax.persistence.OneToMany
+import javax.persistence.*
 
 const val TB_USER = "user"
 

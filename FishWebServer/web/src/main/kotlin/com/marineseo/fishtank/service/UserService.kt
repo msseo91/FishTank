@@ -1,6 +1,5 @@
 package com.marineseo.fishtank.service
 
-import com.marineseo.fishtank.mapper.DatabaseMapper
 import com.marineseo.fishtank.mapper.UserRepository
 import com.marineseo.fishtank.model.User
 import com.marineseo.fishtank.util.makeRandomString

@@ -1,8 +1,5 @@
 package com.marineseo.fishtank.util
 
-import java.io.File
-import java.io.IOException
-import java.util.concurrent.TimeUnit
 import kotlin.random.Random
 
 fun makeRandomString(len: Int): String {

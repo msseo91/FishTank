@@ -1,18 +1,13 @@
 package com.marineseo.fishtank.controller
 
 import com.marineseo.fishtank.model.PeriodicTask
-import com.marineseo.fishtank.model.RESULT_FAIL_DEVICE_CONNECTION
 import com.marineseo.fishtank.model.RESULT_SUCCESS
 import com.marineseo.fishtank.model.Temperature
 import com.marineseo.fishtank.service.*
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 private const val KEY_TOKEN = "token"
 private const val KEY_ENABLE = "enable"

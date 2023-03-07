@@ -27,7 +27,6 @@ class TaskService(
 
     @Scheduled(fixedDelay = TASK_INTERVAL)
     fun executeTask() {
-
         fetchTask()?.let { task ->
             if(task.state != Task.STATE_STANDBY) {
                 logger.warn("Pass this task. State is not STANDBY.")
@@ -36,28 +35,13 @@ class TaskService(
             logger.info("Executing $task")
 
             when (task.type) {
-                Task.TYPE_REPLACE_WATER -> {
-
-                }
-                Task.TYPE_VALVE_IN_WATER -> {
-                    raspberryService.enableInWaterValve(
-                        open = task.data == Task.DATA_OPEN
-                    )
-                }
-                Task.TYPE_VALVE_OUT_WATER -> {
-                    raspberryService.enableOutWaterValve(
-                        open = task.data == Task.DATA_OPEN
-                    )
-                }
-                Task.TYPE_LIGHT -> {
-                    raspberryService.adjustBrightness(task.data * 0.01f)
-                }
-                Task.TYPE_PUMP -> {
-                    raspberryService.enablePump(task.data == Task.DATA_OPEN)
-                }
-                Task.TYPE_PURIFIER -> {
-                    // TODO
-                }
+                Task.TYPE_VALVE_IN_WATER -> raspberryService.enableInWaterValve(task.data == Task.DATA_OPEN)
+                Task.TYPE_VALVE_OUT_WATER -> raspberryService.enableOutWaterValve(task.data == Task.DATA_OPEN)
+                Task.TYPE_VALVE_OUT_WATER_2 -> raspberryService.enableOutWaterValve2(task.data == Task.DATA_OPEN)
+                Task.TYPE_LIGHT -> raspberryService.adjustBrightness(task.data * 0.01f)
+                Task.TYPE_PUMP -> raspberryService.enablePump(task.data == Task.DATA_OPEN)
+                Task.TYPE_REPLACE_WATER -> { /* TODO */ }
+                Task.TYPE_PURIFIER -> { /* TODO */}
             }
 
             task.state = Task.STATE_FINISH
@@ -81,12 +65,15 @@ class TaskService(
         // Create tasks.
         // For tracing(and logging), we put TYPE_REPLACE_WATER task.
         taskRepository.save(Task(type = Task.TYPE_REPLACE_WATER, state = Task.STATE_STANDBY))
+
+        // Close water inlet valve.
         taskRepository.save(Task(
             type = Task.TYPE_VALVE_IN_WATER,
             data = Task.DATA_CLOSE,
             state = Task.STATE_STANDBY
         ))
 
+        // Open water outlet valve.
         taskRepository.save(
             Task(
                 type = Task.TYPE_VALVE_OUT_WATER,
@@ -96,6 +83,7 @@ class TaskService(
         )
 
         val finishTime = System.currentTimeMillis() + (outTimeInSec * 1000L)
+        // Close outlet valve.
         taskRepository.save(
             Task(
                 type = Task.TYPE_VALVE_OUT_WATER,
@@ -105,6 +93,7 @@ class TaskService(
             )
         )
 
+        // Open inlet valve.
         taskRepository.save(
             Task(
                 type = Task.TYPE_VALVE_IN_WATER,

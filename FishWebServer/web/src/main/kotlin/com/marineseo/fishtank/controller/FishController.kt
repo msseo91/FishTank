@@ -71,6 +71,16 @@ class FishController(
         return ResponseEntity.ok(RESULT_SUCCESS)
     }
 
+    @PostMapping("/outWater2")
+    fun enableOutWater2(
+        @RequestParam(KEY_TOKEN) token: String,
+        @RequestParam(KEY_ENABLE) enable: Boolean
+    ): ResponseEntity<Int> {
+        if (userService.getUserByToken(token) == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null)
+        raspberryService.enableOutWaterValve2(enable)
+        return ResponseEntity.ok(RESULT_SUCCESS)
+    }
+
     @PostMapping("/inWater")
     fun enableInWater(
         @RequestParam(KEY_TOKEN) token: String,
@@ -94,6 +104,12 @@ class FishController(
         if (userService.getUserByToken(token) == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null)
 
         return ResponseEntity.ok(raspberryService.isOutWaterValveOpen())
+    }
+
+    @PostMapping("/read/outWater2")
+    fun readOutWater2(@RequestParam(KEY_TOKEN) token: String): ResponseEntity<Boolean> {
+        if (userService.getUserByToken(token) == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null)
+        return ResponseEntity.ok(raspberryService.isOutWaterValve2Open())
     }
 
     @PostMapping("/func/replaceWater")

@@ -55,6 +55,12 @@ fun ControlPage(viewModel: FishTankViewModel = viewModel()) {
             )
 
             SwitchRow(
+                state = tankState.outWaterValve2State,
+                text = stringResource(id = R.string.out_valve2),
+                onClick = { viewModel.enableOutWater2(it) }
+            )
+
+            SwitchRow(
                 state = tankState.inWaterValveState,
                 text = stringResource(id = R.string.in_valve),
                 onClick = { viewModel.enableInWater(it) }

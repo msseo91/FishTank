@@ -52,10 +52,12 @@ class FishTankViewModel @Inject constructor(
                 tankDataSource.readOutWaterState(),
                 tankDataSource.readLightBrightness(),
                 tankDataSource.readHeaterState(),
-            ) { inWaterState, outWaterState, brightness, heaterState ->
+                tankDataSource.readOutWaterState2()
+            ) { inWaterState, outWaterState, brightness, heaterState, outWaterState2 ->
                 TankState(
                     inWaterValveState = inWaterState,
                     outWaterValveState = outWaterState,
+                    outWaterValve2State = outWaterState2,
                     brightness = brightness.toInt(),
                     heaterState = heaterState
                 )
@@ -90,6 +92,10 @@ class FishTankViewModel @Inject constructor(
         tankDataSource.enableOutWater(enable).collect { readState() }
     }
 
+    fun enableOutWater2(enable: Boolean) = viewModelScope.launch {
+        tankDataSource.enableOutWater2(enable).collect { readState() }
+    }
+
     fun enableInWater(enable: Boolean) = viewModelScope.launch {
         tankDataSource.enableInWater(enable).collect { readState() }
     }
@@ -117,6 +123,7 @@ class FishTankViewModel @Inject constructor(
 
 data class TankState(
     val outWaterValveState: Boolean = false,
+    val outWaterValve2State: Boolean = false,
     val inWaterValveState: Boolean = false,
     val heaterState: Boolean = false,
     val brightness: Int = 0,

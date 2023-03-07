@@ -37,6 +37,10 @@ interface FishService {
     @FormUrlEncoded
     suspend fun enableOutWater(@Field(KEY_TOKEN) token: String, @Field(KEY_ENABLE) enable: Boolean): Int
 
+    @POST("/fish/outWater2")
+    @FormUrlEncoded
+    suspend fun enableOutWater2(@Field(KEY_TOKEN) token: String, @Field(KEY_ENABLE) enable: Boolean): Int
+
     @POST("/fish/inWater")
     @FormUrlEncoded
     suspend fun enableInWater(@Field(KEY_TOKEN) token: String, @Field(KEY_ENABLE) enable: Boolean): Int
@@ -64,6 +68,10 @@ interface FishService {
     @POST("/fish/read/outWater")
     @FormUrlEncoded
     suspend fun readOutWaterState(@Field(KEY_TOKEN) token: String): Boolean
+
+    @POST("/fish/read/outWater2")
+    @FormUrlEncoded
+    suspend fun readOutWaterState2(@Field(KEY_TOKEN) token: String): Boolean
 
     @POST("/fish/suspend func/replaceWater")
     @FormUrlEncoded

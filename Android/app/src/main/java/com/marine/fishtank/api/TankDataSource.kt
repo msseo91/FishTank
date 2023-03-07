@@ -50,6 +50,12 @@ class TankDataSource @Inject constructor(
         } ?: emit(RESULT_FAIL_HTTP)
     }.flowOn(Dispatchers.IO)
 
+    fun enableOutWater2(enable: Boolean): Flow<Int> = flow {
+        token?.let {
+            emit(fishService.enableOutWater2(it, enable))
+        } ?: emit(RESULT_FAIL_HTTP)
+    }.flowOn(Dispatchers.IO)
+
     fun enableInWater(enable: Boolean): Flow<Int> = flow {
         token?.let {
             emit(fishService.enableInWater(it, enable))
@@ -89,6 +95,12 @@ class TankDataSource @Inject constructor(
     fun readOutWaterState(): Flow<Boolean> = flow {
         token?.let {
             emit(fishService.readOutWaterState(it))
+        } ?: emit(false)
+    }.flowOn(Dispatchers.IO)
+
+    fun readOutWaterState2(): Flow<Boolean> = flow {
+        token?.let {
+            emit(fishService.readOutWaterState2(it))
         } ?: emit(false)
     }.flowOn(Dispatchers.IO)
 

@@ -40,6 +40,7 @@
 
     <string name="replace_water">환수</string>
     <string name="out_valve">하수밸브</string>
+    <string name="out_valve2">하수밸브(서브어항)</string>
     <string name="in_valve">상수밸브</string>
     <string name="purifier">여과기</string>
     <string name="light">조명</string>

@@ -1,19 +1,34 @@
 package com.marineseo.fishtank.model
 
 import java.sql.Timestamp
+import java.util.Date
+import javax.persistence.*
 
-
+@Entity
+@Table(name = Task.TB_TASK)
 data class Task(
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     val id: Int = 0,
-    var userId: String = "System",
-    var type: Int,
+
+    @Column(nullable = false)
+    val userId: String = "",
+
+    @Column(nullable = false)
+    var type: Int = TYPE_NONE,
+
+    @Column
     var data: Int = 0,
-    var executeTime: Timestamp = Timestamp(System.currentTimeMillis()),
-    var state: Int = STATE_STANDBY
+
+    @Temporal(TemporalType.TIMESTAMP)
+    var executeTime: Date = Date(),
+
+    @Column
+    var state: Int = STATE_STANDBY,
 ) {
     companion object {
+        const val TYPE_NONE = -1
         const val TYPE_REPLACE_WATER = 0
-
         const val TYPE_VALVE_OUT_WATER = 1
         const val TYPE_VALVE_IN_WATER = 2
         const val TYPE_PURIFIER = 3

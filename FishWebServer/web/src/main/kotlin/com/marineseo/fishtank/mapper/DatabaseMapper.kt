@@ -1,9 +1,6 @@
 package com.marineseo.fishtank.mapper
 
-import com.marineseo.fishtank.model.PeriodicTask
-import com.marineseo.fishtank.model.Task
-import com.marineseo.fishtank.model.Temperature
-import com.marineseo.fishtank.model.User
+import com.marineseo.fishtank.model.*
 import org.apache.ibatis.annotations.Delete
 import org.apache.ibatis.annotations.Insert
 import org.apache.ibatis.annotations.Mapper
@@ -18,7 +15,6 @@ const val COL_USER_ID = "id"
 const val COL_USER_NAME = "name"
 const val COL_USER_PASSWORD = "password"
 
-const val TB_TEMPERATURE = "temperature"
 const val COL_TEMP_ID = "id"
 const val COL_TEMP_TEMPERATURE = "temperature"
 const val COL_TEMP_TIME = "time"

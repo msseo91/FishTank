@@ -18,12 +18,10 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.marine.fishtank.viewmodel.SignInViewModel
 
-@OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
 fun SignInScreen(viewModel: SignInViewModel = viewModel(), onSignInSuccess: () -> Unit) {
     var userIdText by rememberSaveable { mutableStateOf("") }

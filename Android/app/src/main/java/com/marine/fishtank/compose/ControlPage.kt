@@ -2,40 +2,45 @@ package com.marine.fishtank.compose
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
+import androidx.compose.material.Divider
+import androidx.compose.material.Slider
+import androidx.compose.material.Switch
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.marine.fishtank.R
+import com.marine.fishtank.model.DataSource
 import com.marine.fishtank.model.Status
-import com.marine.fishtank.viewmodel.ControlViewModel
+import com.marine.fishtank.viewmodel.TankState
 import com.orhanobut.logger.Logger
 
 
-@OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
-fun ControlPage(viewModel: ControlViewModel = viewModel()) {
-    val dataSource by viewModel.tankControlStateFlow.collectAsStateWithLifecycle()
+fun ControlPage(
+    dataSource: DataSource<TankState> = DataSource.loading(TankState()),
+    onRefresh: () -> Unit = {},
+    onOutValveClick: (Boolean) -> Unit = {},
+    onOutValve2Click: (Boolean) -> Unit = {},
+    onInValveClick: (Boolean) -> Unit = {},
+    onHeaterClick: (Boolean) -> Unit = {},
+    onBrightnessChange: (Int) -> Unit = {}
+) {
+    Logger.d("Composing ControlTab!")
+
     val tankState = dataSource.data
-
-    Logger.d("Composing ControlTab! $tankState")
-
     val scrollState = rememberScrollState()
     var brightnessValue by remember { mutableStateOf(tankState.brightness) }
 
     SwipeRefresh(
         state = rememberSwipeRefreshState(dataSource.status == Status.LOADING),
-        onRefresh = { viewModel.refreshState() }
+        onRefresh = onRefresh
     ) {
         Column(
             modifier = Modifier
@@ -48,25 +53,25 @@ fun ControlPage(viewModel: ControlViewModel = viewModel()) {
             SwitchRow(
                 state = tankState.outWaterValveState,
                 text = stringResource(id = R.string.out_valve),
-                onClick = { viewModel.enableOutWater(it) }
+                onClick = onOutValveClick
             )
 
             SwitchRow(
                 state = tankState.outWaterValve2State,
                 text = stringResource(id = R.string.out_valve2),
-                onClick = { viewModel.enableOutWater2(it) }
+                onClick = onOutValve2Click
             )
 
             SwitchRow(
                 state = tankState.inWaterValveState,
                 text = stringResource(id = R.string.in_valve),
-                onClick = { viewModel.enableInWater(it) }
+                onClick = onInValveClick
             )
 
             SwitchRow(
                 state = tankState.heaterState,
                 text = stringResource(id = R.string.heater),
-                onClick = { viewModel.enableHeater(it) }
+                onClick = onHeaterClick
             )
 
             Divider(
@@ -89,28 +94,8 @@ fun ControlPage(viewModel: ControlViewModel = viewModel()) {
                         Logger.d("Brightness onValueChange $value")
                         brightnessValue = value.toInt()
                     },
-                    onValueChangeFinished = {
-                        viewModel.changeLightBrightness(brightnessValue)
-                    }
+                    onValueChangeFinished = { onBrightnessChange(brightnessValue) }
                 )
-            }
-
-            Divider(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 5.dp)
-            )
-            Spacer(modifier = Modifier.height(20.dp))
-
-            Row {
-                OutlinedButton(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 15.dp, end = 15.dp),
-                    shape = RoundedCornerShape(20.dp),
-                    onClick = { viewModel.reconnect() }) {
-                    Text(text = "Reconnect")
-                }
             }
         }
     }

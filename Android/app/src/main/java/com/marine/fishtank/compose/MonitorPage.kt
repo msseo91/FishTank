@@ -11,7 +11,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.tehras.charts.line.LineChart
@@ -22,7 +21,6 @@ import com.github.tehras.charts.piechart.animation.simpleChartAnimation
 import com.marine.fishtank.viewmodel.ControlViewModel
 import com.orhanobut.logger.Logger
 
-@OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
 fun MonitorPage(viewModel: ControlViewModel = viewModel()) {
     Logger.d("MonitorPage!")

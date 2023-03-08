@@ -1,19 +1,20 @@
 package com.marine.fishtank.compose
 
-import android.widget.Toast
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
@@ -21,22 +22,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.marine.fishtank.R
-import com.marine.fishtank.model.*
 import com.marine.fishtank.viewmodel.ControlViewModel
 import com.orhanobut.logger.Logger
-import java.util.*
 
-@OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
-fun ControlScreen(viewModel: ControlViewModel = viewModel()) {
-    Logger.d("Composing FishTankScreen")
+fun ControlScreen(viewModel: ControlViewModel = hiltViewModel()) {
+    Logger.d("Composing ControlScreen")
 
-    val message by viewModel.messageFlow.collectAsStateWithLifecycle()
+    val tankState by viewModel.tankControlStateFlow.collectAsStateWithLifecycle()
     val navController = rememberNavController()
-
-    if (message.isNotEmpty()) {
-        Toast.makeText(LocalContext.current, message, Toast.LENGTH_LONG).show()
-    }
 
     val items = listOf(
         BottomNavItem.Control,
@@ -94,7 +88,17 @@ fun ControlScreen(viewModel: ControlViewModel = viewModel()) {
             navController = navController,
             startDestination = BottomNavItem.Control.screenRoute
         ) {
-            composable(BottomNavItem.Control.screenRoute) { ControlPage(viewModel) }
+            composable(BottomNavItem.Control.screenRoute) {
+                ControlPage(
+                    dataSource = tankState,
+                    onRefresh = { viewModel.refreshState() },
+                    onOutValveClick = { viewModel.enableOutWater(it) },
+                    onOutValve2Click = { viewModel.enableOutWater2(it) },
+                    onInValveClick = { viewModel.enableInWater(it) },
+                    onHeaterClick = { viewModel.enableHeater(it) },
+                    onBrightnessChange = { viewModel.changeLightBrightness(it) },
+                )
+            }
             composable(BottomNavItem.Monitor.screenRoute) { MonitorPage(viewModel) }
             composable(BottomNavItem.Camera.screenRoute) { CameraPage() }
             composable(BottomNavItem.Periodic.screenRoute) { SchedulePage(viewModel) }

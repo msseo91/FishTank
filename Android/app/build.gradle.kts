@@ -7,7 +7,7 @@ plugins {
 }
 
 val composeVersion = "1.3.1"
-val accompanistVersion = "0.23.1"
+val accompanistVersion = "0.28.0"
 val coroutineVersion = "1.6.4"
 val navigationVersion = "2.5.3"
 val exoplayerVersion = "2.18.2"
@@ -64,7 +64,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = composeVersion
+        kotlinCompilerExtensionVersion = "1.4.3"
     }
 
     kapt {
@@ -82,8 +82,8 @@ dependencies {
     api(project(":MpChartLib"))
 
     implementation("androidx.core:core-ktx:1.9.0")
-    implementation("androidx.appcompat:appcompat:1.5.1")
-    implementation("com.google.android.material:material:1.7.0")
+    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("com.google.android.material:material:1.8.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
 
     // Navigation
@@ -92,14 +92,15 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:$navigationVersion")
 
     // Hilt
-    implementation("com.google.dagger:hilt-android:2.44")
-    kapt("com.google.dagger:hilt-android-compiler:2.44")
+    implementation("androidx.hilt:hilt-navigation-compose:1.1.0-alpha01")
+    implementation("com.google.dagger:hilt-android:2.45")
+    kapt("com.google.dagger:hilt-android-compiler:2.45")
 
     // LifeCycle
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifeCycle")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lifeCycle")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$lifeCycle")
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.0-alpha03")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.0-rc01")
 
     // ETC
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")

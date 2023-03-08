@@ -28,11 +28,8 @@ class ControlViewModel @Inject constructor(
     private val _periodicTaskFlow = MutableStateFlow<DataSource<List<PeriodicTask>>>(DataSource.loading(emptyList()))
     val periodicTaskFlow : StateFlow<DataSource<List<PeriodicTask>>> = _periodicTaskFlow
 
-    private val _messageFlow = MutableStateFlow("")
-    val messageFlow: StateFlow<String> = _messageFlow
-
     init {
-        refreshState()
+        Logger.d("init - ControlViewModel")
     }
 
     fun refreshState() {
@@ -106,10 +103,6 @@ class ControlViewModel @Inject constructor(
 
     fun changeLightBrightness(brightness: Int) = viewModelScope.launch {
         tankDataSource.changeLightBrightness(brightness * 0.01f).collect()
-    }
-
-    fun reconnect() = viewModelScope.launch {
-        tankDataSource.reconnect().collect()
     }
 
     fun addPeriodicTask(periodicTask: PeriodicTask) = viewModelScope.launch {

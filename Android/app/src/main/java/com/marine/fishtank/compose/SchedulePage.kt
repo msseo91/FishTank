@@ -17,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.marine.fishtank.R
 import com.marine.fishtank.model.PeriodicTask
@@ -27,7 +26,6 @@ import com.orhanobut.logger.Logger
 import java.util.*
 
 
-@OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
 fun SchedulePage(viewModel: ControlViewModel) {
     Logger.d("Composing SchedulePage!")

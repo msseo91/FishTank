@@ -2,8 +2,6 @@ package com.marine.fishtank
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.setupWithNavController
 import com.marine.fishtank.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
 

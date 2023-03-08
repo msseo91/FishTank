@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class FishTankViewModel @Inject constructor(
+class ControlViewModel @Inject constructor(
     private val tankDataSource: TankDataSource
 ) : ViewModel() {
     private val _tankControlStateFlow = MutableStateFlow<DataSource<TankState>>(DataSource.loading(TankState()))

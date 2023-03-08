@@ -1,4 +1,4 @@
-package com.marine.fishtank.view
+package com.marine.fishtank.compose
 
 import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement

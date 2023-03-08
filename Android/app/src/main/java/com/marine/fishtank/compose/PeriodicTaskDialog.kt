@@ -1,4 +1,4 @@
-package com.marine.fishtank.view
+package com.marine.fishtank.compose
 
 import android.app.TimePickerDialog
 import androidx.compose.foundation.interaction.MutableInteractionSource

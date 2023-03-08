@@ -26,7 +26,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "SERVER_URL", "\"http://fish.marineseo.xyz:8080\"")
+        buildConfigField("String", "SERVER_URL", "\"http://marineseo.iptime.org:15483\"")
     }
 
     signingConfigs {

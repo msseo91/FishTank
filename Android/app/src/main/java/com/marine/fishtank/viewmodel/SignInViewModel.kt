@@ -1,11 +1,12 @@
 package com.marine.fishtank.viewmodel
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.marine.fishtank.SettingsRepository
 import com.marine.fishtank.api.TankDataSource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -15,14 +16,16 @@ data class SignInResult(
 )
 
 @HiltViewModel
-class LogInViewModel @Inject constructor(
+class SignInViewModel @Inject constructor(
     private val tankDataSource: TankDataSource,
     private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
-    val signInResult = MutableLiveData<SignInResult>()
-    val userIdData = MutableLiveData<String>()
-    val userPasswordData = MutableLiveData<String>()
+    private val _signInResultFlow = MutableStateFlow(SignInResult(false, "Not yet"))
+    val signInResultFlow: StateFlow<SignInResult> = _signInResultFlow
+
+    val userId = settingsRepository.userIdFlow
+    val password = settingsRepository.userPasswordFlow
 
     private suspend fun saveUser(id: String, password: String) {
         settingsRepository.saveUserId(id)
@@ -31,20 +34,6 @@ class LogInViewModel @Inject constructor(
 
     fun isAlreadySignIn() = tankDataSource.isAlreadySignIn()
 
-    fun fetchSavedUser() {
-        viewModelScope.launch {
-            settingsRepository.userIdFlow.collect { id ->
-                userIdData.postValue(id)
-            }
-        }
-
-        viewModelScope.launch {
-            settingsRepository.userPasswordFlow.collect { password ->
-                userPasswordData.postValue(password)
-            }
-        }
-    }
-
     fun signIn(userId: String, password: String) {
         viewModelScope.launch {
             tankDataSource.signIn(userId, password).collect { result ->
@@ -52,9 +41,7 @@ class LogInViewModel @Inject constructor(
                     saveUser(userId, password)
                 }
 
-                signInResult.postValue(
-                    SignInResult(result, "Success")
-                )
+                _signInResultFlow.value = SignInResult(result, "Success")
             }
         }
     }

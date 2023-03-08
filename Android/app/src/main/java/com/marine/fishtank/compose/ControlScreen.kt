@@ -1,4 +1,4 @@
-package com.marine.fishtank.view
+package com.marine.fishtank.compose
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
@@ -22,22 +22,13 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.marine.fishtank.R
 import com.marine.fishtank.model.*
-import com.marine.fishtank.viewmodel.FishTankViewModel
+import com.marine.fishtank.viewmodel.ControlViewModel
 import com.orhanobut.logger.Logger
 import java.util.*
 
-sealed class BottomNavItem(
-    val titleRes: Int, val iconRes: Int, val screenRoute: String
-) {
-    object Control : BottomNavItem(R.string.text_control, R.drawable.control, "Control")
-    object Monitor : BottomNavItem(R.string.text_monitor, R.drawable.bar_chart, "Monitor")
-    object Camera : BottomNavItem(R.string.text_camera, R.drawable.camera, "Camera")
-    object Periodic : BottomNavItem(R.string.text_periodic, R.drawable.calendar, "Periodic")
-}
-
 @OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
-fun FishTankScreen(viewModel: FishTankViewModel = viewModel()) {
+fun ControlScreen(viewModel: ControlViewModel = viewModel()) {
     Logger.d("Composing FishTankScreen")
 
     val message by viewModel.messageFlow.collectAsStateWithLifecycle()
@@ -116,5 +107,14 @@ fun FishTankScreen(viewModel: FishTankViewModel = viewModel()) {
 @Preview
 @Composable
 fun PreviewFishTankScreen() {
-    FishTankScreen()
+    ControlScreen()
+}
+
+sealed class BottomNavItem(
+    val titleRes: Int, val iconRes: Int, val screenRoute: String
+) {
+    object Control : BottomNavItem(R.string.text_control, R.drawable.control, "Control")
+    object Monitor : BottomNavItem(R.string.text_monitor, R.drawable.bar_chart, "Monitor")
+    object Camera : BottomNavItem(R.string.text_camera, R.drawable.camera, "Camera")
+    object Periodic : BottomNavItem(R.string.text_periodic, R.drawable.calendar, "Periodic")
 }

@@ -16,8 +16,8 @@ class MainActivity : AppCompatActivity() {
         val binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val hostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-        val navController = hostFragment.navController
-        binding.navView.setupWithNavController(navController)
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragmentContainer, FishTankFragment())
+            .commit()
     }
 }

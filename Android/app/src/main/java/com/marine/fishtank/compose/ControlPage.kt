@@ -1,19 +1,16 @@
-package com.marine.fishtank.view
+package com.marine.fishtank.compose
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -21,13 +18,13 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.marine.fishtank.R
 import com.marine.fishtank.model.Status
-import com.marine.fishtank.viewmodel.FishTankViewModel
+import com.marine.fishtank.viewmodel.ControlViewModel
 import com.orhanobut.logger.Logger
 
 
 @OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
-fun ControlPage(viewModel: FishTankViewModel = viewModel()) {
+fun ControlPage(viewModel: ControlViewModel = viewModel()) {
     val dataSource by viewModel.tankControlStateFlow.collectAsStateWithLifecycle()
     val tankState = dataSource.data
 

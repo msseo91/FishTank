@@ -1,4 +1,4 @@
-package com.marine.fishtank.view
+package com.marine.fishtank.compose
 
 import android.app.TimePickerDialog
 import androidx.compose.foundation.border
@@ -22,14 +22,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.marine.fishtank.R
 import com.marine.fishtank.model.PeriodicTask
 import com.marine.fishtank.model.typeAsString
-import com.marine.fishtank.viewmodel.FishTankViewModel
+import com.marine.fishtank.viewmodel.ControlViewModel
 import com.orhanobut.logger.Logger
 import java.util.*
 
 
 @OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
-fun SchedulePage(viewModel: FishTankViewModel) {
+fun SchedulePage(viewModel: ControlViewModel) {
     Logger.d("Composing SchedulePage!")
     val dataSource by viewModel.periodicTaskFlow.collectAsStateWithLifecycle()
     val periodicTasks = dataSource.data
@@ -108,7 +108,7 @@ fun SchedulePage(viewModel: FishTankViewModel) {
 }
 
 @Composable
-fun PeriodicTaskItem(viewModel: FishTankViewModel, task: PeriodicTask) {
+fun PeriodicTaskItem(viewModel: ControlViewModel, task: PeriodicTask) {
     Row(
         modifier = Modifier
             .fillMaxWidth()

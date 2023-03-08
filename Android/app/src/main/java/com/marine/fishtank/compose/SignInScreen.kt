@@ -1,11 +1,5 @@
-package com.marine.fishtank
+package com.marine.fishtank.compose
 
-import android.os.Bundle
-import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -14,90 +8,40 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import com.marine.fishtank.viewmodel.LogInViewModel
-import dagger.hilt.android.AndroidEntryPoint
+import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.marine.fishtank.viewmodel.SignInViewModel
 
-sealed class LogInEvent {
-    data class SignIn(val userId: String, val password: String) : LogInEvent()
-}
-
-private const val TAG = "LogInFragment"
-
-@AndroidEntryPoint
-class LogInFragment : Fragment() {
-    private val _viewModel: Lazy<LogInViewModel> by lazy { viewModels() }
-    private val viewModel by lazy { _viewModel.value }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        Log.d(TAG, "onCreateView")
-
-        if(viewModel.isAlreadySignIn()) {
-            Log.d(TAG, "Already sign-in")
-            navigate(Screen.LogIn, Screen.FishTank)
-        }
-
-        viewModel.signInResult.observe(viewLifecycleOwner) { signIn ->
-            if(signIn.result) {
-                navigate(Screen.LogIn, Screen.FishTank)
-            } else {
-                Toast.makeText(context, "Fail to sign-in", Toast.LENGTH_SHORT).show()
-            }
-        }
-
-        return ComposeView(requireContext()).apply {
-            setContent {
-                MaterialTheme {
-                    LogInScreen(viewModel) { event ->
-                        when (event) {
-                            is LogInEvent.SignIn -> {
-                                viewModel.signIn(event.userId, event.password)
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    override fun onResume() {
-        Log.d(TAG, "onResume")
-        super.onResume()
-
-        viewModel.fetchSavedUser()
-    }
-}
-
+@OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
-fun LogInScreen(viewModel: LogInViewModel, onEvent: (LogInEvent) -> Unit) {
+fun SignInScreen(viewModel: SignInViewModel = viewModel(), onSignInSuccess: () -> Unit) {
     var userIdText by rememberSaveable { mutableStateOf("") }
     var passwordText by rememberSaveable { mutableStateOf("") }
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
 
-    val userId by viewModel.userIdData.observeAsState()
-    val password by viewModel.userPasswordData.observeAsState()
+    val userId by viewModel.userId.collectAsStateWithLifecycle(initialValue = "")
+    val password by viewModel.password.collectAsStateWithLifecycle(initialValue = "")
+    val signInResult by viewModel.signInResultFlow.collectAsStateWithLifecycle()
 
     userIdText = userId ?: ""
     passwordText = password ?: ""
 
+    if(signInResult.result) { onSignInSuccess() }
+
     Surface(
         modifier = Modifier
-        .fillMaxSize()
+            .fillMaxSize()
     ) {
         Column(
             modifier = Modifier
@@ -108,7 +52,9 @@ fun LogInScreen(viewModel: LogInViewModel, onEvent: (LogInEvent) -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             OutlinedTextField(
-                modifier = Modifier.fillMaxWidth().padding(top = 10.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 10.dp),
                 value = userIdText,
                 maxLines = 1,
                 label = { Text(text = "id") },
@@ -136,8 +82,8 @@ fun LogInScreen(viewModel: LogInViewModel, onEvent: (LogInEvent) -> Unit) {
 
                     val description = if (passwordVisible) "Hide password" else "Show password"
 
-                    IconButton(onClick = {passwordVisible = !passwordVisible}){
-                        Icon(imageVector  = image, description)
+                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                        Icon(imageVector = image, description)
                     }
                 },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -150,10 +96,19 @@ fun LogInScreen(viewModel: LogInViewModel, onEvent: (LogInEvent) -> Unit) {
             OutlinedButton(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(20.dp),
-                onClick = { onEvent(LogInEvent.SignIn(userIdText, passwordText)) },
+                onClick = {
+                    viewModel.signIn(userIdText, passwordText)
+
+                },
             ) {
                 Text(text = "SIGN IN")
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun PreviewSignInScreen() {
+    SignInScreen(onSignInSuccess = {})
 }

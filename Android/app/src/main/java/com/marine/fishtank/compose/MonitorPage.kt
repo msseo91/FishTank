@@ -1,9 +1,7 @@
-package com.marine.fishtank.view
+package com.marine.fishtank.compose
 
-import android.graphics.Color
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Slider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -13,36 +11,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.github.mikephil.charting.charts.LineChart
-import com.github.mikephil.charting.components.AxisBase
-import com.github.mikephil.charting.components.XAxis
-import com.github.mikephil.charting.components.YAxis
-import com.github.mikephil.charting.data.Entry
-import com.github.mikephil.charting.data.LineData
-import com.github.mikephil.charting.data.LineDataSet
-import com.github.mikephil.charting.formatter.IAxisValueFormatter
-import com.github.mikephil.charting.utils.ColorTemplate
-import com.github.tehras.charts.line.renderer.xaxis.SimpleXAxisDrawer
 import com.github.tehras.charts.line.LineChart
 import com.github.tehras.charts.line.LineChartData
 import com.github.tehras.charts.line.renderer.line.SolidLineDrawer
 import com.github.tehras.charts.line.renderer.point.FilledCircularPointDrawer
-import com.github.tehras.charts.line.renderer.yaxis.SimpleYAxisDrawer
 import com.github.tehras.charts.piechart.animation.simpleChartAnimation
-import com.marine.fishtank.R
-import com.marine.fishtank.model.Temperature
-import com.marine.fishtank.viewmodel.FishTankViewModel
+import com.marine.fishtank.viewmodel.ControlViewModel
 import com.orhanobut.logger.Logger
-import java.text.DateFormat
-import java.text.SimpleDateFormat
 
 @OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
-fun MonitorPage(viewModel: FishTankViewModel = viewModel()) {
+fun MonitorPage(viewModel: ControlViewModel = viewModel()) {
     Logger.d("MonitorPage!")
 
     val dataSource by viewModel.temperatureFlow.collectAsStateWithLifecycle()

@@ -1,4 +1,4 @@
-package com.marine.fishtank.view
+package com.marine.fishtank.compose
 
 import android.graphics.Paint
 import android.graphics.PointF

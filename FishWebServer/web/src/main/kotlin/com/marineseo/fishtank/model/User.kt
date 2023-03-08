@@ -16,7 +16,7 @@ data class User(
     @Column
     var password: String = "",
 
-    @Column
+    @Transient
     var token: String = "",
 
     @OneToMany

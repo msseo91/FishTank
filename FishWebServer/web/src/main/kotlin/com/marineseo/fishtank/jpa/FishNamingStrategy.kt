@@ -4,16 +4,14 @@ import org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
 import org.hibernate.boot.model.naming.Identifier
 import org.hibernate.engine.jdbc.env.spi.JdbcEnvironment
 
-class CamelCaseNamingStrategy: CamelCaseToUnderscoresNamingStrategy() {
+class FishNamingStrategy: CamelCaseToUnderscoresNamingStrategy() {
     override fun toPhysicalTableName(name: Identifier, jdbcEnvironment: JdbcEnvironment): Identifier {
-        return Identifier(name.text.toCamelCase(), name.isQuoted)
+        return Identifier(name.text, name.isQuoted)
     }
 
     override fun toPhysicalColumnName(name: Identifier, jdbcEnvironment: JdbcEnvironment): Identifier {
-        return Identifier(name.text.toCamelCase(), name.isQuoted)
+        return Identifier(name.text, name.isQuoted)
     }
-
-
 }
 
 fun String.toCamelCase(): String {

@@ -65,5 +65,6 @@ class FishTankDevice {
             .build()
     )
 
+    val temperature = Ds18b20()
 
 }

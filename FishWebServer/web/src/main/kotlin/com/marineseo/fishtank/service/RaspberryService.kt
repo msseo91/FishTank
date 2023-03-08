@@ -50,8 +50,7 @@ class RaspberryService(
     fun isPumpOn() = fishTankDevice.pump.isLow
 
     fun getTemperatureInTank(): Float {
-        // TODO - IMPL
-        return 0f
+        return fishTankDevice.temperature.readTemperature().toFloat()
     }
 
     fun getTemperatureInDevice(): Float {

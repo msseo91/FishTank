@@ -9,7 +9,7 @@ const val TB_TEMPERATURE = "temperature"
 @Table(name = TB_TEMPERATURE)
 data class Temperature (
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int = 0,
 
     @Column

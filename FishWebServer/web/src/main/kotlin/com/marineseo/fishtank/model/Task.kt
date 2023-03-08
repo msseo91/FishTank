@@ -7,7 +7,7 @@ import javax.persistence.*
 @Table(name = Task.TB_TASK)
 data class Task(
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Int = 0,
 
     @Column(nullable = false)

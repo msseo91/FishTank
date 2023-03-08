@@ -6,7 +6,7 @@ import javax.persistence.*
 @Table(name = PeriodicTask.TABLE_NAME)
 data class PeriodicTask(
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Int = 0,
 
     @Column(nullable = false)

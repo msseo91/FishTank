@@ -105,12 +105,12 @@ fun ControlScreen(viewModel: ControlViewModel = hiltViewModel()) {
         }
     }
 
-    Logger.d("End composing FishTankScreen")
+    Logger.d("End composing ControlScreen")
 }
 
 @Preview
 @Composable
-fun PreviewFishTankScreen() {
+fun PreviewControlScreen() {
     ControlScreen()
 }
 

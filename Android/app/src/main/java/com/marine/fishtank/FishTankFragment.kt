@@ -8,21 +8,17 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.marine.fishtank.compose.ControlScreen
 import com.marine.fishtank.compose.Screens
 import com.marine.fishtank.compose.SignInScreen
-import com.marine.fishtank.viewmodel.SignInViewModel
 import com.orhanobut.logger.Logger
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class FishTankFragment : Fragment() {
-    private val signInViewModel by viewModels<SignInViewModel>()
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         Logger.d("onCreateView")
 
@@ -37,13 +33,18 @@ class FishTankFragment : Fragment() {
                         startDestination = Screens.SignIn.route
                     ) {
                         composable(Screens.SignIn.route) {
-                            SignInScreen(signInViewModel) { navController.navigate(Screens.Control.route) }
+                            SignInScreen() {
+                                if(navController.currentDestination?.route != Screens.Control.route) {
+                                    navController.navigate(Screens.Control.route)
+                                }
+                            }
                         }
 
                         composable(Screens.Control.route) {
                             ControlScreen()
                         }
                     }
+
                 }
             }
         }

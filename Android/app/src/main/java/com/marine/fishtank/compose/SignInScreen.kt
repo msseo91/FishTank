@@ -6,11 +6,8 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -18,12 +15,19 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.marine.fishtank.viewmodel.SignInViewModel
+import com.orhanobut.logger.Logger
 
 @Composable
-fun SignInScreen(viewModel: SignInViewModel = viewModel(), onSignInSuccess: () -> Unit) {
+fun SignInScreen(
+    viewModel: SignInViewModel = hiltViewModel(),
+    onSignInSuccess: () -> Unit
+) {
+    Logger.d("Composing SignInScreen")
+
     var userIdText by rememberSaveable { mutableStateOf("") }
     var passwordText by rememberSaveable { mutableStateOf("") }
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
@@ -35,7 +39,9 @@ fun SignInScreen(viewModel: SignInViewModel = viewModel(), onSignInSuccess: () -
     userIdText = userId ?: ""
     passwordText = password ?: ""
 
-    if(signInResult.result) { onSignInSuccess() }
+    if (signInResult.result) {
+        onSignInSuccess()
+    }
 
     Surface(
         modifier = Modifier
@@ -96,7 +102,6 @@ fun SignInScreen(viewModel: SignInViewModel = viewModel(), onSignInSuccess: () -
                 shape = RoundedCornerShape(20.dp),
                 onClick = {
                     viewModel.signIn(userIdText, passwordText)
-
                 },
             ) {
                 Text(text = "SIGN IN")

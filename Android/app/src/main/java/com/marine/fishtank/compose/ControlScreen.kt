@@ -41,11 +41,7 @@ fun ControlScreen(viewModel: ControlViewModel = hiltViewModel()) {
 
     // Scaffold = TAB 전체화면
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("FishTank") }
-            )
-        },
+        topBar = { TopAppBar(title = { Text("FishTank") }) },
         floatingActionButtonPosition = FabPosition.Center,
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
@@ -73,9 +69,7 @@ fun ControlScreen(viewModel: ControlViewModel = hiltViewModel()) {
                             Icon(
                                 painter = painterResource(id = navItem.iconRes),
                                 contentDescription = stringResource(id = navItem.titleRes),
-                                modifier = Modifier
-                                    .width(26.dp)
-                                    .height(26.dp)
+                                modifier = Modifier.width(26.dp).height(26.dp)
                             )
                         },
                     )

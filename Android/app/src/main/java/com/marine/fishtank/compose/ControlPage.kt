@@ -3,10 +3,10 @@ package com.marine.fishtank.compose
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Divider
-import androidx.compose.material.Slider
-import androidx.compose.material.Switch
-import androidx.compose.material.Text
+import androidx.compose.material.*
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,6 +22,7 @@ import com.marine.fishtank.viewmodel.TankState
 import com.orhanobut.logger.Logger
 
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ControlPage(
     dataSource: DataSource<TankState> = DataSource.loading(TankState()),
@@ -37,11 +38,21 @@ fun ControlPage(
     val tankState = dataSource.data
     val scrollState = rememberScrollState()
     var brightnessValue by remember { mutableStateOf(tankState.brightness) }
+    var isRefreshing by remember { mutableStateOf(false) }
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = isRefreshing,
+        onRefresh = {
+            isRefreshing = true
+            onRefresh()
+        })
 
-    SwipeRefresh(
-        state = rememberSwipeRefreshState(dataSource.status == Status.LOADING),
-        onRefresh = onRefresh
+    isRefreshing = dataSource.status == Status.LOADING
+
+    Box (
+        modifier = Modifier.pullRefresh(pullRefreshState)
     ) {
+        PullRefreshIndicator(refreshing = isRefreshing, state = pullRefreshState)
+
         Column(
             modifier = Modifier
                 .padding(10.dp)

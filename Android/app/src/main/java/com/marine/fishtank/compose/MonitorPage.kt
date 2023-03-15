@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.github.mikephil.charting.charts.LineChart
@@ -27,6 +28,8 @@ import com.marine.fishtank.model.Temperature
 import com.marine.fishtank.view.TemperatureMarker
 import com.orhanobut.logger.Logger
 import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.random.Random
 
 @Composable
 fun MonitorPage(
@@ -103,15 +106,23 @@ fun Chart(
 ) {
     Logger.d("Composing Chart!")
 
+    val minTemperature = temperatureList.minBy { it.temperature }
+    val maxTemperature = temperatureList.maxBy { it.temperature }
+
     AndroidView(
         modifier = modifier,
-
         factory = { context ->
             Logger.d("Factory LineChart")
             LineChart(context).apply {
                 val temperatureMarker = TemperatureMarker(context)
                 temperatureMarker.chartView = this
                 marker = temperatureMarker
+
+                axisRight.apply {
+                    isEnabled = true
+                    setDrawGridLines(false)
+                    setDrawLabels(false)
+                }
 
                 // no description text
                 description.isEnabled = false
@@ -134,11 +145,16 @@ fun Chart(
                 setBackgroundColor(Color.WHITE)
 
                 xAxis.apply {
-                    textSize = 11f
+                    textSize = 10f
                     textColor = Color.BLACK
                     setDrawGridLines(false)
                     setDrawAxisLine(true)
                     position = XAxis.XAxisPosition.BOTTOM
+
+                    labelRotationAngle = 45f
+                    axisMaxLabels = 5
+                    axisMaximum = temperatureList.size.toFloat() - 0.5f
+                    axisMinimum = -0.5f
 
                     valueFormatter = object : IAxisValueFormatter {
                         override fun getFormattedValue(value: Float, axisBase: AxisBase): String {
@@ -163,15 +179,11 @@ fun Chart(
 
                     //String setter in x-Axis
                     valueFormatter = IAxisValueFormatter { value, _ -> String.format("%.2f", value) }
-                    //axisMaximum = LineChartConfig.YAXIS_MAX
-                    //axisMinimum = LineChartConfig.YAXIS_MIN
+                    axisMaximum = maxTemperature.temperature + 3
+                    axisMinimum = minTemperature.temperature - 3
 
-                    spaceBottom = 20f
+                    //spaceBottom = 20f
                     spaceTop = 20f
-                }
-
-                axisRight.apply {
-                    isEnabled = false
                 }
 
                 legend.apply {
@@ -202,15 +214,10 @@ fun Chart(
         update = {
             Logger.d("Update LineChart mx=$maximumCount, size=${temperatureList.size}")
 
-            val entryList = mutableListOf<Entry>()
-            for (tmp in temperatureList.withIndex()) {
-                entryList.add(
-                    Entry(tmp.index.toFloat(), tmp.value.temperature, tmp.value)
-                )
-            }
-
             val dataSet = it.data.getDataSetByIndex(0) as LineDataSet
-            dataSet.entries = entryList
+            dataSet.entries = temperatureList.mapIndexed { index, temperature ->
+                Entry(index.toFloat(), temperature.temperature, temperature)
+            }
 
             it.data.notifyDataChanged()
             it.notifyDataSetChanged()
@@ -219,4 +226,21 @@ fun Chart(
             it.setVisibleXRange(1f, maximumCount)
             it.moveViewToX((temperatureList.size - 1).toFloat())
         })
+}
+
+@Preview
+@Composable
+fun MonitorPagePreview() {
+    MonitorPage(
+        dataSource = DataSource.success(
+            buildList {
+                repeat(10) {
+                    add(
+                        Temperature(temperature = Random.nextDouble(24.0, 26.0).toFloat(),
+                            time = Date().apply { time -= 1000 * 60 * 5 * it })
+                    )
+                }
+            }.reversed()
+        )
+    )
 }

@@ -138,9 +138,9 @@ class TankDataSource @Inject constructor(
         } ?: emit(false)
     }.flowOn(Dispatchers.IO)
 
-    fun deletePeriodicTask(periodicTask: PeriodicTask): Flow<Boolean> = flow {
+    fun deletePeriodicTask(id: Int): Flow<Boolean> = flow {
         token?.let {
-            emit(fishService.deletePeriodicTask(it, periodicTask.id))
+            emit(fishService.deletePeriodicTask(it, id))
         } ?: emit(false)
     }.flowOn(Dispatchers.IO)
 

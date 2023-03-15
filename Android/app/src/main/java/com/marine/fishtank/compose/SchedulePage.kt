@@ -19,6 +19,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.marine.fishtank.R
+import com.marine.fishtank.model.DataSource
 import com.marine.fishtank.model.PeriodicTask
 import com.marine.fishtank.model.typeAsString
 import com.marine.fishtank.viewmodel.ControlViewModel
@@ -27,9 +28,12 @@ import java.util.*
 
 
 @Composable
-fun SchedulePage(viewModel: ControlViewModel) {
+fun SchedulePage(
+    dataSource: DataSource<List<PeriodicTask>>,
+    onAddPeriodicTask: (PeriodicTask) -> Unit = {},
+    onDeletePeriodicTask: (Int) -> Unit = {}
+) {
     Logger.d("Composing SchedulePage!")
-    val dataSource by viewModel.periodicTaskFlow.collectAsStateWithLifecycle()
     val periodicTasks = dataSource.data
 
     val context = LocalContext.current
@@ -71,7 +75,7 @@ fun SchedulePage(viewModel: ControlViewModel) {
         actionTime = actionTime,
         timePickerDialog = timePickerDialog,
     ) {
-        viewModel.addPeriodicTask(
+        onAddPeriodicTask(
             PeriodicTask(
                 type = PeriodicTask.typeFromResource(selectedTypeOption.value),
                 data = selectedOption.value,
@@ -89,16 +93,11 @@ fun SchedulePage(viewModel: ControlViewModel) {
         }
     ) { padding ->
         LazyColumn(
-            Modifier
-                .padding(padding)
-                .fillMaxSize()
+            Modifier.padding(padding).fillMaxSize()
         ) {
             for (task in periodicTasks) {
                 item {
-                    PeriodicTaskItem(
-                        viewModel = viewModel,
-                        task = task
-                    )
+                    PeriodicTaskItem(task = task, deleteCallback = onDeletePeriodicTask)
                 }
             }
         }
@@ -106,7 +105,7 @@ fun SchedulePage(viewModel: ControlViewModel) {
 }
 
 @Composable
-fun PeriodicTaskItem(viewModel: ControlViewModel, task: PeriodicTask) {
+fun PeriodicTaskItem(task: PeriodicTask, deleteCallback: (Int) -> Unit = {}) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -126,7 +125,7 @@ fun PeriodicTaskItem(viewModel: ControlViewModel, task: PeriodicTask) {
             horizontalAlignment = Alignment.End
         ) {
             Button(
-                onClick = { viewModel.deletePeriodicTask(task) },
+                onClick = { deleteCallback(task.id) },
                 contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
             ) {
                 Icon(

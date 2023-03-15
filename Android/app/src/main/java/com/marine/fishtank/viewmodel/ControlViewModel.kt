@@ -32,15 +32,7 @@ class ControlViewModel @Inject constructor(
         Logger.d("init - ControlViewModel")
     }
 
-    fun refreshState() {
-        Logger.d("emit - refreshState - loading")
-        readState()
-        startFetchTemperature(1)
-        fetchPeriodicTasks()
-        Logger.d("emit - refreshState - success")
-    }
-
-    private fun readState() {
+    fun readDeviceState() {
         viewModelScope.launch {
             // emit last TankState with 'Loading' state.
             _tankControlStateFlow.emit(DataSource.loading(_tankControlStateFlow.value.data))
@@ -86,19 +78,19 @@ class ControlViewModel @Inject constructor(
     }
 
     fun enableOutWater(enable: Boolean) = viewModelScope.launch {
-        tankDataSource.enableOutWater(enable).collect { readState() }
+        tankDataSource.enableOutWater(enable).collect { readDeviceState() }
     }
 
     fun enableOutWater2(enable: Boolean) = viewModelScope.launch {
-        tankDataSource.enableOutWater2(enable).collect { readState() }
+        tankDataSource.enableOutWater2(enable).collect { readDeviceState() }
     }
 
     fun enableInWater(enable: Boolean) = viewModelScope.launch {
-        tankDataSource.enableInWater(enable).collect { readState() }
+        tankDataSource.enableInWater(enable).collect { readDeviceState() }
     }
 
     fun enableHeater(enable: Boolean) = viewModelScope.launch {
-        tankDataSource.enableHeater(enable).collect { readState() }
+        tankDataSource.enableHeater(enable).collect { readDeviceState() }
     }
 
     fun changeLightBrightness(brightness: Int) = viewModelScope.launch {
@@ -109,8 +101,8 @@ class ControlViewModel @Inject constructor(
         tankDataSource.addPeriodicTask(periodicTask).collect { fetchPeriodicTasks() }
     }
 
-    fun deletePeriodicTask(periodicTask: PeriodicTask) = viewModelScope.launch {
-        tankDataSource.deletePeriodicTask(periodicTask).collect { fetchPeriodicTasks() }
+    fun deletePeriodicTask(id: Int) = viewModelScope.launch {
+        tankDataSource.deletePeriodicTask(id).collect { fetchPeriodicTasks() }
     }
 }
 

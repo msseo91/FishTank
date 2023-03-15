@@ -30,6 +30,7 @@ fun ControlScreen(viewModel: ControlViewModel = hiltViewModel()) {
     Logger.d("Composing ControlScreen")
 
     val tankState by viewModel.tankControlStateFlow.collectAsStateWithLifecycle()
+    val periodicTaskDataSource by viewModel.periodicTaskFlow.collectAsStateWithLifecycle()
     val navController = rememberNavController()
 
     val items = listOf(
@@ -85,7 +86,7 @@ fun ControlScreen(viewModel: ControlViewModel = hiltViewModel()) {
             composable(BottomNavItem.Control.screenRoute) {
                 ControlPage(
                     dataSource = tankState,
-                    onRefresh = { viewModel.refreshState() },
+                    onRefresh = { viewModel.readDeviceState() },
                     onOutValveClick = { viewModel.enableOutWater(it) },
                     onOutValve2Click = { viewModel.enableOutWater2(it) },
                     onInValveClick = { viewModel.enableInWater(it) },
@@ -95,7 +96,13 @@ fun ControlScreen(viewModel: ControlViewModel = hiltViewModel()) {
             }
             composable(BottomNavItem.Monitor.screenRoute) { MonitorPage(viewModel) }
             composable(BottomNavItem.Camera.screenRoute) { CameraPage() }
-            composable(BottomNavItem.Periodic.screenRoute) { SchedulePage(viewModel) }
+            composable(BottomNavItem.Periodic.screenRoute) {
+                SchedulePage(
+                    dataSource = periodicTaskDataSource,
+                    onAddPeriodicTask = { viewModel.addPeriodicTask(it) },
+                    onDeletePeriodicTask = { viewModel.deletePeriodicTask(it) }
+                )
+            }
         }
     }
 

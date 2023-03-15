@@ -23,7 +23,6 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IAxisValueFormatter
 import com.github.mikephil.charting.utils.ColorTemplate
 import com.marine.fishtank.R
-import com.marine.fishtank.model.DataSource
 import com.marine.fishtank.model.Temperature
 import com.marine.fishtank.view.TemperatureMarker
 import com.orhanobut.logger.Logger
@@ -33,12 +32,10 @@ import kotlin.random.Random
 
 @Composable
 fun MonitorPage(
-    dataSource: DataSource<List<Temperature>> = DataSource.loading(emptyList()),
+    temperatureList: List<Temperature> = emptyList(),
     onRequestTemperatures: (Int) -> Unit = {},
 ) {
     Logger.d("MonitorPage!")
-
-    val temperatureList = dataSource.data
 
     val position = remember { mutableStateOf(1f) }
     val positionRange = remember { mutableStateOf(10f) }
@@ -232,15 +229,15 @@ fun Chart(
 @Composable
 fun MonitorPagePreview() {
     MonitorPage(
-        dataSource = DataSource.success(
-            buildList {
-                repeat(10) {
-                    add(
-                        Temperature(temperature = Random.nextDouble(24.0, 26.0).toFloat(),
-                            time = Date().apply { time -= 1000 * 60 * 5 * it })
-                    )
-                }
-            }.reversed()
-        )
+        temperatureList =
+        buildList {
+            repeat(10) {
+                add(
+                    Temperature(temperature = Random.nextDouble(24.0, 26.0).toFloat(),
+                        time = Date().apply { time -= 1000 * 60 * 5 * it })
+                )
+            }
+        }.reversed()
+
     )
 }

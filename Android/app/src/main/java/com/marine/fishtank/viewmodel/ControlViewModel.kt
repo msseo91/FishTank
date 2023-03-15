@@ -9,10 +9,7 @@ import com.marine.fishtank.model.PeriodicTask
 import com.marine.fishtank.model.Temperature
 import com.orhanobut.logger.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -44,7 +41,14 @@ class ControlViewModel @Inject constructor(
         }
     }
 
-    fun fetchTemperature(days: Int) {
+    fun fetchTemperature(days: Int) = tankDataSource.readDBTemperature(days)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = emptyList()
+        )
+
+    /*fun fetchTemperature(days: Int) {
         viewModelScope.launch {
             _temperatureFlow.emit(DataSource.loading(emptyList()))
             tankDataSource.readDBTemperature(days).collect {
@@ -52,7 +56,7 @@ class ControlViewModel @Inject constructor(
                 _temperatureFlow.emit(DataSource.success(it))
             }
         }
-    }
+    }*/
 
     private fun fetchPeriodicTasks() {
         viewModelScope.launch {

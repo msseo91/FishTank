@@ -57,7 +57,7 @@ class ControlViewModel @Inject constructor(
         }
     }
 
-    fun startFetchTemperature(days: Int) {
+    fun fetchTemperature(days: Int) {
         viewModelScope.launch {
             _temperatureFlow.emit(DataSource.loading(emptyList()))
             tankDataSource.readDBTemperature(days).collect {

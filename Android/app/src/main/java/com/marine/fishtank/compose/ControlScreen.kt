@@ -31,6 +31,7 @@ fun ControlScreen(viewModel: ControlViewModel = hiltViewModel()) {
 
     val tankState by viewModel.tankControlStateFlow.collectAsStateWithLifecycle()
     val periodicTaskDataSource by viewModel.periodicTaskFlow.collectAsStateWithLifecycle()
+    val temperatureDataSource by viewModel.temperatureFlow.collectAsStateWithLifecycle()
     val navController = rememberNavController()
 
     val items = listOf(
@@ -94,7 +95,12 @@ fun ControlScreen(viewModel: ControlViewModel = hiltViewModel()) {
                     onBrightnessChange = { viewModel.changeLightBrightness(it) },
                 )
             }
-            composable(BottomNavItem.Monitor.screenRoute) { MonitorPage(viewModel) }
+            composable(BottomNavItem.Monitor.screenRoute) {
+                MonitorPage(
+                    dataSource = temperatureDataSource,
+                    onRequestTemperatures = { viewModel.fetchTemperature(it) }
+                )
+            }
             composable(BottomNavItem.Camera.screenRoute) { CameraPage() }
             composable(BottomNavItem.Periodic.screenRoute) {
                 SchedulePage(

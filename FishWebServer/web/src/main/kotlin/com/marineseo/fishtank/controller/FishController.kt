@@ -1,7 +1,7 @@
 package com.marineseo.fishtank.controller
 
+import com.marineseo.fishtank.model.DeviceState
 import com.marineseo.fishtank.model.PeriodicTask
-import com.marineseo.fishtank.model.RESULT_SUCCESS
 import com.marineseo.fishtank.model.Temperature
 import com.marineseo.fishtank.service.*
 import org.slf4j.LoggerFactory
@@ -19,6 +19,11 @@ private const val KEY_PERIODIC = "periodicTask"
 private const val KEY_TYPE = "type"
 private const val KEY_DATA = "data"
 private const val KEY_TIME = "time"
+
+const val RESULT_FAIL_GENERAL = 0
+const val RESULT_SUCCESS = 100
+const val RESULT_FAIL_AUTH = 1
+const val RESULT_FAIL_DEVICE_CONNECTION = 2
 
 @RestController
 @RequestMapping("/fish")
@@ -110,6 +115,20 @@ class FishController(
     fun readOutWater2(@RequestParam(KEY_TOKEN) token: String): ResponseEntity<Boolean> {
         if (userService.getUserByToken(token) == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null)
         return ResponseEntity.ok(raspberryService.isOutWaterValve2Open())
+    }
+
+    @PostMapping("/read/allState")
+    fun readAllState(@RequestParam(KEY_TOKEN) token: String):ResponseEntity<DeviceState> {
+        userService.getUserByToken(token) ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null)
+
+        return ResponseEntity.ok(DeviceState(
+            isPumpEnabled = raspberryService.isPumpOn(),
+            isOutletValve1Enabled = raspberryService.isOutWaterValveOpen(),
+            isOutletValve2Enabled = raspberryService.isOutWaterValve2Open(),
+            isInletValveEnabled = raspberryService.isInWaterValveOpen(),
+            isHeaterEnabled = raspberryService.isHeaterOn(),
+            lightBrightness = raspberryService.readBrightness()
+        ))
     }
 
     @PostMapping("/func/replaceWater")

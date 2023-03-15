@@ -55,7 +55,7 @@ class FishTankDevice {
             .build()
     )
 
-    val light = pi4j.create(
+    val light: Pwm = pi4j.create(
         Pwm.newConfigBuilder(pi4j)
             .address(Pin.LIGHT.bsmPin)
             .pwmType(PwmType.HARDWARE)

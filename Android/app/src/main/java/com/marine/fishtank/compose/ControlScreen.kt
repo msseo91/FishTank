@@ -29,7 +29,7 @@ import com.orhanobut.logger.Logger
 fun ControlScreen(viewModel: ControlViewModel = hiltViewModel()) {
     Logger.d("Composing ControlScreen")
 
-    val tankState by viewModel.tankControlStateFlow.collectAsStateWithLifecycle()
+    val deviceStateDataSource by viewModel.tankControlStateFlow.collectAsStateWithLifecycle()
     val periodicTaskDataSource by viewModel.periodicTaskFlow.collectAsStateWithLifecycle()
     val temperatureDataSource by viewModel.temperatureFlow.collectAsStateWithLifecycle()
     val navController = rememberNavController()
@@ -86,7 +86,7 @@ fun ControlScreen(viewModel: ControlViewModel = hiltViewModel()) {
         ) {
             composable(BottomNavItem.Control.screenRoute) {
                 ControlPage(
-                    dataSource = tankState,
+                    dataSource = deviceStateDataSource,
                     onRefresh = { viewModel.readDeviceState() },
                     onOutValveClick = { viewModel.enableOutWater(it) },
                     onOutValve2Click = { viewModel.enableOutWater2(it) },

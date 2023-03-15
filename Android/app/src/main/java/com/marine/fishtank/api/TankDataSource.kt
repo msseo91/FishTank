@@ -1,5 +1,6 @@
 package com.marine.fishtank.api
 
+import com.marine.fishtank.model.DeviceState
 import com.marine.fishtank.model.PeriodicTask
 import com.marine.fishtank.model.Temperature
 import kotlinx.coroutines.Dispatchers
@@ -120,6 +121,12 @@ class TankDataSource @Inject constructor(
         token?.let {
             emit(fishService.readLightBrightness(it))
         } ?: emit(0f)
+    }.flowOn(Dispatchers.IO)
+
+    fun readAllState(): Flow<DeviceState> = flow {
+        token?.let {
+            emit(fishService.readAllState(it))
+        } ?: emit(DeviceState())
     }.flowOn(Dispatchers.IO)
 
     fun fetchPeriodicTasks(): Flow<List<PeriodicTask>> = flow {

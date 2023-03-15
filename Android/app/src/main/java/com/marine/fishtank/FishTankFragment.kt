@@ -33,7 +33,7 @@ class FishTankFragment : Fragment() {
                         startDestination = Screens.SignIn.route
                     ) {
                         composable(Screens.SignIn.route) {
-                            SignInScreen() {
+                            SignInScreen {
                                 if(navController.currentDestination?.route != Screens.Control.route) {
                                     navController.navigate(Screens.Control.route)
                                 }

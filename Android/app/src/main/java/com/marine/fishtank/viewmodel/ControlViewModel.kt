@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.marine.fishtank.api.TankDataSource
 import com.marine.fishtank.model.DataSource
+import com.marine.fishtank.model.DeviceState
 import com.marine.fishtank.model.PeriodicTask
 import com.marine.fishtank.model.Temperature
 import com.orhanobut.logger.Logger
@@ -19,8 +20,8 @@ import javax.inject.Inject
 class ControlViewModel @Inject constructor(
     private val tankDataSource: TankDataSource
 ) : ViewModel() {
-    private val _tankControlStateFlow = MutableStateFlow<DataSource<TankState>>(DataSource.loading(TankState()))
-    val tankControlStateFlow: StateFlow<DataSource<TankState>> = _tankControlStateFlow
+    private val _tankControlStateFlow = MutableStateFlow(DataSource.loading(DeviceState()))
+    val tankControlStateFlow: StateFlow<DataSource<DeviceState>> = _tankControlStateFlow
 
     private val _temperatureFlow = MutableStateFlow<DataSource<List<Temperature>>>(DataSource.loading(emptyList()))
     val temperatureFlow : StateFlow<DataSource<List<Temperature>>> = _temperatureFlow
@@ -36,22 +37,8 @@ class ControlViewModel @Inject constructor(
         viewModelScope.launch {
             // emit last TankState with 'Loading' state.
             _tankControlStateFlow.emit(DataSource.loading(_tankControlStateFlow.value.data))
-            combine(
-                tankDataSource.readInWaterState(),
-                tankDataSource.readOutWaterState(),
-                tankDataSource.readLightBrightness(),
-                tankDataSource.readHeaterState(),
-                tankDataSource.readOutWaterState2()
-            ) { inWaterState, outWaterState, brightness, heaterState, outWaterState2 ->
-                TankState(
-                    inWaterValveState = inWaterState,
-                    outWaterValveState = outWaterState,
-                    outWaterValve2State = outWaterState2,
-                    brightness = brightness.toInt(),
-                    heaterState = heaterState
-                )
-            }.collect {
-                Logger.d("emit - tankState $it")
+            tankDataSource.readAllState().collect {
+                Logger.d("emit - readDeviceState")
                 _tankControlStateFlow.emit(DataSource.success(it))
             }
         }
@@ -93,8 +80,8 @@ class ControlViewModel @Inject constructor(
         tankDataSource.enableHeater(enable).collect { readDeviceState() }
     }
 
-    fun changeLightBrightness(brightness: Int) = viewModelScope.launch {
-        tankDataSource.changeLightBrightness(brightness * 0.01f).collect()
+    fun changeLightBrightness(brightness: Float) = viewModelScope.launch {
+        tankDataSource.changeLightBrightness(brightness).collect()
     }
 
     fun addPeriodicTask(periodicTask: PeriodicTask) = viewModelScope.launch {
@@ -106,10 +93,3 @@ class ControlViewModel @Inject constructor(
     }
 }
 
-data class TankState(
-    val outWaterValveState: Boolean = false,
-    val outWaterValve2State: Boolean = false,
-    val inWaterValveState: Boolean = false,
-    val heaterState: Boolean = false,
-    val brightness: Int = 0,
-)

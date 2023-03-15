@@ -13,31 +13,29 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.marine.fishtank.R
 import com.marine.fishtank.model.DataSource
+import com.marine.fishtank.model.DeviceState
 import com.marine.fishtank.model.Status
-import com.marine.fishtank.viewmodel.TankState
 import com.orhanobut.logger.Logger
 
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ControlPage(
-    dataSource: DataSource<TankState> = DataSource.loading(TankState()),
+    dataSource: DataSource<DeviceState> = DataSource.loading(DeviceState()),
     onRefresh: () -> Unit = {},
     onOutValveClick: (Boolean) -> Unit = {},
     onOutValve2Click: (Boolean) -> Unit = {},
     onInValveClick: (Boolean) -> Unit = {},
     onHeaterClick: (Boolean) -> Unit = {},
-    onBrightnessChange: (Int) -> Unit = {}
+    onBrightnessChange: (Float) -> Unit = {}
 ) {
     Logger.d("Composing ControlTab!")
 
-    val tankState = dataSource.data
+    val deviceState = dataSource.data
     val scrollState = rememberScrollState()
-    var brightnessValue by remember { mutableStateOf(tankState.brightness) }
+    var brightnessValue by remember { mutableStateOf(deviceState.lightBrightness) }
     var isRefreshing by remember { mutableStateOf(false) }
     val pullRefreshState = rememberPullRefreshState(
         refreshing = isRefreshing,
@@ -62,25 +60,25 @@ fun ControlPage(
             Divider(modifier = Modifier.padding(vertical = 5.dp))
 
             SwitchRow(
-                state = tankState.outWaterValveState,
+                state = deviceState.isOutletValve1Enabled,
                 text = stringResource(id = R.string.out_valve),
                 onClick = onOutValveClick
             )
 
             SwitchRow(
-                state = tankState.outWaterValve2State,
+                state = deviceState.isOutletValve2Enabled,
                 text = stringResource(id = R.string.out_valve2),
                 onClick = onOutValve2Click
             )
 
             SwitchRow(
-                state = tankState.inWaterValveState,
+                state = deviceState.isInletValveEnabled,
                 text = stringResource(id = R.string.in_valve),
                 onClick = onInValveClick
             )
 
             SwitchRow(
-                state = tankState.heaterState,
+                state = deviceState.isHeaterEnabled,
                 text = stringResource(id = R.string.heater),
                 onClick = onHeaterClick
             )
@@ -97,13 +95,14 @@ fun ControlPage(
                     .fillMaxWidth()
                     .padding(start = 20.dp, end = 20.dp)
             ) {
-                Text(text = "${stringResource(id = R.string.light_brightness)} (${brightnessValue}%)")
+                Text(text = "${stringResource(id = R.string.light_brightness)} (${brightnessValue * 100}%)")
                 Slider(
-                    value = brightnessValue.toFloat(),
-                    valueRange = 0f..100f,
+                    value = brightnessValue,
+                    steps = 100,
+                    valueRange = 0f..1f,
                     onValueChange = { value: Float ->
                         Logger.d("Brightness onValueChange $value")
-                        brightnessValue = value.toInt()
+                        brightnessValue = value
                     },
                     onValueChangeFinished = { onBrightnessChange(brightnessValue) }
                 )

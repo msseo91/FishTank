@@ -1,5 +1,6 @@
 package com.marine.fishtank.api
 
+import com.marine.fishtank.model.DeviceState
 import com.marine.fishtank.model.PeriodicTask
 import com.marine.fishtank.model.Temperature
 import retrofit2.http.Field
@@ -84,6 +85,10 @@ interface FishService {
     @POST("/fish/brightness/read")
     @FormUrlEncoded
     suspend fun readLightBrightness(@Field(KEY_TOKEN) token: String): Float
+
+    @POST("/fish/read/allState")
+    @FormUrlEncoded
+    suspend fun readAllState(@Field(KEY_TOKEN) token: String): DeviceState
 
     @POST("/fish/periodic/add")
     @FormUrlEncoded

@@ -6,7 +6,7 @@ plugins {
     id("com.google.dagger.hilt.android")
 }
 
-val composeVersion = "1.3.1"
+val composeVersion = "1.4.0-beta01"
 val accompanistVersion = "0.28.0"
 val coroutineVersion = "1.6.4"
 val navigationVersion = "2.5.3"
@@ -27,26 +27,6 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String", "SERVER_URL", "\"http://marineseo.iptime.org:15483\"")
-    }
-
-    signingConfigs {
-        create("fishman") {
-            storeFile = file("../key/fishman-key.jks")
-            storePassword = "fishman"
-            keyAlias = "fishman"
-            keyPassword = "fishman"
-        }
-    }
-
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            signingConfig = signingConfigs.getByName("fishman")
-        }
-
-        debug {
-            signingConfig = signingConfigs.getByName("fishman")
-        }
     }
 
     compileOptions {

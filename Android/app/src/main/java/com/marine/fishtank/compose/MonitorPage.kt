@@ -103,8 +103,8 @@ fun Chart(
 ) {
     Logger.d("Composing Chart!")
 
-    val minTemperature = temperatureList.minBy { it.temperature }
-    val maxTemperature = temperatureList.maxBy { it.temperature }
+    val minTemperature = temperatureList.minByOrNull { it.temperature } ?: Temperature(0, 0f, Date())
+    val maxTemperature = temperatureList.maxByOrNull { it.temperature } ?: Temperature(0, 0f, Date())
 
     AndroidView(
         modifier = modifier,

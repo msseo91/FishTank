@@ -100,11 +100,11 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifeCycle")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lifeCycle")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$lifeCycle")
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.0-rc01")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.0")
 
     // ETC
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.5.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.0")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.0")
     implementation("androidx.datastore:datastore-preferences:1.0.0")
     implementation("com.google.code.gson:gson:2.10")
     implementation("com.orhanobut:logger:2.2.0")
@@ -133,6 +133,7 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:$retrofit2Version")
     implementation("com.squareup.retrofit2:converter-gson:$retrofit2Version")
     implementation("com.squareup.retrofit2:converter-scalars:$retrofit2Version")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.9.3")
 
     // Test
     testImplementation("junit:junit:4.13.2")

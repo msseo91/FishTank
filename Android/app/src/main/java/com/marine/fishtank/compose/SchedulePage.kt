@@ -29,13 +29,11 @@ import java.util.*
 
 @Composable
 fun SchedulePage(
-    dataSource: DataSource<List<PeriodicTask>>,
+    periodicTasks: List<PeriodicTask>,
     onAddPeriodicTask: (PeriodicTask) -> Unit = {},
     onDeletePeriodicTask: (Int) -> Unit = {}
 ) {
     Logger.d("Composing SchedulePage!")
-    val periodicTasks = dataSource.data
-
     val context = LocalContext.current
     val openDialog = remember { mutableStateOf(false) }
 

@@ -27,6 +27,7 @@ import androidx.navigation.compose.rememberNavController
 import com.marine.fishtank.R
 import com.marine.fishtank.viewmodel.ControlViewModel
 import com.orhanobut.logger.Logger
+import kotlinx.coroutines.flow.retry
 
 @Composable
 fun ControlScreen(viewModel: ControlViewModel = hiltViewModel()) {
@@ -35,10 +36,13 @@ fun ControlScreen(viewModel: ControlViewModel = hiltViewModel()) {
     var temperatureShowDays by rememberSaveable { mutableStateOf(1) }
 
     val deviceStateDataSource by viewModel.tankControlStateFlow.collectAsStateWithLifecycle()
-    val periodicTaskDataSource by viewModel.periodicTaskFlow.collectAsStateWithLifecycle()
+    val periodicTaskList by viewModel.periodicTasks.collectAsStateWithLifecycle()
     val temperatures by viewModel.fetchTemperature(temperatureShowDays).collectAsStateWithLifecycle()
 
     val navController = rememberNavController()
+
+    viewModel.readPeriodicTasks()
+    viewModel.readDeviceState()
 
     val items = listOf(
         BottomNavItem.Control,
@@ -75,7 +79,9 @@ fun ControlScreen(viewModel: ControlViewModel = hiltViewModel()) {
                         },
                         icon = {
                             Icon(
-                                modifier = Modifier.width(26.dp).height(26.dp),
+                                modifier = Modifier
+                                    .width(26.dp)
+                                    .height(26.dp),
                                 painter = painterResource(id = navItem.iconRes),
                                 contentDescription = stringResource(id = navItem.titleRes),
                             )
@@ -110,7 +116,7 @@ fun ControlScreen(viewModel: ControlViewModel = hiltViewModel()) {
             composable(BottomNavItem.Camera.screenRoute) { CameraPage() }
             composable(BottomNavItem.Periodic.screenRoute) {
                 SchedulePage(
-                    dataSource = periodicTaskDataSource,
+                    periodicTasks = periodicTaskList,
                     onAddPeriodicTask = { viewModel.addPeriodicTask(it) },
                     onDeletePeriodicTask = { viewModel.deletePeriodicTask(it) }
                 )

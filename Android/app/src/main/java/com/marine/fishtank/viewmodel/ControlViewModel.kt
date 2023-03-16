@@ -1,12 +1,15 @@
 package com.marine.fishtank.viewmodel
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.marine.fishtank.api.TankDataSource
 import com.marine.fishtank.model.DataSource
 import com.marine.fishtank.model.DeviceState
 import com.marine.fishtank.model.PeriodicTask
-import com.marine.fishtank.model.Temperature
 import com.orhanobut.logger.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -20,14 +23,15 @@ class ControlViewModel @Inject constructor(
     private val _tankControlStateFlow = MutableStateFlow(DataSource.loading(DeviceState()))
     val tankControlStateFlow: StateFlow<DataSource<DeviceState>> = _tankControlStateFlow
 
-    private val _temperatureFlow = MutableStateFlow<DataSource<List<Temperature>>>(DataSource.loading(emptyList()))
-    val temperatureFlow : StateFlow<DataSource<List<Temperature>>> = _temperatureFlow
+    private val _periodicTasks = MutableStateFlow(emptyList<PeriodicTask>())
+    val periodicTasks: StateFlow<List<PeriodicTask>> = _periodicTasks
 
-    private val _periodicTaskFlow = MutableStateFlow<DataSource<List<PeriodicTask>>>(DataSource.loading(emptyList()))
-    val periodicTaskFlow : StateFlow<DataSource<List<PeriodicTask>>> = _periodicTaskFlow
-
-    init {
-        Logger.d("init - ControlViewModel")
+    fun readPeriodicTasks() {
+        viewModelScope.launch {
+            tankDataSource.fetchPeriodicTasks().collect {
+                _periodicTasks.emit(it)
+            }
+        }
     }
 
     fun readDeviceState() {
@@ -47,26 +51,6 @@ class ControlViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(),
             initialValue = emptyList()
         )
-
-    /*fun fetchTemperature(days: Int) {
-        viewModelScope.launch {
-            _temperatureFlow.emit(DataSource.loading(emptyList()))
-            tankDataSource.readDBTemperature(days).collect {
-                Logger.d("emit - startFetchTemperature")
-                _temperatureFlow.emit(DataSource.success(it))
-            }
-        }
-    }*/
-
-    private fun fetchPeriodicTasks() {
-        viewModelScope.launch {
-            _periodicTaskFlow.emit(DataSource.loading(emptyList()))
-            tankDataSource.fetchPeriodicTasks().collect {
-                Logger.d("emit - fetchPeriodicTasks")
-                _periodicTaskFlow.emit(DataSource.success(it))
-            }
-        }
-    }
 
     fun enableOutWater(enable: Boolean) = viewModelScope.launch {
         tankDataSource.enableOutWater(enable).collect { readDeviceState() }
@@ -89,11 +73,11 @@ class ControlViewModel @Inject constructor(
     }
 
     fun addPeriodicTask(periodicTask: PeriodicTask) = viewModelScope.launch {
-        tankDataSource.addPeriodicTask(periodicTask).collect { fetchPeriodicTasks() }
+        tankDataSource.addPeriodicTask(periodicTask).collect { readPeriodicTasks() }
     }
 
     fun deletePeriodicTask(id: Int) = viewModelScope.launch {
-        tankDataSource.deletePeriodicTask(id).collect { fetchPeriodicTasks() }
+        tankDataSource.deletePeriodicTask(id).collect { readPeriodicTasks() }
     }
 }
 

@@ -18,6 +18,7 @@ import com.marine.fishtank.model.DataSource
 import com.marine.fishtank.model.DeviceState
 import com.marine.fishtank.model.Status
 import com.orhanobut.logger.Logger
+import kotlin.math.roundToInt
 
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -49,7 +50,11 @@ fun ControlPage(
     Box (
         modifier = Modifier.pullRefresh(pullRefreshState)
     ) {
-        PullRefreshIndicator(refreshing = isRefreshing, state = pullRefreshState)
+        PullRefreshIndicator(
+            modifier = Modifier.align(Alignment.TopCenter),
+            refreshing = isRefreshing,
+            state = pullRefreshState
+        )
 
         Column(
             modifier = Modifier
@@ -95,7 +100,7 @@ fun ControlPage(
                     .fillMaxWidth()
                     .padding(start = 20.dp, end = 20.dp)
             ) {
-                Text(text = "${stringResource(id = R.string.light_brightness)} (${brightnessValue * 100}%)")
+                Text(text = "${stringResource(id = R.string.light_brightness)} (${(brightnessValue * 100).roundToInt()}%)")
                 Slider(
                     value = brightnessValue,
                     steps = 100,

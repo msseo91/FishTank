@@ -29,7 +29,7 @@ class RaspberryService(
 
     fun isOutWaterValve2Open() = fishTankDevice.outletValve2.isLow
 
-    fun readBrightness(): Float = fishTankDevice.light.dutyCycle()
+    fun readBrightness(): Float = fishTankDevice.light.dutyCycle() / 100f
 
     fun adjustBrightness(value: Float) {
         fishTankDevice.light.on(value * 100)

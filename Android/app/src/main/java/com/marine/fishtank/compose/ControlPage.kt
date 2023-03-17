@@ -1,5 +1,6 @@
 package com.marine.fishtank.compose
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -10,6 +11,7 @@ import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -61,7 +63,8 @@ fun ControlPage(
             tankResult.data
         }
         is TankResult.Error -> {
-            Logger.d("Error")
+            Logger.e("Error: ${tankResult.message}")
+            Toast.makeText(LocalContext.current, tankResult.message, Toast.LENGTH_SHORT).show()
             isRefreshing = false
             DeviceState()
         }

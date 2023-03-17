@@ -1,6 +1,9 @@
 package com.marine.fishtank.api
 
 import com.marine.fishtank.BuildConfig
+import com.skydoves.sandwich.adapters.ApiResponseCallAdapterFactory
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -13,6 +16,7 @@ object RetrofitBuilder {
             .baseUrl(BuildConfig.SERVER_URL)
             .addConverterFactory(ScalarsConverterFactory.create())
             .addConverterFactory(GsonConverterFactory.create())
+            .addCallAdapterFactory(ApiResponseCallAdapterFactory.create(CoroutineScope(Dispatchers.IO)))
             .also {
                 if(BuildConfig.DEBUG) {
                     it.client(

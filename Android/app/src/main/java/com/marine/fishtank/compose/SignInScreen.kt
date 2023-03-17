@@ -17,7 +17,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.marine.fishtank.api.TankResult
+import com.marine.fishtank.viewmodel.SignInResult
 import com.marine.fishtank.viewmodel.SignInViewModel
 import com.orhanobut.logger.Logger
 
@@ -28,30 +29,43 @@ fun SignInScreen(
 ) {
     Logger.d("Composing SignInScreen")
 
+    val scaffoldState = rememberScaffoldState()
     var userIdText by rememberSaveable { mutableStateOf("") }
     var passwordText by rememberSaveable { mutableStateOf("") }
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
 
     val userId by viewModel.userId.collectAsStateWithLifecycle(initialValue = "")
     val password by viewModel.password.collectAsStateWithLifecycle(initialValue = "")
-    val signInResult by viewModel.signInResultFlow.collectAsStateWithLifecycle()
+    val signInResult by viewModel.signInResultFlow.collectAsStateWithLifecycle(initialValue = SignInResult.Notyet())
 
-    userIdText = userId ?: ""
-    passwordText = password ?: ""
+    userIdText = userId
+    passwordText = password
 
-    if (signInResult.result) {
-        onSignInSuccess()
-    }
-
-    Surface(
+    Scaffold(
         modifier = Modifier
             .fillMaxSize()
-    ) {
+            .padding(15.dp),
+        scaffoldState = scaffoldState
+    ) { paddingValue ->
+        when(signInResult) {
+            is SignInResult.Loading -> {
+                Box(Modifier.fillMaxSize()) {
+                    CircularProgressIndicator(Modifier.align(Alignment.Center).size(50.dp))
+                }
+            }
+            is SignInResult.Error -> {
+                LaunchedEffect(signInResult) {
+                    scaffoldState.snackbarHostState.showSnackbar(message = (signInResult as SignInResult.Error).message)
+                }
+            }
+            is SignInResult.Success -> onSignInSuccess()
+            is SignInResult.Notyet -> {/* Nothing */}
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                //.background(colorResource(id = R.color.loyal_blue))
-                .padding(15.dp),
+                .padding(paddingValue),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {

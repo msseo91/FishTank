@@ -113,7 +113,8 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:$retrofit2Version")
     implementation("com.squareup.retrofit2:converter-gson:$retrofit2Version")
     implementation("com.squareup.retrofit2:converter-scalars:$retrofit2Version")
-    implementation("com.squareup.okhttp3:logging-interceptor:4.9.3")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.10.0")
+    implementation("com.github.skydoves:sandwich:1.3.4")
 
     // Test
     testImplementation("junit:junit:4.13.2")

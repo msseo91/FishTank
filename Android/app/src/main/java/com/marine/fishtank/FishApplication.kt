@@ -2,6 +2,7 @@ package com.marine.fishtank
 
 import android.app.Application
 import android.content.Intent
+import com.marine.fishtank.logger.PlainLogger
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger
 import com.orhanobut.logger.PrettyFormatStrategy
@@ -15,10 +16,7 @@ class FishApplication : Application() {
         // Set Logger setting.
         Logger.addLogAdapter(
             AndroidLogAdapter(
-                PrettyFormatStrategy.newBuilder()
-                    .methodCount(0) // (Optional) How many method line to show. Default 2
-                    .tag("FishTank") // (Optional) Global tag for every log. Default PRETTY_LOGGER
-                    .build()
+                PlainLogger()
             )
         )
 

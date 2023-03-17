@@ -23,6 +23,7 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IAxisValueFormatter
 import com.github.mikephil.charting.utils.ColorTemplate
 import com.marine.fishtank.R
+import com.marine.fishtank.api.TankResult
 import com.marine.fishtank.model.Temperature
 import com.marine.fishtank.view.TemperatureMarker
 import com.orhanobut.logger.Logger
@@ -32,7 +33,7 @@ import kotlin.random.Random
 
 @Composable
 fun MonitorPage(
-    temperatureList: List<Temperature> = emptyList(),
+    temperatureResult: TankResult<List<Temperature>> = TankResult.Loading(),
     onRequestTemperatures: (Int) -> Unit = {},
 ) {
     Logger.d("MonitorPage!")
@@ -40,6 +41,21 @@ fun MonitorPage(
     val position = remember { mutableStateOf(1f) }
     val positionRange = remember { mutableStateOf(10f) }
     val scrollState = rememberScrollState()
+
+    val temperatureList = when (temperatureResult) {
+        is TankResult.Loading -> {
+            Logger.d("Loading")
+            listOf()
+        }
+        is TankResult.Success -> {
+            Logger.d("Success")
+            temperatureResult.data
+        }
+        is TankResult.Error -> {
+            Logger.d("Error")
+            listOf()
+        }
+    }
 
     Column {
         Chart(
@@ -229,15 +245,15 @@ fun Chart(
 @Composable
 fun MonitorPagePreview() {
     MonitorPage(
-        temperatureList =
-        buildList {
-            repeat(10) {
-                add(
-                    Temperature(temperature = Random.nextDouble(24.0, 26.0).toFloat(),
-                        time = Date().apply { time -= 1000 * 60 * 5 * it })
-                )
-            }
-        }.reversed()
-
+        temperatureResult = TankResult.Success(
+            buildList {
+                repeat(10) {
+                    add(
+                        Temperature(temperature = Random.nextDouble(24.0, 26.0).toFloat(),
+                            time = Date().apply { time -= 1000 * 60 * 5 * it })
+                    )
+                }
+            }.reversed()
+        )
     )
 }

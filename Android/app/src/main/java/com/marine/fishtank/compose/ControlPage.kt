@@ -14,7 +14,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.marine.fishtank.R
-import com.marine.fishtank.model.DataSource
+import com.marine.fishtank.api.TankResult
 import com.marine.fishtank.model.DeviceState
 import com.marine.fishtank.model.Status
 import com.orhanobut.logger.Logger
@@ -24,7 +24,7 @@ import kotlin.math.roundToInt
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ControlPage(
-    dataSource: DataSource<DeviceState> = DataSource.loading(DeviceState()),
+    tankResult: TankResult<DeviceState> = TankResult.Loading(),
     onRefresh: () -> Unit = {},
     onOutValveClick: (Boolean) -> Unit = {},
     onOutValve2Click: (Boolean) -> Unit = {},
@@ -34,9 +34,8 @@ fun ControlPage(
 ) {
     Logger.d("Composing ControlTab!")
 
-    val deviceState = dataSource.data
     val scrollState = rememberScrollState()
-    var brightnessValue by remember { mutableStateOf(deviceState.lightBrightness) }
+    var brightnessValue by remember { mutableStateOf(0f) }
     var isRefreshing by remember { mutableStateOf(false) }
     val pullRefreshState = rememberPullRefreshState(
         refreshing = isRefreshing,
@@ -45,7 +44,25 @@ fun ControlPage(
             onRefresh()
         })
 
-    isRefreshing = dataSource.status == Status.LOADING
+    val deviceState = when(tankResult) {
+        is TankResult.Loading -> {
+            Logger.d("Loading")
+            isRefreshing = true
+            DeviceState()
+        }
+        is TankResult.Success -> {
+            Logger.d("Success")
+            isRefreshing = false
+
+            tankResult.data.apply { brightnessValue = lightBrightness }
+        }
+        is TankResult.Error -> {
+            Logger.d("Error")
+            isRefreshing = false
+            DeviceState()
+        }
+    }
+
 
     Box (
         modifier = Modifier.pullRefresh(pullRefreshState)

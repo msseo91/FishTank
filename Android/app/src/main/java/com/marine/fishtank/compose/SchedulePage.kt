@@ -9,7 +9,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.rounded.DeleteOutline
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -17,23 +16,36 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.marine.fishtank.R
-import com.marine.fishtank.model.DataSource
+import com.marine.fishtank.api.TankResult
 import com.marine.fishtank.model.PeriodicTask
 import com.marine.fishtank.model.typeAsString
-import com.marine.fishtank.viewmodel.ControlViewModel
 import com.orhanobut.logger.Logger
 import java.util.*
 
 
 @Composable
 fun SchedulePage(
-    periodicTasks: List<PeriodicTask>,
+    periodicTaskResult: TankResult<List<PeriodicTask>>,
     onAddPeriodicTask: (PeriodicTask) -> Unit = {},
     onDeletePeriodicTask: (Int) -> Unit = {}
 ) {
     Logger.d("Composing SchedulePage!")
+    val periodicTasks = when (periodicTaskResult) {
+        is TankResult.Loading -> {
+            Logger.d("Loading")
+            listOf()
+        }
+        is TankResult.Success -> {
+            Logger.d("Success")
+            periodicTaskResult.data
+        }
+        is TankResult.Error -> {
+            Logger.d("Error")
+            listOf()
+        }
+    }
+
     val context = LocalContext.current
     val openDialog = remember { mutableStateOf(false) }
 

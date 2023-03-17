@@ -5,11 +5,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -27,7 +24,6 @@ import androidx.navigation.compose.rememberNavController
 import com.marine.fishtank.R
 import com.marine.fishtank.viewmodel.ControlViewModel
 import com.orhanobut.logger.Logger
-import kotlinx.coroutines.flow.retry
 
 @Composable
 fun ControlScreen(viewModel: ControlViewModel = hiltViewModel()) {
@@ -35,9 +31,9 @@ fun ControlScreen(viewModel: ControlViewModel = hiltViewModel()) {
 
     var temperatureShowDays by rememberSaveable { mutableStateOf(1) }
 
-    val deviceStateDataSource by viewModel.tankControlStateFlow.collectAsStateWithLifecycle()
-    val periodicTaskList by viewModel.periodicTasks.collectAsStateWithLifecycle()
-    val temperatures by viewModel.fetchTemperature(temperatureShowDays).collectAsStateWithLifecycle()
+    val deviceStateResult by viewModel.tankControlStateFlow.collectAsStateWithLifecycle()
+    val periodicTaskResult by viewModel.periodicTaskFlow.collectAsStateWithLifecycle()
+    val temperatureResult by viewModel.fetchTemperature(temperatureShowDays).collectAsStateWithLifecycle()
 
     val navController = rememberNavController()
 
@@ -98,7 +94,7 @@ fun ControlScreen(viewModel: ControlViewModel = hiltViewModel()) {
         ) {
             composable(BottomNavItem.Control.screenRoute) {
                 ControlPage(
-                    dataSource = deviceStateDataSource,
+                    tankResult = deviceStateResult,
                     onRefresh = { viewModel.readDeviceState() },
                     onOutValveClick = { viewModel.enableOutWater(it) },
                     onOutValve2Click = { viewModel.enableOutWater2(it) },
@@ -109,14 +105,14 @@ fun ControlScreen(viewModel: ControlViewModel = hiltViewModel()) {
             }
             composable(BottomNavItem.Monitor.screenRoute) {
                 MonitorPage(
-                    temperatureList = temperatures,
+                    temperatureResult = temperatureResult,
                     onRequestTemperatures = { temperatureShowDays = it }
                 )
             }
             composable(BottomNavItem.Camera.screenRoute) { CameraPage() }
             composable(BottomNavItem.Periodic.screenRoute) {
                 SchedulePage(
-                    periodicTasks = periodicTaskList,
+                    periodicTaskResult = periodicTaskResult,
                     onAddPeriodicTask = { viewModel.addPeriodicTask(it) },
                     onDeletePeriodicTask = { viewModel.deletePeriodicTask(it) }
                 )

@@ -23,5 +23,5 @@ fun <T> ApiResponse<T>.asTankResult(): Flow<TankResult<T>> {
     return when(this) {
         is ApiResponse.Success -> flowOf(TankResult.Success(data))
         is ApiResponse.Failure -> flowOf(TankResult.Error(message = message()))
-    }.onStart { emit(TankResult.Loading()) }
+    }
 }

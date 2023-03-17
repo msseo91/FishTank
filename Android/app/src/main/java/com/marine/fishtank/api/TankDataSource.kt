@@ -4,10 +4,7 @@ import com.marine.fishtank.model.DeviceState
 import com.marine.fishtank.model.PeriodicTask
 import com.marine.fishtank.model.Temperature
 import com.skydoves.sandwich.*
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -32,127 +29,37 @@ class TankDataSource @Inject constructor(
             .asTankResult()
             .onEach { if(it is TankResult.Success) token = it.data }
 
-    fun enableBoardLed(enable: Boolean): Flow<Int> = flow {
-        token?.let {
-            emit(fishService.enableBoardLed(it, enable))
-        } ?: emit(RESULT_FAIL_AUTH)
+    fun readDBTemperature(days: Int) = flow { emitAll(fishService.readDBTemperature(token, days).asTankResult()) }
+
+    fun enableOutWater(enable: Boolean) = flow { emitAll(fishService.enableOutWater(token, enable).asTankResult()) }
+
+    fun enableOutWater2(enable: Boolean) = flow { emitAll(fishService.enableOutWater2(token, enable).asTankResult()) }
+    fun enableInWater(enable: Boolean) = flow { emitAll(fishService.enableInWater(token, enable).asTankResult()) }
+
+    fun enableHeater(enable: Boolean) = flow {  emitAll(fishService.enableHeater(token, enable).asTankResult()) }
+
+    fun readHeaterState() = flow { emitAll(fishService.readHeaterState(token).asTankResult()) }
+
+    fun readInWaterState() = flow {  emitAll(fishService.readInWaterState(token).asTankResult()) }
+
+    fun readOutWaterState() = flow { emitAll(fishService.readOutWaterState(token).asTankResult()) }
+
+    fun readOutWaterState2() = flow { emitAll(fishService.readOutWaterState2(token).asTankResult()) }
+
+    fun changeLightBrightness(percentage: Float) = flow { emitAll(fishService.changeBrightness(token, percentage).asTankResult()) }
+
+    fun readLightBrightness() = flow { emitAll(fishService.readLightBrightness(token).asTankResult()) }
+
+    fun readAllState() = flow { emitAll(fishService.readAllState(token).asTankResult()) }
+
+    fun fetchPeriodicTasks() = flow { emitAll(fishService.fetchPeriodicTasks(token).asTankResult()) }
+
+    fun addPeriodicTask(periodicTask: PeriodicTask) = flow {
+        emitAll(
+            fishService.addPeriodicTask(token, periodicTask.type, periodicTask.data, periodicTask.time).asTankResult()
+        )
     }
 
-    fun readDBTemperature(days: Int): Flow<List<Temperature>> = flow {
-        token?.let {
-            emit(fishService.readDBTemperature(it, days))
-        } ?: emit(emptyList())
-    }
+    fun deletePeriodicTask(id: Int) = flow {emitAll(fishService.deletePeriodicTask(token, id).asTankResult()) }
 
-    fun enableOutWater(enable: Boolean): Flow<Int> = flow {
-        token?.let {
-            emit(fishService.enableOutWater(it, enable))
-        } ?: emit(RESULT_FAIL_HTTP)
-    }
-
-    fun enableOutWater2(enable: Boolean): Flow<Int> = flow {
-        token?.let {
-            emit(fishService.enableOutWater2(it, enable))
-        } ?: emit(RESULT_FAIL_HTTP)
-    }
-
-    fun enableInWater(enable: Boolean): Flow<Int> = flow {
-        token?.let {
-            emit(fishService.enableInWater(it, enable))
-        } ?: emit(RESULT_FAIL_HTTP)
-    }
-
-    fun enableLight(enable: Boolean): Flow<Int> = flow {
-        token?.let {
-            emit(fishService.enableLight(it, enable))
-        } ?: emit(RESULT_FAIL_HTTP)
-    }
-
-    fun enablePurifier(enable: Boolean): Flow<Int> = flow {
-        token?.let {
-            emit(fishService.enablePurifier(it, enable))
-        } ?: emit(RESULT_FAIL_HTTP)
-    }
-
-    fun enableHeater(enable: Boolean): Flow<Int> = flow {
-        token?.let {
-            emit(fishService.enableHeater(it, enable))
-        } ?: emit(RESULT_FAIL_HTTP)
-    }
-
-    fun readHeaterState(): Flow<Boolean> = flow {
-        token?.let {
-            emit(fishService.readHeaterState(it))
-        } ?: emit(false)
-    }
-
-    fun readInWaterState(): Flow<Boolean> = flow {
-        token?.let {
-            emit(fishService.readInWaterState(it))
-        } ?: emit(false)
-    }
-
-    fun readOutWaterState(): Flow<Boolean> = flow {
-        token?.let {
-            emit(fishService.readOutWaterState(it))
-        } ?: emit(false)
-    }
-
-    fun readOutWaterState2(): Flow<Boolean> = flow {
-        token?.let {
-            emit(fishService.readOutWaterState2(it))
-        } ?: emit(false)
-    }
-
-    fun replaceWater(percentage: Float): Flow<Int> = flow {
-        token?.let {
-            emit(fishService.replaceWater(it, percentage))
-        } ?: emit(RESULT_FAIL_HTTP)
-    }
-
-    fun changeLightBrightness(percentage: Float): Flow<Boolean> = flow {
-        token?.let {
-            emit(fishService.changeBrightness(it, percentage))
-        } ?: emit(false)
-    }
-
-    fun readLightBrightness(): Flow<Float> = flow {
-        token?.let {
-            emit(fishService.readLightBrightness(it))
-        } ?: emit(0f)
-    }
-
-    fun readAllState(): Flow<DeviceState> = flow {
-        token?.let {
-            emit(fishService.readAllState(it))
-        } ?: emit(DeviceState())
-    }
-
-    fun fetchPeriodicTasks(): Flow<List<PeriodicTask>> = flow {
-        token?.let {
-            emit(fishService.fetchPeriodicTasks(it))
-        } ?: emit(emptyList())
-    }
-
-    fun addPeriodicTask(periodicTask: PeriodicTask): Flow<Boolean> = flow {
-        token?.let {
-            emit(
-                fishService.addPeriodicTask(
-                    it, periodicTask.type, periodicTask.data, periodicTask.time
-                )
-            )
-        } ?: emit(false)
-    }
-
-    fun deletePeriodicTask(id: Int): Flow<Boolean> = flow {
-        token?.let {
-            emit(fishService.deletePeriodicTask(it, id))
-        } ?: emit(false)
-    }
-
-    fun reconnect() = flow<Void> {
-        token?.let {
-            fishService.reconnect(it)
-        }
-    }
 }

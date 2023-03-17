@@ -1,13 +1,9 @@
 package com.marine.fishtank.viewmodel
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.marine.fishtank.api.TankDataSource
-import com.marine.fishtank.model.DataSource
+import com.marine.fishtank.api.TankResult
 import com.marine.fishtank.model.DeviceState
 import com.marine.fishtank.model.PeriodicTask
 import com.orhanobut.logger.Logger
@@ -20,27 +16,23 @@ import javax.inject.Inject
 class ControlViewModel @Inject constructor(
     private val tankDataSource: TankDataSource
 ) : ViewModel() {
-    private val _tankControlStateFlow = MutableStateFlow(DataSource.loading(DeviceState()))
-    val tankControlStateFlow: StateFlow<DataSource<DeviceState>> = _tankControlStateFlow
+    private val _tankControlStateFlow: MutableStateFlow<TankResult<DeviceState>> = MutableStateFlow(TankResult.Loading())
+    val tankControlStateFlow = _tankControlStateFlow.asStateFlow()
 
-    private val _periodicTasks = MutableStateFlow(emptyList<PeriodicTask>())
-    val periodicTasks: StateFlow<List<PeriodicTask>> = _periodicTasks
+    private val _periodicTasks: MutableStateFlow<TankResult<List<PeriodicTask>>> = MutableStateFlow(TankResult.Loading())
+    val periodicTaskFlow = _periodicTasks.asStateFlow()
 
     fun readPeriodicTasks() {
         viewModelScope.launch {
-            tankDataSource.fetchPeriodicTasks().collect {
-                _periodicTasks.emit(it)
-            }
+            tankDataSource.fetchPeriodicTasks().collect { _periodicTasks.emit(it) }
         }
     }
 
     fun readDeviceState() {
         viewModelScope.launch {
-            // emit last TankState with 'Loading' state.
-            _tankControlStateFlow.emit(DataSource.loading(_tankControlStateFlow.value.data))
             tankDataSource.readAllState().collect {
                 Logger.d("emit - readDeviceState")
-                _tankControlStateFlow.emit(DataSource.success(it))
+                _tankControlStateFlow.emit(it)
             }
         }
     }
@@ -49,7 +41,7 @@ class ControlViewModel @Inject constructor(
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(),
-            initialValue = emptyList()
+            initialValue = TankResult.Loading()
         )
 
     fun enableOutWater(enable: Boolean) = viewModelScope.launch {

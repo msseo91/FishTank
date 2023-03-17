@@ -35,7 +35,11 @@ class FishTankFragment : Fragment() {
                         composable(Screens.SignIn.route) {
                             SignInScreen {
                                 if(navController.currentDestination?.route != Screens.Control.route) {
-                                    navController.navigate(Screens.Control.route)
+                                    navController.navigate(Screens.Control.route) {
+                                        popUpTo(route = Screens.SignIn.route) {
+                                            inclusive = true
+                                        }
+                                    }
                                 }
                             }
                         }

@@ -54,7 +54,11 @@ fun ControlPage(
             Logger.d("Success")
             isRefreshing = false
 
-            tankResult.data.apply { brightnessValue = lightBrightness }
+            // Update brightness value only on first time.
+            LaunchedEffect(null) {
+                brightnessValue = tankResult.data.lightBrightness
+            }
+            tankResult.data
         }
         is TankResult.Error -> {
             Logger.d("Error")

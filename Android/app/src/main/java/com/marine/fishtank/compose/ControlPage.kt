@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.dp
 import com.marine.fishtank.R
 import com.marine.fishtank.api.TankResult
 import com.marine.fishtank.model.DeviceState
-import com.marine.fishtank.model.Status
 import com.orhanobut.logger.Logger
 import kotlin.math.roundToInt
 

@@ -4,8 +4,6 @@ import com.marine.fishtank.model.DeviceState
 import com.marine.fishtank.model.PeriodicTask
 import com.marine.fishtank.model.Temperature
 import com.skydoves.sandwich.ApiResponse
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.POST

@@ -6,7 +6,7 @@ plugins {
     id("com.google.dagger.hilt.android")
 }
 
-val composeVersion = "1.4.0-beta01"
+val composeVersion = "1.4.0"
 val accompanistVersion = "0.28.0"
 val coroutineVersion = "1.6.4"
 val navigationVersion = "2.5.3"
@@ -88,7 +88,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifeCycle")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lifeCycle")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$lifeCycle")
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.1")
 
     // ETC
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.0")
@@ -100,6 +100,7 @@ dependencies {
     // Compose
     implementation("androidx.compose.ui:ui:$composeVersion")
     implementation("androidx.compose.material:material:$composeVersion")
+    implementation("androidx.compose.ui:ui-tooling:$composeVersion")
     implementation("androidx.compose.ui:ui-tooling-preview:$composeVersion")
     implementation("androidx.compose.material:material-icons-extended:$composeVersion")
     implementation("androidx.compose.runtime:runtime-livedata:$composeVersion")

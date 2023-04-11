@@ -15,6 +15,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -132,4 +133,17 @@ fun Graph(
             )
         }
     }
+}
+
+@Preview
+@Composable
+fun PreviewGraph() {
+    Graph(
+        modifier = Modifier,
+        xValues = listOf(1L,2L,3L,4L,5L,6L,7L,8L,9L,10L, 11L),
+        yValues = listOf(0,1,2,3,4,5,6,7,8,9,10),
+        points = listOf(0f,1f,2f,3f,4f,5f,6f,7f,8f,9f,10f),
+        paddingSpace = 16.dp,
+        verticalStep = 1
+    )
 }

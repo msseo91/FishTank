@@ -5,7 +5,6 @@ import android.content.Intent
 import com.marine.fishtank.logger.PlainLogger
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger
-import com.orhanobut.logger.PrettyFormatStrategy
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp

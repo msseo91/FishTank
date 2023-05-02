@@ -7,14 +7,16 @@ plugins {
 }
 
 val composeVersion = "1.4.0"
+val composeBom = "2023.04.01"
 val accompanistVersion = "0.28.0"
 val coroutineVersion = "1.6.4"
 val navigationVersion = "2.5.3"
 val exoplayerVersion = "2.18.2"
 val retrofit2Version = "2.9.0"
-val lifeCycle = "2.5.1"
+val lifeCycle = "2.6.1"
 
 android {
+    namespace = "com.marine.fishtank"
     compileSdk = 33
 
     defaultConfig {
@@ -38,12 +40,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
 
     buildFeatures {
@@ -59,17 +61,18 @@ android {
         correctErrorTypes = true
     }
 
-    packagingOptions {
+    packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
 }
 
 dependencies {
     api(project(":MpChartLib"))
 
-    implementation("androidx.core:core-ktx:1.9.0")
+    implementation("androidx.core:core-ktx:1.10.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.8.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
@@ -88,22 +91,23 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifeCycle")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lifeCycle")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$lifeCycle")
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.1")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:$lifeCycle")
 
     // ETC
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.0")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.0")
     implementation("androidx.datastore:datastore-preferences:1.0.0")
     implementation("com.google.code.gson:gson:2.10")
     implementation("com.orhanobut:logger:2.2.0")
 
     // Compose
-    implementation("androidx.compose.ui:ui:$composeVersion")
-    implementation("androidx.compose.material:material:$composeVersion")
-    implementation("androidx.compose.ui:ui-tooling:$composeVersion")
-    implementation("androidx.compose.ui:ui-tooling-preview:$composeVersion")
-    implementation("androidx.compose.material:material-icons-extended:$composeVersion")
-    implementation("androidx.compose.runtime:runtime-livedata:$composeVersion")
+    val composeBom = platform("androidx.compose:compose-bom:$composeBom")
+    implementation(composeBom)
+    androidTestImplementation(composeBom)
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.ui:ui-tooling")
+    implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation("androidx.compose.material:material-icons-extended")
+    implementation("androidx.compose.runtime:runtime-livedata")
 
     // Accompanist - for compose
     implementation("com.google.accompanist:accompanist-pager:$accompanistVersion")

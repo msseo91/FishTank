@@ -17,6 +17,7 @@ android {
             isMinifyEnabled = false
         }
     }
+    namespace = "com.github.mikephil.charting"
 }
 
 dependencies {

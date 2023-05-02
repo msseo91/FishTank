@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.material.MaterialTheme
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
@@ -14,6 +13,7 @@ import androidx.navigation.compose.rememberNavController
 import com.marine.fishtank.compose.ControlScreen
 import com.marine.fishtank.compose.Screens
 import com.marine.fishtank.compose.SignInScreen
+import com.marine.fishtank.theme.FishTheme
 import com.orhanobut.logger.Logger
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -27,7 +27,7 @@ class FishTankFragment : Fragment() {
             setContent {
                 val navController = rememberNavController()
 
-                MaterialTheme {
+                FishTheme {
                     NavHost(
                         navController = navController,
                         startDestination = Screens.SignIn.route
@@ -48,7 +48,6 @@ class FishTankFragment : Fragment() {
                             ControlScreen()
                         }
                     }
-
                 }
             }
         }

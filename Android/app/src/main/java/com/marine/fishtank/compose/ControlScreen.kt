@@ -4,7 +4,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.*
+import androidx.compose.material.AppBarDefaults
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,6 +29,7 @@ import com.marine.fishtank.R
 import com.marine.fishtank.viewmodel.ControlViewModel
 import com.orhanobut.logger.Logger
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ControlScreen(viewModel: ControlViewModel = hiltViewModel()) {
     Logger.d("Composing ControlScreen")
@@ -52,18 +54,16 @@ fun ControlScreen(viewModel: ControlViewModel = hiltViewModel()) {
 
     // Scaffold = TAB 전체화면
     Scaffold(
-        topBar = { TopAppBar(title = { Text("FishTank") }) },
+        topBar = { ControlTopAppBar() },
         floatingActionButtonPosition = FabPosition.Center,
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
-            BottomNavigation {
+            NavigationBar {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentDestination = navBackStackEntry?.destination
 
                 items.forEach { navItem ->
-                    BottomNavigationItem(
-                        selectedContentColor = Color.Magenta,
-                        unselectedContentColor = Color.White,
+                    NavigationBarItem(
                         alwaysShowLabel = true,
                         label = { Text(stringResource(id = navItem.titleRes)) },
                         selected = currentDestination?.hierarchy?.any { it.route == navItem.screenRoute } == true,
@@ -124,6 +124,14 @@ fun ControlScreen(viewModel: ControlViewModel = hiltViewModel()) {
     }
 
     Logger.d("End composing ControlScreen")
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ControlTopAppBar() {
+    TopAppBar(
+        title = { Text("FishTank Control") }
+    )
 }
 
 @Preview

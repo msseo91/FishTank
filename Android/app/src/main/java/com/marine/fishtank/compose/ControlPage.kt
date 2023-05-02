@@ -1,10 +1,12 @@
 package com.marine.fishtank.compose
 
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material3.*
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -70,7 +72,6 @@ fun ControlPage(
     }
     Logger.d("ControlPage = $deviceState")
 
-
     Box (
         modifier = Modifier.pullRefresh(pullRefreshState)
     ) {
@@ -84,10 +85,11 @@ fun ControlPage(
             modifier = Modifier
                 .padding(10.dp)
                 .verticalScroll(scrollState)
+                .background(
+                    color = MaterialTheme.colorScheme.surface,
+                    shape = MaterialTheme.shapes.medium
+                )
         ) {
-            Text(text = "Functions")
-            Divider(modifier = Modifier.padding(vertical = 5.dp))
-
             SwitchRow(
                 state = deviceState.outletValve1Enabled,
                 text = stringResource(id = R.string.out_valve),
@@ -112,11 +114,6 @@ fun ControlPage(
                 onClick = onPumpClick
             )
 
-            Divider(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 5.dp)
-            )
             Spacer(modifier = Modifier.height(20.dp))
 
             Column(
@@ -154,16 +151,15 @@ fun SwitchRow(
                 end = 10.dp,
                 top = 10.dp
             ),
-        horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            modifier = Modifier.weight(1f),
-            text = text
+            text = text + "hoee"
         )
 
+        Spacer(modifier = Modifier.weight(1f))
+
         Switch(
-            modifier = Modifier.weight(1f),
             checked = state,
             onCheckedChange = onClick
         )

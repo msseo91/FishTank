@@ -2,7 +2,7 @@ package com.marine.fishtank.compose
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -21,6 +21,7 @@ import com.marine.fishtank.viewmodel.SignInResult
 import com.marine.fishtank.viewmodel.SignInViewModel
 import com.orhanobut.logger.Logger
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignInScreen(
     viewModel: SignInViewModel = hiltViewModel(),
@@ -28,7 +29,7 @@ fun SignInScreen(
 ) {
     Logger.d("Composing SignInScreen")
 
-    val scaffoldState = rememberScaffoldState()
+    val snackbarHostState = remember { SnackbarHostState() }
     var userIdText by rememberSaveable { mutableStateOf("") }
     var passwordText by rememberSaveable { mutableStateOf("") }
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
@@ -44,17 +45,20 @@ fun SignInScreen(
         modifier = Modifier
             .fillMaxSize()
             .padding(15.dp),
-        scaffoldState = scaffoldState
+        snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { paddingValue ->
         when(signInResult) {
             is SignInResult.Loading -> {
                 Box(Modifier.fillMaxSize()) {
-                    CircularProgressIndicator(Modifier.align(Alignment.Center).size(50.dp))
+                    CircularProgressIndicator(
+                        Modifier
+                            .align(Alignment.Center)
+                            .size(50.dp))
                 }
             }
             is SignInResult.Error -> {
                 LaunchedEffect(signInResult) {
-                    scaffoldState.snackbarHostState.showSnackbar(message = (signInResult as SignInResult.Error).message)
+                    snackbarHostState.showSnackbar(message = (signInResult as SignInResult.Error).message)
                 }
             }
             is SignInResult.Success -> onSignInSuccess()
@@ -77,9 +81,6 @@ fun SignInScreen(
                 label = { Text(text = "id") },
                 placeholder = { Text("id") },
                 onValueChange = { userIdText = it },
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    backgroundColor = Color.White
-                )
             )
 
             Spacer(modifier = Modifier.height(15.dp))
@@ -103,15 +104,15 @@ fun SignInScreen(
                         Icon(imageVector = image, description)
                     }
                 },
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    backgroundColor = Color.White
-                )
             )
 
             Spacer(modifier = Modifier.height(40.dp))
 
-            OutlinedButton(
+            Button(
                 modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary
+                ),
                 shape = RoundedCornerShape(20.dp),
                 onClick = {
                     viewModel.signIn(userIdText, passwordText)

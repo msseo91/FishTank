@@ -9,8 +9,8 @@
     <string name="open_water_out">하수도 열기</string>
     <string name="close_water_out">하수도 닫기</string>
 
-    <string name="pump_run">Run pump</string>
-    <string name="pump_stop">Stop pump</string>
+    <string name="pump_run">펌프 켜기</string>
+    <string name="pump_stop">펌프 중지</string>
 
     <string name="light_on">조명 켜기</string>
     <string name="light_off">조명 끄기</string>
@@ -45,6 +45,7 @@
     <string name="purifier">여과기</string>
     <string name="light">조명</string>
     <string name="board_led">LED</string>
+    <string name="pump">펌프</string>
 
     <string name="text_control">Control</string>
     <string name="text_monitor">Monitor</string>

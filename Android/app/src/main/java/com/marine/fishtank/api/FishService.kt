@@ -55,6 +55,14 @@ interface FishService {
     @FormUrlEncoded
     suspend fun enablePurifier(@Field(KEY_TOKEN) token: String, @Field(KEY_ENABLE) enable: Boolean): ApiResponse<Int>
 
+    @POST("fish/pump")
+    @FormUrlEncoded
+    suspend fun enablePump(@Field(KEY_TOKEN) token: String, @Field(KEY_ENABLE) enable: Boolean): ApiResponse<Int>
+
+    @POST("/fish/pump/read")
+    @FormUrlEncoded
+    suspend fun readPumpState(@Field(KEY_TOKEN) token: String): ApiResponse<Boolean>
+
     @POST("/fish/heater")
     @FormUrlEncoded
     suspend fun enableHeater(@Field(KEY_TOKEN) token: String, @Field(KEY_ENABLE) enable: Boolean): ApiResponse<Int>
@@ -75,7 +83,7 @@ interface FishService {
     @FormUrlEncoded
     suspend fun readOutWaterState2(@Field(KEY_TOKEN) token: String): ApiResponse<Boolean>
 
-    @POST("/fish/suspend func/replaceWater")
+    @POST("/fish/replaceWater")
     @FormUrlEncoded
     suspend fun replaceWater(@Field(KEY_TOKEN) token: String, @Field(KEY_PERCENTAGE) percentage: Float): ApiResponse<Int>
 

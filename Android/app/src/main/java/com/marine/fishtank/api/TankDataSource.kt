@@ -37,6 +37,10 @@ class TankDataSource @Inject constructor(
 
     fun enableHeater(enable: Boolean) = flow {  emitAll(fishService.enableHeater(token, enable).asTankResult()) }
 
+    fun enablePump(enable: Boolean) = flow { emitAll(fishService.enablePump(token, enable).asTankResult()) }
+
+    fun readPumpState() = flow { emitAll(fishService.readPumpState(token).asTankResult()) }
+
     fun readHeaterState() = flow { emitAll(fishService.readHeaterState(token).asTankResult()) }
 
     fun readInWaterState() = flow {  emitAll(fishService.readInWaterState(token).asTankResult()) }

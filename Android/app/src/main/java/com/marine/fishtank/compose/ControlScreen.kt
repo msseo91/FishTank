@@ -102,7 +102,7 @@ fun ControlScreen(viewModel: ControlViewModel = hiltViewModel()) {
                     onOutValveClick = { viewModel.enableOutWater(it) },
                     onOutValve2Click = { viewModel.enableOutWater2(it) },
                     onInValveClick = { viewModel.enableInWater(it) },
-                    onHeaterClick = { viewModel.enableHeater(it) },
+                    onPumpClick = { viewModel.enablePump(it) },
                     onBrightnessChange = { viewModel.changeLightBrightness(it) },
                 )
             }

@@ -118,7 +118,7 @@ class FishController(
     }
 
     @PostMapping("/read/allState")
-    fun readAllState(@RequestParam(KEY_TOKEN) token: String):ResponseEntity<DeviceState> {
+    fun readAllState(@RequestParam(KEY_TOKEN) token: String): ResponseEntity<DeviceState> {
         userService.getUserByToken(token) ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null)
 
         return ResponseEntity.ok(DeviceState(
@@ -129,6 +129,19 @@ class FishController(
             isHeaterEnabled = raspberryService.isHeaterOn(),
             lightBrightness = raspberryService.readBrightness()
         ))
+    }
+
+    @PostMapping("/pump")
+    fun enablePump(@RequestParam(KEY_TOKEN) token: String, @RequestParam(KEY_ENABLE) enable: Boolean): ResponseEntity<Int> {
+        userService.getUserByToken(token) ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null)
+        raspberryService.enablePump(enable)
+        return ResponseEntity.ok(RESULT_SUCCESS)
+    }
+
+    @PostMapping("/pump/read")
+    fun readPumpState(@RequestParam(KEY_TOKEN) token: String): ResponseEntity<Boolean> {
+        userService.getUserByToken(token) ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null)
+        return ResponseEntity.ok(raspberryService.isPumpOn())
     }
 
     @PostMapping("/func/replaceWater")

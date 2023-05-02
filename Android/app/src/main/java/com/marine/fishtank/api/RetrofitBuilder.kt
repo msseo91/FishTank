@@ -21,7 +21,7 @@ object RetrofitBuilder {
                 if(BuildConfig.DEBUG) {
                     it.client(
                         OkHttpClient().newBuilder().addInterceptor(HttpLoggingInterceptor().apply {
-                            level = HttpLoggingInterceptor.Level.HEADERS
+                            level = HttpLoggingInterceptor.Level.BODY
                         }).build()
                     )
                 }

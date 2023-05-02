@@ -30,7 +30,7 @@ fun ControlPage(
     onOutValveClick: (Boolean) -> Unit = {},
     onOutValve2Click: (Boolean) -> Unit = {},
     onInValveClick: (Boolean) -> Unit = {},
-    onHeaterClick: (Boolean) -> Unit = {},
+    onPumpClick: (Boolean) -> Unit = {},
     onBrightnessChange: (Float) -> Unit = {}
 ) {
     Logger.d("Composing ControlTab!")
@@ -68,6 +68,7 @@ fun ControlPage(
             DeviceState()
         }
     }
+    Logger.d("ControlPage = $deviceState")
 
 
     Box (
@@ -88,27 +89,27 @@ fun ControlPage(
             Divider(modifier = Modifier.padding(vertical = 5.dp))
 
             SwitchRow(
-                state = deviceState.isOutletValve1Enabled,
+                state = deviceState.outletValve1Enabled,
                 text = stringResource(id = R.string.out_valve),
                 onClick = onOutValveClick
             )
 
             SwitchRow(
-                state = deviceState.isOutletValve2Enabled,
+                state = deviceState.outletValve2Enabled,
                 text = stringResource(id = R.string.out_valve2),
                 onClick = onOutValve2Click
             )
 
             SwitchRow(
-                state = deviceState.isInletValveEnabled,
+                state = deviceState.inletValveEnabled,
                 text = stringResource(id = R.string.in_valve),
                 onClick = onInValveClick
             )
 
             SwitchRow(
-                state = deviceState.isHeaterEnabled,
-                text = stringResource(id = R.string.heater),
-                onClick = onHeaterClick
+                state = deviceState.pumpEnabled,
+                text = stringResource(id = R.string.pump),
+                onClick = onPumpClick
             )
 
             Divider(

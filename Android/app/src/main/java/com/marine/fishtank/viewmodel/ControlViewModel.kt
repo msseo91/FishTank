@@ -31,7 +31,7 @@ class ControlViewModel @Inject constructor(
     fun readDeviceState() {
         viewModelScope.launch {
             tankDataSource.readAllState().collect {
-                Logger.d("emit - readDeviceState")
+                Logger.d("emit - readDeviceState $it")
                 _tankControlStateFlow.emit(it)
             }
         }
@@ -56,8 +56,8 @@ class ControlViewModel @Inject constructor(
         tankDataSource.enableInWater(enable).collect { readDeviceState() }
     }
 
-    fun enableHeater(enable: Boolean) = viewModelScope.launch {
-        tankDataSource.enableHeater(enable).collect { readDeviceState() }
+    fun enablePump(enable: Boolean) = viewModelScope.launch {
+        tankDataSource.enablePump(enable).collect { readDeviceState() }
     }
 
     fun changeLightBrightness(brightness: Float) = viewModelScope.launch {

@@ -154,7 +154,7 @@ fun SwitchRow(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = text + "hoee"
+            text = text
         )
 
         Spacer(modifier = Modifier.weight(1f))

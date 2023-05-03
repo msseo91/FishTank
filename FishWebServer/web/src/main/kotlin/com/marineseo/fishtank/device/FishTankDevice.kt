@@ -60,10 +60,9 @@ class FishTankDevice {
             .address(Pin.LIGHT.bsmPin)
             .pwmType(PwmType.HARDWARE)
             .provider(PROVIDER_PWM)
-            .initial(0)
             .shutdown(0)
             .build()
-    )
+    ).also { it.on(0) }
 
     val temperature = Ds18b20()
 

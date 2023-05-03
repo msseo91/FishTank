@@ -1,9 +1,11 @@
 package com.marine.fishtank.compose
 
 import android.app.TimePickerDialog
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -15,6 +17,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.marine.fishtank.R
 import com.marine.fishtank.api.TankResult
@@ -37,10 +41,12 @@ fun SchedulePage(
             Logger.d("Loading")
             listOf()
         }
+
         is TankResult.Success -> {
             Logger.d("Success")
             periodicTaskResult.data
         }
+
         is TankResult.Error -> {
             Logger.d("Error")
             listOf()
@@ -104,39 +110,71 @@ fun SchedulePage(
         }
     ) { padding ->
         LazyColumn(
-            Modifier.padding(padding).fillMaxSize()
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize()
         ) {
-            for (task in periodicTasks) {
-                item {
-                    PeriodicTaskItem(task = task, deleteCallback = onDeletePeriodicTask)
-                }
+            // Header
+            item {
+                PeriodicTaskRow(
+                    isHeader = true,
+                    taskType = "Type",
+                    taskValue = "Value",
+                    taskTime = "Time",
+                    showDeleteButton = false
+                )
+            }
+
+            items(periodicTasks) { task ->
+                PeriodicTaskItem(task = task, deleteCallback = onDeletePeriodicTask)
             }
         }
     }
 }
 
 @Composable
-fun PeriodicTaskItem(task: PeriodicTask, deleteCallback: (Int) -> Unit = {}) {
+fun PeriodicTaskRow(
+    isHeader: Boolean = false,
+    id: Int = 0,
+    taskType: String,
+    taskValue: String,
+    taskTime: String,
+    showDeleteButton: Boolean = true,
+    deleteCallback: (Int) -> Unit = {}
+) {
+    val rowModifier = if(isHeader) {
+        Modifier.background(color = MaterialTheme.colorScheme.secondaryContainer).padding(10.dp)
+    } else {
+        Modifier.padding(10.dp)
+    }
+    val fontWeight = if(isHeader) FontWeight.Bold else FontWeight.Normal
+
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .heightIn(40.dp, 60.dp)
-            .border(width = 1.dp, color = Color.Black)
-            .padding(10.dp),
+        modifier = rowModifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = task.typeAsString(LocalContext.current))
-        Spacer(modifier = Modifier.width(15.dp))
-        Text(text = "data=${task.data}")
-        Spacer(modifier = Modifier.width(15.dp))
-        Text(text = task.time)
+        Text(
+            modifier = Modifier.weight(6f),
+            text = taskType,
+            fontWeight = fontWeight
+        )
+        Text(
+            modifier = Modifier.weight(3f),
+            text = taskValue,
+            fontWeight = fontWeight
+        )
 
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.End
-        ) {
+        Text(
+            modifier = Modifier.weight(3f),
+            text = taskTime,
+            fontWeight = fontWeight
+        )
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        if(showDeleteButton) {
             Button(
-                onClick = { deleteCallback(task.id) },
+                onClick = { deleteCallback(id) },
                 contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
             ) {
                 Icon(
@@ -147,4 +185,31 @@ fun PeriodicTaskItem(task: PeriodicTask, deleteCallback: (Int) -> Unit = {}) {
             }
         }
     }
+}
+
+@Composable
+fun PeriodicTaskItem(task: PeriodicTask, deleteCallback: (Int) -> Unit = {}) {
+    PeriodicTaskRow(
+        id = task.id,
+        taskType = task.typeAsString(LocalContext.current),
+        taskValue = "data=${task.data}",
+        taskTime = task.time,
+        deleteCallback = deleteCallback
+    )
+}
+
+@Preview
+@Composable
+fun PreviewSchedulePage() {
+    SchedulePage(
+        periodicTaskResult = TankResult.Success(
+            listOf(
+                PeriodicTask(type = PeriodicTask.TYPE_LIGHT, data = 100, time = "18:00"),
+                PeriodicTask(type = PeriodicTask.TYPE_LIGHT, data = 0, time = "23:00"),
+
+                PeriodicTask(type = PeriodicTask.TYPE_VALVE_OUT_WATER, data = 0, time = "10:00"),
+                PeriodicTask(type = PeriodicTask.TYPE_VALVE_OUT_WATER, data = 1, time = "11:00")
+            )
+        )
+    )
 }

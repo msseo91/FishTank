@@ -15,7 +15,5 @@ class ServletInitializer : SpringBootServletInitializer() {
     override fun onStartup(servletContext: ServletContext) {
         initLogger.info("onStartup")
         super.onStartup(servletContext)
-
-        System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "DEBUG")
     }
 }

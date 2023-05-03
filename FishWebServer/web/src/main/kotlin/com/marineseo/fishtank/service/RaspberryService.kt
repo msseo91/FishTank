@@ -32,6 +32,7 @@ class RaspberryService(
     fun readBrightness(): Float = fishTankDevice.light.dutyCycle() / 100f
 
     fun adjustBrightness(value: Float) {
+        fishTankDevice.light.dutyCycle(value * 100)
         fishTankDevice.light.on(value * 100)
     }
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="30 seconds">
-    <property name="LOGS_ABSOLUTE_PATH" value="/home/msseo/fishtank/log/server"/>
+    <property name="LOGS_ABSOLUTE_PATH" value="/root/tomcat9/log/" />
     <property name="PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%{pid}/%t] %logger : %msg %n" />
 
     <appender name="RollingGeneral" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -16,24 +16,7 @@
 
         <encoder>
             <charset>UTF-8</charset>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%t] %logger : %msg %n</pattern>
-        </encoder>
-    </appender>
-
-    <appender name="RollingArduino" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOGS_ABSOLUTE_PATH}/fishServer-arduino.log</file>
-
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <!-- rollover daily -->
-            <fileNamePattern>${LOGS_ABSOLUTE_PATH}/fishServer-arduino-%d{yyyy-MM-dd}.%i.txt</fileNamePattern>
-            <!-- each file should be at most 100MB, keep 60 days worth of history, but at most 20GB -->
-            <maxFileSize>100MB</maxFileSize>
-            <maxHistory>60</maxHistory>
-        </rollingPolicy>
-
-        <encoder>
-            <charset>UTF-8</charset>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%t] %logger : %msg %n</pattern>
+            <pattern>%d{yyyy:MM:dd HH:mm:ss.SSS} %-5level --- [%thread] %logger{35} : %msg %n</pattern>
         </encoder>
     </appender>
 
@@ -55,27 +38,26 @@
 
         <encoder>
             <charset>UTF-8</charset>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%t] %logger : %msg %n</pattern>
+            <pattern>%d{yyyy:MM:dd HH:mm:ss.SSS} %-5level --- [%thread] %logger{35} : %msg %n</pattern>
         </encoder>
     </appender>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <layout class="ch.qos.logback.classic.PatternLayout">
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%t] %logger : %msg %n</pattern>
+            <pattern>%d{yyyy:MM:dd HH:mm:ss.SSS} %-5level --- [%thread] %logger{35} : %msg %n</pattern>
         </layout>
     </appender>
 
     <root level="DEBUG">
         <appender-ref ref="STDOUT"/>
-        <appender-ref ref="RollingError" />
     </root>
 
     <logger name="com.marineseo.fishtank" level="DEBUG">
         <appender-ref ref="RollingGeneral" />
     </logger>
 
-    <logger name="com.marineseo.fishtank.service.ArduinoService" level="DEBUG">
-        <appender-ref ref="RollingArduino" />
+    <logger name="org.hibernate.SQL" level="DEBUG">
+        <appender-ref ref="RollingGeneral" />
     </logger>
 
 </configuration>

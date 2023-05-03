@@ -31,7 +31,6 @@ dependencies {
 
     // DB
     runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
-    implementation("org.mybatis.spring.boot:mybatis-spring-boot-starter:2.2.2")
 
     // ETC
     implementation("com.google.code.gson:gson:2.9.0")
@@ -42,8 +41,10 @@ dependencies {
     implementation("com.pi4j:pi4j-core:2.3.0")
     implementation("com.pi4j:pi4j-plugin-raspberrypi:2.3.0")
     implementation("com.pi4j:pi4j-plugin-pigpio:2.3.0")
-    implementation("org.slf4j:slf4j-api:2.0.6")
-    implementation("org.slf4j:slf4j-simple:2.0.6")
+
+    // slf4j
+    implementation("org.slf4j:slf4j-api:1.7.36")
+    implementation("org.slf4j:slf4j-simple:1.7.36")
 
     // Test
     testImplementation("org.springframework.boot:spring-boot-starter-test")

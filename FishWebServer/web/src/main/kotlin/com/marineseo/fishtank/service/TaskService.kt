@@ -120,13 +120,15 @@ class TaskService(
                     val divided = periodicTask.time.split(":")
                     set(Calendar.HOUR_OF_DAY, divided[0].toInt())
                     set(Calendar.MINUTE, divided[1].toInt())
+                    set(Calendar.SECOND, 0)
+                    set(Calendar.MILLISECOND, 0)
                 }.timeInMillis)
             ))
         }
     }
 
     private fun fetchTask(): Task? {
-        return taskRepository.findByStateAndExecuteTimeGreaterThan(Task.STATE_STANDBY, Date()).firstOrNull()
+        return taskRepository.findByStateAndExecuteTimeLessThan(Task.STATE_STANDBY, Date()).firstOrNull()
     }
 
     fun fetchPeriodicTask(userId: String): List<PeriodicTask> {

@@ -60,4 +60,8 @@
         <appender-ref ref="RollingGeneral" />
     </logger>
 
+    <logger name="org.hibernate.type.descriptor.sql" level="TRACE">
+        <appender-ref ref="RollingGeneral" />
+    </logger>
+
 </configuration>

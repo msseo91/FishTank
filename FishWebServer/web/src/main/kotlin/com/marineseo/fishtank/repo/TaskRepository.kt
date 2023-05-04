@@ -8,6 +8,6 @@ import java.util.*
 @Repository
 interface TaskRepository: CrudRepository<Task, Int> {
 
-    fun findByStateAndExecuteTimeGreaterThan(state: Int, executeTime: Date): List<Task>
+    fun findByStateAndExecuteTimeLessThan(state: Int, executeTime: Date): List<Task>
 
 }

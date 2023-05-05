@@ -32,18 +32,18 @@
     <string name="light_brightness">Light brightness</string>
 
     <string name="periodic_dialog_title">Periodic Action</string>
-    <string name="periodic_dialog_task_type">type</string>
+    <string name="periodic_dialog_task_type">Type</string>
     <string name="periodic_dialog_task_value">Value</string>
     <string name="periodic_dialog_save">Save</string>
-    <string name="periodic_dialog_cancel">cancel</string>
+    <string name="periodic_dialog_cancel">Cancel</string>
     <string name="periodic_dialog_task_time">Time</string>
 
-    <string name="replace_water">환수</string>
-    <string name="out_valve">하수밸브</string>
-    <string name="out_valve2">하수밸브(서브어항)</string>
-    <string name="in_valve">상수밸브</string>
-    <string name="purifier">여과기</string>
-    <string name="light">조명</string>
+    <string name="replace_water">Replace water</string>
+    <string name="out_valve">Outlet valve(main)</string>
+    <string name="out_valve2">Outlet valve(Sub)</string>
+    <string name="in_valve">Inlet valve</string>
+    <string name="purifier">Purifier</string>
+    <string name="light">Light</string>
     <string name="board_led">LED</string>
     <string name="pump">Pump</string>
 
@@ -51,4 +51,8 @@
     <string name="text_monitor">Monitor</string>
     <string name="text_camera">Camera</string>
     <string name="text_periodic">Periodic</string>
+    <string name="open">Open</string>
+    <string name="close">Close</string>
+    <string name="turn_on">Turn on</string>
+    <string name="turn_off">Turn off</string>
 </resources>

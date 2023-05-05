@@ -2,7 +2,6 @@ package com.marine.fishtank.compose
 
 import android.app.TimePickerDialog
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -11,12 +10,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.rounded.DeleteOutline
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -24,6 +25,7 @@ import com.marine.fishtank.R
 import com.marine.fishtank.api.TankResult
 import com.marine.fishtank.model.PeriodicTask
 import com.marine.fishtank.model.typeAsString
+import com.marine.fishtank.model.valueAsText
 import com.orhanobut.logger.Logger
 import java.util.*
 
@@ -41,12 +43,10 @@ fun SchedulePage(
             Logger.d("Loading")
             listOf()
         }
-
         is TankResult.Success -> {
             Logger.d("Success")
             periodicTaskResult.data
         }
-
         is TankResult.Error -> {
             Logger.d("Error")
             listOf()
@@ -54,10 +54,31 @@ fun SchedulePage(
     }
 
     val context = LocalContext.current
-    val openDialog = remember { mutableStateOf(false) }
+    var openDialog by remember { mutableStateOf(false) }
+
+    if(openDialog) {
+        PeriodicTaskDialog(
+            onCancel = { openDialog = false},
+            onSave = { type, value, time ->
+                openDialog = false
+                onAddPeriodicTask(
+                    PeriodicTask(
+                        type = type,
+                        data = value,
+                        time = time
+                    )
+                )
+            }
+        )
+    }
 
     val typeExpand = remember { mutableStateOf(false) }
-    val typeOptions = listOf(R.string.out_valve, R.string.in_valve, R.string.light_brightness)
+    val typeOptions = listOf(
+        R.string.out_valve,
+        R.string.out_valve2,
+        R.string.in_valve,
+        R.string.light_brightness
+    )
     val selectedTypeOption = remember { mutableStateOf(typeOptions[0]) }
 
     val valueBooleanExpand = remember { mutableStateOf(false) }
@@ -70,16 +91,18 @@ fun SchedulePage(
     val mCalendar = Calendar.getInstance()
     val currentHour = mCalendar[Calendar.HOUR_OF_DAY]
     val currentMinute = mCalendar[Calendar.MINUTE]
-    val actionTime = remember { mutableStateOf("$currentHour:$currentMinute") }
+    val h = if(currentHour < 10) "0$currentHour" else "$currentHour"
+    val m = if(currentMinute < 10) "0$currentMinute" else "$currentMinute"
+    val actionTime = remember { mutableStateOf("$h:$m") }
 
     val timePickerDialog = TimePickerDialog(
         context,
         { _, hour: Int, minute: Int ->
-            actionTime.value = "$hour:${String.format("%02d", minute)}"
+            actionTime.value = "${if(hour < 10) "0$hour" else "$hour"}:${if(minute < 10) "0$minute" else "$minute"}"
         }, currentHour, currentMinute, false
     )
 
-    PeriodicTaskDialog(
+    /*PeriodicTaskDialog(
         openState = openDialog,
         typeExpand = typeExpand,
         typeOptions = typeOptions,
@@ -99,12 +122,12 @@ fun SchedulePage(
                 time = actionTime.value
             )
         )
-    }
+    }*/
 
     // Floating button
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = { openDialog.value = true }) {
+            FloatingActionButton(onClick = { openDialog = true }) {
                 Icon(Icons.Filled.Add, "PeriodicTask add button")
             }
         }
@@ -118,9 +141,9 @@ fun SchedulePage(
             item {
                 PeriodicTaskRow(
                     isHeader = true,
-                    taskType = "Type",
-                    taskValue = "Value",
-                    taskTime = "Time",
+                    taskType = stringResource(id = R.string.periodic_dialog_task_type),
+                    taskValue = stringResource(id = R.string.periodic_dialog_task_value),
+                    taskTime = stringResource(id = R.string.periodic_dialog_task_time),
                     showDeleteButton = false
                 )
             }
@@ -143,7 +166,9 @@ fun PeriodicTaskRow(
     deleteCallback: (Int) -> Unit = {}
 ) {
     val rowModifier = if(isHeader) {
-        Modifier.background(color = MaterialTheme.colorScheme.secondaryContainer).padding(10.dp)
+        Modifier
+            .background(color = MaterialTheme.colorScheme.secondaryContainer)
+            .padding(10.dp)
     } else {
         Modifier.padding(10.dp)
     }
@@ -154,7 +179,7 @@ fun PeriodicTaskRow(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            modifier = Modifier.weight(6f),
+            modifier = Modifier.weight(5f),
             text = taskType,
             fontWeight = fontWeight
         )
@@ -174,6 +199,7 @@ fun PeriodicTaskRow(
 
         if(showDeleteButton) {
             Button(
+                modifier = Modifier.weight(2f),
                 onClick = { deleteCallback(id) },
                 contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
             ) {
@@ -183,17 +209,25 @@ fun PeriodicTaskRow(
                     modifier = Modifier.size(ButtonDefaults.IconSize)
                 )
             }
+        } else {
+            Spacer(Modifier.weight(2f))
         }
     }
 }
 
 @Composable
 fun PeriodicTaskItem(task: PeriodicTask, deleteCallback: (Int) -> Unit = {}) {
+    val time = if(task.time.count { it == ':' } > 1) {
+        task.time.substring(0, task.time.lastIndexOf(':'))
+    } else {
+        task.time
+    }
+
     PeriodicTaskRow(
         id = task.id,
         taskType = task.typeAsString(LocalContext.current),
-        taskValue = "data=${task.data}",
-        taskTime = task.time,
+        taskValue = task.valueAsText(LocalContext.current),
+        taskTime = time,
         deleteCallback = deleteCallback
     )
 }

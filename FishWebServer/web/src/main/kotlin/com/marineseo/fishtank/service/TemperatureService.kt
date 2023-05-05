@@ -10,8 +10,6 @@ import java.sql.Timestamp
 import java.text.SimpleDateFormat
 
 private const val TEMPERATURE_INTERVAL = TimeUtils.MILS_MINUTE * 5
-private const val TAG = "TemperatureService"
-
 private const val TARGET_TEMPERATURE = 26
 
 @Service

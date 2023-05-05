@@ -4,7 +4,8 @@ import javax.persistence.*
 
 @Entity
 @Table(name = PeriodicTask.TABLE_NAME)
-data class PeriodicTask(
+data class
+PeriodicTask(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Int = 0,
@@ -34,5 +35,6 @@ data class PeriodicTask(
         const val TYPE_VALVE_IN_WATER = Task.TYPE_VALVE_OUT_WATER
         const val TYPE_PURIFIER = Task.TYPE_VALVE_OUT_WATER
         const val TYPE_LIGHT = Task.TYPE_VALVE_OUT_WATER
+        const val TYPE_VALVE_OUT_WATER2 = Task.TYPE_VALVE_OUT_WATER_2
     }
 }

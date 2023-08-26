@@ -44,6 +44,7 @@
     <string name="in_valve">Inlet valve</string>
     <string name="purifier">Purifier</string>
     <string name="light">Light</string>
+    <string name="co2">CO2</string>
     <string name="board_led">LED</string>
     <string name="pump">Pump</string>
 

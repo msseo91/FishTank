@@ -87,6 +87,10 @@ interface FishService {
     @FormUrlEncoded
     suspend fun readAllState(@Field(KEY_TOKEN) token: String): ApiResponse<DeviceState>
 
+    @POST("/fish/co2/enable")
+    @FormUrlEncoded
+    suspend fun enableCo2(@Field(KEY_TOKEN) token: String, @Field(KEY_ENABLE) enable: Boolean): ApiResponse<Int>
+
     @POST("/fish/periodic/add")
     @FormUrlEncoded
     suspend fun addPeriodicTask(

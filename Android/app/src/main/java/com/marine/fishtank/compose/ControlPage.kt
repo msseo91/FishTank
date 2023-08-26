@@ -33,6 +33,7 @@ fun ControlPage(
     onOutValve2Click: (Boolean) -> Unit = {},
     onInValveClick: (Boolean) -> Unit = {},
     onLightClick: (Boolean) -> Unit = {},
+    onCo2Click: (Boolean) -> Unit = {},
 ) {
     Logger.d("Composing ControlTab!")
 
@@ -105,6 +106,12 @@ fun ControlPage(
                 state = deviceState.lightOn,
                 text = stringResource(id = R.string.light),
                 onClick = onLightClick
+            )
+
+            SwitchRow(
+                state = deviceState.co2ValveOpened,
+                text = stringResource(id = R.string.co2),
+                onClick = onCo2Click
             )
         }
     }

@@ -44,6 +44,7 @@
     <string name="in_valve">상수밸브</string>
     <string name="purifier">여과기</string>
     <string name="light">조명</string>
+    <string name="co2">CO2</string>
     <string name="board_led">LED</string>
     <string name="pump">펌프</string>
 

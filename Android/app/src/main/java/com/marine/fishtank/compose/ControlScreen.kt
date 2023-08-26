@@ -102,6 +102,7 @@ fun ControlScreen(viewModel: ControlViewModel = hiltViewModel()) {
                     onOutValve2Click = { viewModel.enableOutWater2(it) },
                     onInValveClick = { viewModel.enableInWater(it) },
                     onLightClick = { viewModel.enableLight(it) },
+                    onCo2Click = { viewModel.enableCo2(it) }
                 )
             }
             composable(BottomNavItem.Monitor.screenRoute) {

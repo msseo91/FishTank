@@ -60,6 +60,10 @@ class ControlViewModel @Inject constructor(
         tankDataSource.enableLight(enable).collect { readDeviceState() }
     }
 
+    fun enableCo2(enable: Boolean) = viewModelScope.launch {
+        tankDataSource.enableCo2(enable).collect { readDeviceState() }
+    }
+
     fun addPeriodicTask(periodicTask: PeriodicTask) = viewModelScope.launch {
         tankDataSource.addPeriodicTask(periodicTask).collect { readPeriodicTasks() }
     }

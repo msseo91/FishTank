@@ -37,9 +37,9 @@ class TankDataSource @Inject constructor(
 
     fun enableHeater(enable: Boolean) = flow {  emitAll(fishService.enableHeater(token, enable).asTankResult()) }
 
-    fun enablePump(enable: Boolean) = flow { emitAll(fishService.enablePump(token, enable).asTankResult()) }
+    fun enableLight(enable: Boolean) = flow { emitAll(fishService.enableLight(token, enable).asTankResult()) }
 
-    fun readPumpState() = flow { emitAll(fishService.readPumpState(token).asTankResult()) }
+    fun readLightState() = flow { emitAll(fishService.readLightState(token).asTankResult()) }
 
     fun readHeaterState() = flow { emitAll(fishService.readHeaterState(token).asTankResult()) }
 
@@ -48,10 +48,6 @@ class TankDataSource @Inject constructor(
     fun readOutWaterState() = flow { emitAll(fishService.readOutWaterState(token).asTankResult()) }
 
     fun readOutWaterState2() = flow { emitAll(fishService.readOutWaterState2(token).asTankResult()) }
-
-    fun changeLightBrightness(percentage: Float) = flow { emitAll(fishService.changeBrightness(token, percentage).asTankResult()) }
-
-    fun readLightBrightness() = flow { emitAll(fishService.readLightBrightness(token).asTankResult()) }
 
     fun readAllState() = flow { emitAll(fishService.readAllState(token).asTankResult()) }
 

@@ -56,12 +56,8 @@ class ControlViewModel @Inject constructor(
         tankDataSource.enableInWater(enable).collect { readDeviceState() }
     }
 
-    fun enablePump(enable: Boolean) = viewModelScope.launch {
-        tankDataSource.enablePump(enable).collect { readDeviceState() }
-    }
-
-    fun changeLightBrightness(brightness: Float) = viewModelScope.launch {
-        tankDataSource.changeLightBrightness(brightness).collect()
+    fun enableLight(enable: Boolean) = viewModelScope.launch {
+        tankDataSource.enableLight(enable).collect { readDeviceState() }
     }
 
     fun addPeriodicTask(periodicTask: PeriodicTask) = viewModelScope.launch {

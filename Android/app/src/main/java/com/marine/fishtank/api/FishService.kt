@@ -47,21 +47,17 @@ interface FishService {
     @FormUrlEncoded
     suspend fun enableInWater(@Field(KEY_TOKEN) token: String, @Field(KEY_ENABLE) enable: Boolean): ApiResponse<Int>
 
-    @POST("/fish/light")
-    @FormUrlEncoded
-    suspend fun enableLight(@Field(KEY_TOKEN) token: String, @Field(KEY_ENABLE) enable: Boolean): ApiResponse<Int>
-
     @POST("/fish/purifier")
     @FormUrlEncoded
     suspend fun enablePurifier(@Field(KEY_TOKEN) token: String, @Field(KEY_ENABLE) enable: Boolean): ApiResponse<Int>
 
-    @POST("fish/pump")
+    @POST("fish/light/enable")
     @FormUrlEncoded
-    suspend fun enablePump(@Field(KEY_TOKEN) token: String, @Field(KEY_ENABLE) enable: Boolean): ApiResponse<Int>
+    suspend fun enableLight(@Field(KEY_TOKEN) token: String, @Field(KEY_ENABLE) enable: Boolean): ApiResponse<Int>
 
-    @POST("/fish/pump/read")
+    @POST("/fish/light/read")
     @FormUrlEncoded
-    suspend fun readPumpState(@Field(KEY_TOKEN) token: String): ApiResponse<Boolean>
+    suspend fun readLightState(@Field(KEY_TOKEN) token: String): ApiResponse<Boolean>
 
     @POST("/fish/heater")
     @FormUrlEncoded
@@ -86,14 +82,6 @@ interface FishService {
     @POST("/fish/replaceWater")
     @FormUrlEncoded
     suspend fun replaceWater(@Field(KEY_TOKEN) token: String, @Field(KEY_PERCENTAGE) percentage: Float): ApiResponse<Int>
-
-    @POST("/fish/brightness")
-    @FormUrlEncoded
-    suspend fun changeBrightness(@Field(KEY_TOKEN) token: String, @Field(KEY_PERCENTAGE) percentage: Float): ApiResponse<Boolean>
-
-    @POST("/fish/brightness/read")
-    @FormUrlEncoded
-    suspend fun readLightBrightness(@Field(KEY_TOKEN) token: String): ApiResponse<Float>
 
     @POST("/fish/read/allState")
     @FormUrlEncoded

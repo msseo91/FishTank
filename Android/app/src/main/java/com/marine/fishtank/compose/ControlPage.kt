@@ -32,13 +32,11 @@ fun ControlPage(
     onOutValveClick: (Boolean) -> Unit = {},
     onOutValve2Click: (Boolean) -> Unit = {},
     onInValveClick: (Boolean) -> Unit = {},
-    onPumpClick: (Boolean) -> Unit = {},
-    onBrightnessChange: (Float) -> Unit = {}
+    onLightClick: (Boolean) -> Unit = {},
 ) {
     Logger.d("Composing ControlTab!")
 
     val scrollState = rememberScrollState()
-    var brightnessValue by remember { mutableStateOf(0f) }
     var isRefreshing by remember { mutableStateOf(false) }
     val pullRefreshState = rememberPullRefreshState(
         refreshing = isRefreshing,
@@ -56,11 +54,6 @@ fun ControlPage(
         is TankResult.Success -> {
             Logger.d("Success")
             isRefreshing = false
-
-            // Update brightness value only on first time.
-            LaunchedEffect(null) {
-                brightnessValue = tankResult.data.lightBrightness
-            }
             tankResult.data
         }
         is TankResult.Error -> {
@@ -109,30 +102,10 @@ fun ControlPage(
             )
 
             SwitchRow(
-                state = deviceState.pumpEnabled,
-                text = stringResource(id = R.string.pump),
-                onClick = onPumpClick
+                state = deviceState.lightOn,
+                text = stringResource(id = R.string.light),
+                onClick = onLightClick
             )
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 20.dp, end = 20.dp)
-            ) {
-                Text(text = "${stringResource(id = R.string.light_brightness)} (${(brightnessValue * 100).roundToInt()}%)")
-                Slider(
-                    value = brightnessValue,
-                    steps = 100,
-                    valueRange = 0f..1f,
-                    onValueChange = { value: Float ->
-                        Logger.d("Brightness onValueChange $value")
-                        brightnessValue = value
-                    },
-                    onValueChangeFinished = { onBrightnessChange(brightnessValue) }
-                )
-            }
         }
     }
 }

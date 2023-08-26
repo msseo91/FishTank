@@ -32,7 +32,6 @@ data class Task(
         const val TYPE_VALVE_IN_WATER = 2
         const val TYPE_PURIFIER = 3
         const val TYPE_LIGHT = 4
-        const val TYPE_PUMP = 5
         const val TYPE_VALVE_OUT_WATER_2 = 6
 
         /**

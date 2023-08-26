@@ -47,7 +47,7 @@ class RaspberryService(
         return isOpen
     }
 
-    fun readBrightness(): Float {
+/*    fun readBrightness(): Float {
         val dutyCycle = fishTankDevice.light.dutyCycle()
         logger.debug("read Brightness=$dutyCycle")
         return dutyCycle / 100f
@@ -56,7 +56,7 @@ class RaspberryService(
     fun adjustBrightness(value: Float) {
         logger.debug("adjustBrightness=$value")
         fishTankDevice.light.on(value * 100)
-    }
+    }*/
 
     fun enableHeater(enable: Boolean) {
         logger.debug("enableHeater=$enable")
@@ -70,14 +70,14 @@ class RaspberryService(
         return isOn
     }
 
-    fun enablePump(enable: Boolean) {
+    fun enableLight(enable: Boolean) {
         logger.debug("enablePump=$enable")
-        if(enable) fishTankDevice.pump.low()
-        else fishTankDevice.pump.high()
+        if(enable) fishTankDevice.light.low()
+        else fishTankDevice.light.high()
     }
 
-    fun isPumpOn(): Boolean {
-        val isOn = fishTankDevice.pump.isLow
+    fun isLightOn(): Boolean {
+        val isOn = fishTankDevice.light.isLow
         logger.debug("isPumpOn=$isOn")
         return isOn
     }

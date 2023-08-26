@@ -122,26 +122,25 @@ class FishController(
         userService.getUserByToken(token) ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null)
 
         return ResponseEntity.ok(DeviceState(
-            isPumpEnabled = raspberryService.isPumpOn(),
             isOutletValve1Enabled = raspberryService.isOutWaterValveOpen(),
             isOutletValve2Enabled = raspberryService.isOutWaterValve2Open(),
             isInletValveEnabled = raspberryService.isInWaterValveOpen(),
             isHeaterEnabled = raspberryService.isHeaterOn(),
-            lightBrightness = raspberryService.readBrightness()
+            isLightOn = raspberryService.isLightOn()
         ))
     }
 
-    @PostMapping("/pump")
-    fun enablePump(@RequestParam(KEY_TOKEN) token: String, @RequestParam(KEY_ENABLE) enable: Boolean): ResponseEntity<Int> {
+    @PostMapping("/light/enable")
+    fun enableLight(@RequestParam(KEY_TOKEN) token: String, @RequestParam(KEY_ENABLE) enable: Boolean): ResponseEntity<Int> {
         userService.getUserByToken(token) ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null)
-        raspberryService.enablePump(enable)
+        raspberryService.enableLight(enable)
         return ResponseEntity.ok(RESULT_SUCCESS)
     }
 
-    @PostMapping("/pump/read")
-    fun readPumpState(@RequestParam(KEY_TOKEN) token: String): ResponseEntity<Boolean> {
+    @PostMapping("/light/read")
+    fun readLightState(@RequestParam(KEY_TOKEN) token: String): ResponseEntity<Boolean> {
         userService.getUserByToken(token) ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null)
-        return ResponseEntity.ok(raspberryService.isPumpOn())
+        return ResponseEntity.ok(raspberryService.isLightOn())
     }
 
     @PostMapping("/func/replaceWater")
@@ -153,25 +152,6 @@ class FishController(
 
         taskService.createReplaceWaterTask(percentage)
         return ResponseEntity.ok(RESULT_SUCCESS)
-    }
-
-    @PostMapping("/brightness")
-    fun adjustBrightness(
-        @RequestParam(KEY_TOKEN) token: String,
-        @RequestParam(KEY_PERCENTAGE) percentage: Float
-    ): ResponseEntity<Int> {
-        if (userService.getUserByToken(token) == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null)
-
-        raspberryService.adjustBrightness(percentage)
-        return ResponseEntity.ok(RESULT_SUCCESS)
-    }
-
-    @PostMapping("/brightness/read")
-    fun readLightBrightness(
-        @RequestParam(KEY_TOKEN) token: String,
-    ): ResponseEntity<Float> {
-        if (userService.getUserByToken(token) == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null)
-        return ResponseEntity.ok(raspberryService.readBrightness())
     }
 
     @PostMapping("/periodic/add")

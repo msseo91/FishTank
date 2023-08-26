@@ -38,8 +38,7 @@ class TaskService(
                 Task.TYPE_VALVE_IN_WATER -> raspberryService.enableInWaterValve(task.data == Task.DATA_OPEN)
                 Task.TYPE_VALVE_OUT_WATER -> raspberryService.enableOutWaterValve(task.data == Task.DATA_OPEN)
                 Task.TYPE_VALVE_OUT_WATER_2 -> raspberryService.enableOutWaterValve2(task.data == Task.DATA_OPEN)
-                Task.TYPE_LIGHT -> raspberryService.adjustBrightness(task.data * 0.01f)
-                Task.TYPE_PUMP -> raspberryService.enablePump(task.data == Task.DATA_OPEN)
+                Task.TYPE_LIGHT -> raspberryService.enableLight(task.data == Task.DATA_OPEN)
                 Task.TYPE_REPLACE_WATER -> { /* TODO */ }
                 Task.TYPE_PURIFIER -> { /* TODO */}
             }

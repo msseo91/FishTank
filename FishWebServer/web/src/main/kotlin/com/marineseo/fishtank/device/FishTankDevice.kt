@@ -3,8 +3,6 @@ package com.marineseo.fishtank.device
 import com.pi4j.Pi4J
 import com.pi4j.io.gpio.digital.DigitalOutput
 import com.pi4j.io.gpio.digital.DigitalState
-import com.pi4j.io.pwm.Pwm
-import com.pi4j.io.pwm.PwmType
 import com.pi4j.plugin.pigpio.PiGpioPlugin
 import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationListener
@@ -28,7 +26,7 @@ class FishTankDevice: ApplicationListener<ContextClosedEvent> {
     private val logger = LoggerFactory.getLogger(FishTankDevice::class.java)
     private val pi4j = Pi4J.newAutoContext()
 
-    val pump: DigitalOutput = pi4j.create(
+    val light: DigitalOutput = pi4j.create(
             DigitalOutput.newConfigBuilder(pi4j)
                     .address(Pin.PUMP.bsmPin)
                     .initial(DigitalState.HIGH)
@@ -68,7 +66,7 @@ class FishTankDevice: ApplicationListener<ContextClosedEvent> {
                     .build()
     )
 
-    val light: Pwm = pi4j.create(
+    /*val light: Pwm = pi4j.create(
             Pwm.newConfigBuilder(pi4j)
                     .id("light-pwm-bcm")
                     .name("Light pwm")
@@ -79,7 +77,7 @@ class FishTankDevice: ApplicationListener<ContextClosedEvent> {
                     .shutdown(0)
                     .dutyCycle(0)
                     .build()
-    )
+    )*/
 
     val temperature = Ds18b20()
 

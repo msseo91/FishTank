@@ -6,4 +6,5 @@ data class DeviceState(
     val isInletValveEnabled: Boolean = false,
     val isHeaterEnabled: Boolean = false,
     val isLightOn: Boolean = false,
+    val isCo2ValveOpened: Boolean = false,
 )

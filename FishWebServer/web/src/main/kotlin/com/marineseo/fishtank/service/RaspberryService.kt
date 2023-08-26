@@ -71,7 +71,7 @@ class RaspberryService(
     }
 
     fun enableLight(enable: Boolean) {
-        logger.debug("enablePump=$enable")
+        logger.debug("enableLight=$enable")
         if(enable) fishTankDevice.light.low()
         else fishTankDevice.light.high()
     }
@@ -80,6 +80,18 @@ class RaspberryService(
         val isOn = fishTankDevice.light.isLow
         logger.debug("isPumpOn=$isOn")
         return isOn
+    }
+
+    fun enableCo2Valve(open: Boolean) {
+        logger.debug("enableCo2Valve=$open")
+        if(open) fishTankDevice.co2Valve.low()
+        else fishTankDevice.co2Valve.high()
+    }
+
+    fun isCo2ValveOpen(): Boolean {
+        val isOpen = fishTankDevice.co2Valve.isLow
+        logger.debug("Co2Valve=$isOpen")
+        return isOpen
     }
 
     fun getTemperatureInTank(): Float {

@@ -126,7 +126,8 @@ class FishController(
             isOutletValve2Enabled = raspberryService.isOutWaterValve2Open(),
             isInletValveEnabled = raspberryService.isInWaterValveOpen(),
             isHeaterEnabled = raspberryService.isHeaterOn(),
-            isLightOn = raspberryService.isLightOn()
+            isLightOn = raspberryService.isLightOn(),
+            isCo2ValveOpened = raspberryService.isCo2ValveOpen(),
         ))
     }
 
@@ -141,6 +142,19 @@ class FishController(
     fun readLightState(@RequestParam(KEY_TOKEN) token: String): ResponseEntity<Boolean> {
         userService.getUserByToken(token) ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null)
         return ResponseEntity.ok(raspberryService.isLightOn())
+    }
+
+    @PostMapping("/co2/enable")
+    fun enableCo2Valve(@RequestParam(KEY_TOKEN) token: String, @RequestParam(KEY_ENABLE) enable: Boolean): ResponseEntity<Int> {
+        userService.getUserByToken(token) ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null)
+        raspberryService.enableCo2Valve(enable)
+        return ResponseEntity.ok(RESULT_SUCCESS)
+    }
+
+    @PostMapping("/co2/read")
+    fun readCo2ValveState(@RequestParam(KEY_TOKEN) token: String): ResponseEntity<Boolean> {
+        userService.getUserByToken(token) ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null)
+        return ResponseEntity.ok(raspberryService.isCo2ValveOpen())
     }
 
     @PostMapping("/func/replaceWater")

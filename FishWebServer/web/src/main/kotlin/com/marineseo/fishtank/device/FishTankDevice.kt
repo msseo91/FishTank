@@ -28,7 +28,7 @@ class FishTankDevice: ApplicationListener<ContextClosedEvent> {
 
     val light: DigitalOutput = pi4j.create(
             DigitalOutput.newConfigBuilder(pi4j)
-                    .address(Pin.PUMP.bsmPin)
+                    .address(Pin.LIGHT.bsmPin)
                     .initial(DigitalState.HIGH)
                     .provider(PiGpioPlugin.DIGITAL_OUTPUT_PROVIDER_ID)
                     .build()
@@ -64,6 +64,14 @@ class FishTankDevice: ApplicationListener<ContextClosedEvent> {
                     .initial(DigitalState.HIGH)
                     .provider(PiGpioPlugin.DIGITAL_OUTPUT_PROVIDER_ID)
                     .build()
+    )
+
+    val co2Valve: DigitalOutput = pi4j.create(
+        DigitalOutput.newConfigBuilder(pi4j)
+            .address(Pin.CO2_VALVE.bsmPin)
+            .initial(DigitalState.HIGH)
+            .provider(PiGpioPlugin.DIGITAL_OUTPUT_PROVIDER_ID)
+            .build()
     )
 
     /*val light: Pwm = pi4j.create(

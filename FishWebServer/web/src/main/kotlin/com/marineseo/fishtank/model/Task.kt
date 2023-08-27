@@ -33,6 +33,7 @@ data class Task(
         const val TYPE_PURIFIER = 3
         const val TYPE_LIGHT = 4
         const val TYPE_VALVE_OUT_WATER_2 = 6
+        const val TYPE_VALVE_CO2 = 7
 
         /**
          * Task is standby, waiting to execute

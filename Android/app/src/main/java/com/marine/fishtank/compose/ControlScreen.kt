@@ -47,7 +47,6 @@ fun ControlScreen(viewModel: ControlViewModel = hiltViewModel()) {
     val items = listOf(
         BottomNavItem.Control,
         BottomNavItem.Monitor,
-        BottomNavItem.Camera,
         BottomNavItem.Periodic
     )
 
@@ -111,7 +110,6 @@ fun ControlScreen(viewModel: ControlViewModel = hiltViewModel()) {
                     onRequestTemperatures = { temperatureShowDays = it }
                 )
             }
-            composable(BottomNavItem.Camera.screenRoute) { CameraPage() }
             composable(BottomNavItem.Periodic.screenRoute) {
                 SchedulePage(
                     periodicTaskResult = periodicTaskResult,
@@ -152,6 +150,5 @@ sealed class BottomNavItem(
 ) {
     object Control : BottomNavItem(R.string.text_control, R.drawable.control, "Control")
     object Monitor : BottomNavItem(R.string.text_monitor, R.drawable.bar_chart, "Monitor")
-    object Camera : BottomNavItem(R.string.text_camera, R.drawable.camera, "Camera")
     object Periodic : BottomNavItem(R.string.text_periodic, R.drawable.calendar, "Periodic")
 }

@@ -38,8 +38,8 @@ fun PeriodicTaskDialog(
         stringResource(R.string.out_valve) to PeriodicTask.TYPE_VALVE_OUT_WATER,
         stringResource(R.string.out_valve2) to PeriodicTask.TYPE_VALVE_OUT_WATER_2,
         stringResource(R.string.in_valve) to PeriodicTask.TYPE_VALVE_IN_WATER,
-        stringResource(R.string.light_brightness) to PeriodicTask.TYPE_LIGHT,
-        stringResource(R.string.pump) to PeriodicTask.TYPE_PUMP
+        stringResource(R.string.light) to PeriodicTask.TYPE_LIGHT,
+        stringResource(R.string.co2) to PeriodicTask.TYPE_VALVE_CO2
     )
     var selectedType by remember { mutableStateOf(typeOptionMap.keys.first()) }
 
@@ -47,15 +47,14 @@ fun PeriodicTaskDialog(
         stringResource(R.string.out_valve),
         stringResource(R.string.out_valve2),
         stringResource(R.string.in_valve),
-        stringResource(R.string.pump)-> {
+        stringResource(R.string.co2),
+        stringResource(R.string.light)-> {
             listOf(textOpen, textClose)
-        }
-        stringResource(R.string.light_brightness) -> {
-            (0..100).map { "$it %" }.toList()
         }
         else -> { emptyList() }
     }
     Logger.d("Composition. SelectedType=${selectedType}, valueOptions=${valueOptions}")
+
     var selectedValue by remember { mutableStateOf(textOpen) }
     var selectedTime by remember { mutableStateOf(TimeUtils.currentTimeHHmm()) }
 
@@ -122,14 +121,10 @@ fun PeriodicTaskDialog(
                             Logger.d("Save type=${typeOptionMap[selectedType]}, value=${selectedValue}")
                             onSave(
                                 typeOptionMap[selectedType]!!,
-                                if(selectedValue.contains("%")) {
-                                    selectedValue.replace("[^0-9]".toRegex(), "").toInt()
+                                if(selectedValue == textOpen) {
+                                    1
                                 } else {
-                                    if(selectedValue == textOpen) {
-                                        1
-                                    } else {
-                                        0
-                                    }
+                                    0
                                 },
                                 selectedTime
                             )

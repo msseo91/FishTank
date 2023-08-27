@@ -24,7 +24,15 @@ class ControlViewModel @Inject constructor(
 
     fun readPeriodicTasks() {
         viewModelScope.launch {
-            tankDataSource.fetchPeriodicTasks().collect { _periodicTasks.emit(it) }
+            tankDataSource.fetchPeriodicTasks()
+                .map {
+                    if(it is TankResult.Success) {
+                        TankResult.Success(it.data.sortedBy { it.time })
+                    } else {
+                        it
+                    }
+                }
+                .collect { _periodicTasks.emit(it) }
         }
     }
 

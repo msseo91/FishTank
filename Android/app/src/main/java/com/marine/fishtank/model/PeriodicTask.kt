@@ -4,9 +4,8 @@ import android.content.Context
 import android.os.Parcelable
 import com.marine.fishtank.R
 import com.marine.fishtank.model.PeriodicTask.Companion.TYPE_LIGHT
-import com.marine.fishtank.model.PeriodicTask.Companion.TYPE_PUMP
 import com.marine.fishtank.model.PeriodicTask.Companion.TYPE_PURIFIER
-import com.marine.fishtank.model.PeriodicTask.Companion.TYPE_REPLACE_WATER
+import com.marine.fishtank.model.PeriodicTask.Companion.TYPE_VALVE_CO2
 import com.marine.fishtank.model.PeriodicTask.Companion.TYPE_VALVE_IN_WATER
 import com.marine.fishtank.model.PeriodicTask.Companion.TYPE_VALVE_OUT_WATER
 import com.marine.fishtank.model.PeriodicTask.Companion.TYPE_VALVE_OUT_WATER_2
@@ -33,8 +32,8 @@ data class PeriodicTask(
         const val TYPE_VALVE_IN_WATER = 2
         const val TYPE_PURIFIER = 3
         const val TYPE_LIGHT = 4
-        const val TYPE_PUMP = 5
         const val TYPE_VALVE_OUT_WATER_2 = 6
+        const val TYPE_VALVE_CO2 = 7
 
         fun typeFromResource(resource: Int): Int {
             return when(resource) {
@@ -55,30 +54,23 @@ fun PeriodicTask.typeAsString(context: Context): String {
         TYPE_VALVE_OUT_WATER_2 -> context.getString(R.string.out_valve2)
         TYPE_VALVE_IN_WATER -> context.getString(R.string.in_valve)
         TYPE_PURIFIER -> context.getString(R.string.purifier)
-        TYPE_LIGHT -> context.getString(R.string.light_brightness)
-        TYPE_PUMP -> context.getString(R.string.pump)
+        TYPE_LIGHT -> context.getString(R.string.light)
+        TYPE_VALVE_CO2 -> context.getString(R.string.co2)
         else -> "UNKNOWN"
     }
 }
 
 fun PeriodicTask.valueAsText(context: Context): String {
     return when(type) {
-        TYPE_VALVE_IN_WATER, TYPE_VALVE_OUT_WATER, TYPE_VALVE_OUT_WATER_2 -> {
+        TYPE_VALVE_IN_WATER, TYPE_VALVE_OUT_WATER,
+        TYPE_VALVE_OUT_WATER_2, TYPE_LIGHT,
+        TYPE_VALVE_CO2 -> {
             if(data == 1) {
                 context.getString(R.string.open)
             } else {
                 context.getString(R.string.close)
             }
         }
-        TYPE_PURIFIER, TYPE_PUMP -> {
-            if(data == 1) {
-                context.getString(R.string.turn_on)
-            } else {
-                context.getString(R.string.turn_off)
-            }
-        }
-        TYPE_LIGHT -> "$data%"
-
         else -> "UNKNOWN"
     }
 }

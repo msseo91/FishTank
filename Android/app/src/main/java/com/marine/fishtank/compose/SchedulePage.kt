@@ -72,58 +72,6 @@ fun SchedulePage(
         )
     }
 
-    val typeExpand = remember { mutableStateOf(false) }
-    val typeOptions = listOf(
-        R.string.out_valve,
-        R.string.out_valve2,
-        R.string.in_valve,
-        R.string.light_brightness
-    )
-    val selectedTypeOption = remember { mutableStateOf(typeOptions[0]) }
-
-    val valueBooleanExpand = remember { mutableStateOf(false) }
-    val valueBooleanOptions = arrayOf(0, 1)
-
-    val valueLightExpand = remember { mutableStateOf(false) }
-    val valueLightOptions = (0..100).toList().toTypedArray()
-    val selectedOption = remember { mutableStateOf(valueLightOptions[0]) }
-
-    val mCalendar = Calendar.getInstance()
-    val currentHour = mCalendar[Calendar.HOUR_OF_DAY]
-    val currentMinute = mCalendar[Calendar.MINUTE]
-    val h = if(currentHour < 10) "0$currentHour" else "$currentHour"
-    val m = if(currentMinute < 10) "0$currentMinute" else "$currentMinute"
-    val actionTime = remember { mutableStateOf("$h:$m") }
-
-    val timePickerDialog = TimePickerDialog(
-        context,
-        { _, hour: Int, minute: Int ->
-            actionTime.value = "${if(hour < 10) "0$hour" else "$hour"}:${if(minute < 10) "0$minute" else "$minute"}"
-        }, currentHour, currentMinute, false
-    )
-
-    /*PeriodicTaskDialog(
-        openState = openDialog,
-        typeExpand = typeExpand,
-        typeOptions = typeOptions,
-        selectedTypeOption = selectedTypeOption,
-        valueBooleanExpand = valueBooleanExpand,
-        valueBooleanOptions = valueBooleanOptions,
-        valueLightExpand = valueLightExpand,
-        valueLightOptions = valueLightOptions,
-        selectedOption = selectedOption,
-        actionTime = actionTime,
-        timePickerDialog = timePickerDialog,
-    ) {
-        onAddPeriodicTask(
-            PeriodicTask(
-                type = PeriodicTask.typeFromResource(selectedTypeOption.value),
-                data = selectedOption.value,
-                time = actionTime.value
-            )
-        )
-    }*/
-
     // Floating button
     Scaffold(
         floatingActionButton = {
